@@ -1,0 +1,626 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   رُزِت — استایل صفحه‌ی ورود و ثبت‌نام
+   ───────────────────────────────────────────────────────────────────────────
+   فقط از توکن‌های مشترک دو تم استفاده می‌شود (رنگ، فاصله، فونت، ایزینگ)،
+   پس این فایل برای هر دو تم یکی است و چیزی را دوباره تعریف نمی‌کند.
+
+   ۱. چیدمان دو ستونی
+   ۲. کارت فرم
+   ۳. سوییچ ورود / ثبت‌نام
+   ۴. فیلدها، چشمک رمز، چک‌باکس
+   ۵. کد شش‌رقمی
+   ۶. پایان موفق
+   ۷. قاب تصویری برند
+   ۸. واکنش‌گرایی و حرکت کم
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── نشانگر ماوس ──
+   دکمه‌ها در حالت پیش‌فرض مرورگر cursor: default می‌گیرند نه pointer؛
+   روی فرم ورود که همه‌چیز کلیک‌کردنی است، افوردنس درست لازم است. */
+.page-auth a,
+.page-auth button,
+.page-auth label,
+.page-auth [role="switch"],
+.page-auth [role="tab"] { cursor: pointer; }
+.page-auth input { cursor: text; }
+
+/* ─────────── ۱. چیدمان ─────────── */
+.au-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: calc(100vh - var(--header-h));
+  padding-top: var(--header-h);
+}
+
+.au-pane {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2.25rem, 5vw, 4.5rem) var(--gutter);
+}
+
+/* ─────────── ۲. کارت فرم ─────────── */
+.au-card {
+  width: 100%;
+  max-width: 428px;
+}
+
+.au-eyebrow {
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+  margin-bottom: 0.65rem;
+}
+.au-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 26px;
+  height: 1px;
+  background: var(--amber);
+  vertical-align: middle;
+  margin-inline-end: 0.6rem;
+  opacity: 0.7;
+}
+
+.au-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.au-sub {
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  line-height: 1.9;
+  color: var(--text-muted);
+  margin-bottom: 1.85rem;
+  text-wrap: pretty;
+}
+
+/* ─────────── ۳. سوییچ ورود / ثبت‌نام ─────────── */
+.au-tabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 4px;
+  margin-bottom: 1.75rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+}
+/* قرص لغزنده — چون RTL است، حالت دوم به چپ می‌رود نه راست */
+.au-tabs__pill {
+  position: absolute;
+  inset-block: 4px;
+  inset-inline-start: 4px;
+  width: calc(50% - 4px);
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: 0 6px 18px -10px rgba(0, 0, 0, 0.45),
+              0 0 0 1px color-mix(in srgb, var(--amber) 26%, transparent);
+  transform: translateX(0);
+  transition: transform 0.5s var(--ease-out);
+}
+.au-tabs[data-on="signup"] .au-tabs__pill { transform: translateX(-100%); }
+
+.au-tab {
+  position: relative;
+  z-index: 1;
+  padding: 0.72rem 0;
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-muted);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.35s var(--ease);
+}
+.au-tab.is-on { color: var(--text); }
+
+/* ─────────── ۴. فرم‌ها ─────────── */
+.au-form { display: none; }
+.au-form.is-on { display: block; animation: auFade 0.5s var(--ease-out) both; }
+@keyframes auFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.au-field { margin-bottom: 1.15rem; }
+
+.au-field label,
+.au-field__row label {
+  display: block;
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+.au-field__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.au-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0 1rem;
+  height: 54px;
+  border: 1px solid var(--border-mid);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+  transition: border-color 0.35s var(--ease), box-shadow 0.35s var(--ease),
+              background-color 0.35s var(--ease);
+}
+.au-input:focus-within {
+  border-color: color-mix(in srgb, var(--amber) 62%, transparent);
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--amber) 14%, transparent);
+}
+.au-input > svg {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  color: var(--text-subtle);
+  transition: color 0.35s var(--ease);
+}
+.au-input:focus-within > svg { color: var(--amber); }
+
+.au-input input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: none;
+  outline: none;
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: var(--text);
+}
+.au-input input::placeholder { color: var(--text-subtle); }
+.au-input input[dir="ltr"] {
+  text-align: right;
+  font-family: var(--font-num);
+  letter-spacing: 0.04em;   /* فقط رقم لاتین — روی فارسی اعمال نمی‌شود */
+}
+
+/* نمایش / پنهان‌کردن رمز — پلک با CSS کشیده می‌شود */
+.au-eye {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--text-subtle);
+  position: relative;
+  transition: color 0.3s var(--ease);
+}
+.au-eye:hover { color: var(--amber); }
+.au-eye::before,
+.au-eye::after {
+  content: '';
+  position: absolute;
+  left: 50%;                /* عمداً فیزیکی: با translateX(-50%) جفت است */
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.au-eye::before {
+  width: 19px;
+  height: 12px;
+  border: 1.4px solid currentColor;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+.au-eye::after {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+/* حالت «رمز دیده می‌شود» → خط اریب روی چشم */
+.au-eye.is-open { color: var(--amber); }
+.au-eye.is-open::after {
+  width: 22px;
+  height: 1.4px;
+  border-radius: 0;
+  transform: translate(-50%, -50%) rotate(-38deg);
+}
+
+/* نوار قدرت رمز */
+.au-meter {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-top: 0.6rem;
+}
+.au-meter span {
+  height: 3px;
+  border-radius: 999px;
+  background: var(--border-mid);
+  transition: background-color 0.4s var(--ease);
+}
+.au-meter[data-level="1"] span:nth-child(1) { background: #C4674F; }
+.au-meter[data-level="2"] span:nth-child(-n+2) { background: var(--amber); }
+.au-meter[data-level="3"] span { background: var(--pistachio); }
+
+.au-hint {
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+  margin-top: 0.45rem;
+}
+
+.au-err {
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  color: var(--rosette);
+  margin-top: 0.4rem;
+  min-height: 0;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.au-err.is-on { opacity: 1; transform: none; }
+.au-err--center { text-align: center; }
+
+/* چک‌باکس */
+.au-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin: 0.3rem 0 1.5rem;
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  line-height: 1.85;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.au-check input { position: absolute; opacity: 0; width: 0; height: 0; }
+.au-check__box {
+  position: relative;
+  flex-shrink: 0;
+  width: 19px;
+  height: 19px;
+  margin-top: 0.18rem;
+  border: 1px solid var(--border-mid);
+  border-radius: 6px;
+  transition: background-color 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.au-check__box::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--bg);
+  border-width: 0 1.8px 1.8px 0;
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.3s var(--ease-out);
+}
+.au-check input:checked + .au-check__box {
+  background: var(--amber);
+  border-color: var(--amber);
+}
+.au-check input:checked + .au-check__box::after { transform: rotate(45deg) scale(1); }
+.au-check input:focus-visible + .au-check__box {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--amber) 20%, transparent);
+}
+
+/* دکمه‌ها */
+.au-submit { width: 100%; }
+.au-alt { width: 100%; }
+.au-submit.is-busy { pointer-events: none; opacity: 0.75; }
+.au-submit.is-busy .au-submit__label { visibility: hidden; }
+.au-submit.is-busy::after {
+  content: '';
+  position: absolute;
+  left: 50%;                /* عمداً فیزیکی: با margin-left منفی جفت است */
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: auSpin 0.75s linear infinite;
+}
+@keyframes auSpin { to { transform: rotate(360deg); } }
+
+.au-link {
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  color: var(--amber);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.3s var(--ease);
+}
+.au-link:hover { opacity: 0.72; }
+.au-link--sm { font-size: var(--text-xs); }
+
+.au-or {
+  position: relative;
+  text-align: center;
+  margin: 1.15rem 0;
+}
+.au-or::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--border);
+}
+.au-or span {
+  position: relative;
+  padding: 0 0.85rem;
+  background: var(--bg);
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+
+/* ─────────── ۵. کد شش‌رقمی ─────────── */
+.au-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.35rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  transition: color 0.3s var(--ease), gap 0.3s var(--ease);
+}
+.au-back:hover { color: var(--amber); gap: 0.65rem; }
+.au-back svg { width: 15px; height: 15px; }
+
+.au-otp__lead {
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  line-height: 1.95;
+  color: var(--text-muted);
+  margin-bottom: 1.35rem;
+}
+.au-otp__num {
+  font-family: var(--font-num);
+  color: var(--text);
+  display: inline-block;
+}
+
+.au-otp {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.55rem;
+  margin-bottom: 0.4rem;
+}
+.au-otp input {
+  width: 100%;
+  height: 58px;
+  text-align: center;
+  font-family: var(--font-num);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text);
+  border: 1px solid var(--border-mid);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+  outline: none;
+  transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease),
+              transform 0.3s var(--ease-out);
+}
+.au-otp input:focus {
+  border-color: color-mix(in srgb, var(--amber) 65%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--amber) 14%, transparent);
+  transform: translateY(-2px);
+}
+.au-otp.is-wrong { animation: auShake 0.45s var(--ease); }
+@keyframes auShake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-6px); }
+  75%      { transform: translateX(6px); }
+}
+
+.au-resend {
+  margin-top: 1.1rem;
+  text-align: center;
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+
+/* ─────────── ۶. پایان موفق ─────────── */
+.au-done { text-align: center; }
+.au-done.is-on { display: block; }
+
+.au-done__ring {
+  display: block;
+  width: 76px;
+  margin: 0 auto 1.35rem;
+  color: var(--amber);
+}
+.au-done__ring svg { width: 100%; height: auto; }
+.au-done__circle,
+.au-done__tick {
+  stroke-dasharray: var(--len, 200);
+  stroke-dashoffset: var(--len, 200);
+  animation: auDraw 1s var(--ease-out) forwards;
+}
+.au-done__tick { animation-delay: 0.35s; }
+@keyframes auDraw { to { stroke-dashoffset: 0; } }
+
+.au-done__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.au-done__text {
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  line-height: 1.9;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+.au-done .au-link { display: block; margin-top: 0.9rem; }
+
+/* ─────────── ۷. قاب تصویری برند ─────────── */
+.au-art {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 5vw, 4rem);
+  background: var(--bg-alt);
+  border-inline-end: 1px solid var(--border);
+}
+/* هاله‌های نرم که خیلی آرام جابه‌جا می‌شوند */
+.au-art__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  pointer-events: none;
+}
+.au-art__glow--a {
+  width: 46%;
+  aspect-ratio: 1;
+  top: 8%;
+  inset-inline-start: -8%;
+  background: color-mix(in srgb, var(--rosette) 42%, transparent);
+  animation: auDriftA 19s var(--ease) infinite;
+}
+.au-art__glow--b {
+  width: 40%;
+  aspect-ratio: 1;
+  bottom: 6%;
+  inset-inline-end: -6%;
+  background: color-mix(in srgb, var(--amber) 38%, transparent);
+  animation: auDriftB 23s var(--ease) infinite;
+}
+@keyframes auDriftA {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(9%, 7%) scale(1.14); }
+}
+@keyframes auDriftB {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(-8%, -9%) scale(1.1); }
+}
+
+.au-art__ring {
+  position: absolute;
+  width: min(78%, 520px);
+  aspect-ratio: 1;
+  fill: none;
+  pointer-events: none;
+}
+.au-art__ring circle {
+  stroke: color-mix(in srgb, var(--amber) 34%, transparent);
+  stroke-width: 0.5;
+  transform-origin: 100px 100px;
+}
+.au-art__ring circle:first-child {
+  stroke-dasharray: 3 9;
+  animation: auRing 46s linear infinite;
+}
+.au-art__ring circle:last-child {
+  stroke-dasharray: 1 16;
+  animation: auRing 34s linear infinite reverse;
+}
+@keyframes auRing { to { transform: rotate(360deg); } }
+
+.au-art__motes { position: absolute; inset: 0; pointer-events: none; }
+.au-mote {
+  position: absolute;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--amber) 80%, transparent);
+  opacity: 0;
+  animation: auMote linear infinite;
+}
+@keyframes auMote {
+  0%       { opacity: 0; transform: translate(0, 0); }
+  14%      { opacity: 0.75; }
+  86%      { opacity: 0.55; }
+  100%     { opacity: 0; transform: translate(var(--mx, 0), -110px); }
+}
+
+.au-art__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 380px;
+  text-align: center;
+}
+.au-art__mark {
+  display: block;
+  width: clamp(120px, 15vw, 168px);
+  aspect-ratio: 400 / 295;
+  margin: 0 auto 1.85rem;
+  background: var(--logo-icon) center / contain no-repeat;
+  animation: auBreathe 7s var(--ease) infinite;
+}
+@keyframes auBreathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.04); }
+}
+.au-art__line {
+  font-family: var(--font-heading);
+  font-size: var(--text-md);
+  font-weight: 700;
+  line-height: 1.75;
+  color: var(--text);
+  margin-bottom: 0.7rem;
+  text-wrap: balance;
+}
+.au-art__sub {
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  line-height: 1.9;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+/* ─────────── ۸. واکنش‌گرایی ─────────── */
+@media (max-width: 980px) {
+  .au-main { grid-template-columns: 1fr; }
+  /* قاب تصویری به یک نوار کوتاه بالای فرم تبدیل می‌شود */
+  .au-art {
+    order: -1;
+    min-height: 210px;
+    border-inline-end: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .au-art__inner { max-width: 460px; }
+  .au-art__mark { width: 104px; margin-bottom: 1.1rem; }
+  .au-art__sub { display: none; }
+  .au-art__ring { width: 300px; }
+}
+
+@media (max-width: 480px) {
+  .au-art { min-height: 168px; padding: 1.5rem; }
+  .au-art__line { font-size: var(--text-sm); }
+  .au-otp { gap: 0.35rem; }
+  .au-otp input { height: 50px; font-size: 1.2rem; border-radius: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .au-form.is-on, .au-art__glow, .au-art__ring circle,
+  .au-art__mark, .au-mote, .au-done__circle, .au-done__tick {
+    animation: none !important;
+  }
+  .au-done__circle, .au-done__tick { stroke-dashoffset: 0 !important; }
+  .au-art__motes { display: none; }
+}

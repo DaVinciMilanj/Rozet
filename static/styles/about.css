@@ -1,0 +1,444 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   رُزِت — استایل صفحه درباره ما
+   ───────────────────────────────────────────────────────────────────────────
+   لحن بصری: اولترا لوکس — فضای خالی سخاوتمندانه، تایپوگرافی بزرگ با
+   فاصله‌گذاری باز، خطوط مویی طلایی و حرکت‌های آرام. رنگ کم است؛ شخصیت را
+   ریتم و انیمیشن می‌سازد. فقط از توکن‌های مشترک دو تم استفاده می‌کند.
+
+   ۱. پایه و نشانگر ماوس
+   ۲. هرو (نشان خانه، ظهور کلمه‌به‌کلمه، هاله، ذرات، تصویر خودکشیده)
+   ۳. نوار روان
+   ۴. بیانیه
+   ۵. معیارهای خانه
+   ۶. تصویر کافه
+   ۷. تماس و نقشه
+   ۸. واکنش‌گرایی و کاهش حرکت
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────── ۱. پایه ─────────── */
+.page-about { background-color: var(--bg); color: var(--text); }
+
+.ab-container {
+  width: 100%;
+  max-width: 980px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.ab-main { padding-top: var(--header-h); }
+
+.skip-link {
+  position: absolute; inset-inline-start: -9999px; top: 0; z-index: 9999;
+  padding: 0.75rem 1.25rem; background: var(--cocoa); color: var(--cream);
+  border-radius: 0 0 6px 0; font-family: var(--font-heading); font-size: var(--text-sm);
+}
+.skip-link:focus { inset-inline-start: 0; }
+
+/* استایل مشترک سایت cursor:none می‌گذارد چون صفحه اصلی نشانگر اختصاصی دارد */
+.page-about, .page-about a, .page-about button, .page-about [role="switch"] { cursor: auto; }
+.page-about a, .page-about button, .page-about [role="switch"] { cursor: pointer; }
+
+/* سربرگ بخش‌ها */
+.ab-sec-head { margin-bottom: clamp(2rem, 4vw, 3.25rem); }
+.ab-sec-head--center { text-align: center; }
+
+.ab-kicker {
+  display: inline-flex; align-items: center; gap: 0.65rem;
+  font-family: var(--font); font-size: var(--text-xs);
+  text-transform: uppercase;
+  color: var(--amber); margin-bottom: 0.9rem;
+}
+html[data-theme="light"] .ab-kicker { color: #7E6034; }
+.ab-kicker--center { justify-content: center; }
+.ab-kicker__line {
+  width: 30px; height: 1px; background: currentColor; opacity: 0.5;
+  animation: abLine 3.6s var(--ease) infinite;
+}
+
+.ab-h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.55rem, 3vw, 2.4rem);
+  font-weight: 700; line-height: 1.32;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+/* ─────────── ۲. هرو ─────────── */
+.ab-hero {
+  position: relative; isolation: isolate;
+  padding-block: clamp(3rem, 8vw, 6.5rem) clamp(2.5rem, 6vw, 4.5rem);
+  text-align: center;
+  overflow: hidden;
+}
+
+.ab-hero__halo {
+  position: absolute; z-index: -1;
+  top: 2%; left: 50%; transform: translateX(-50%);
+  width: min(760px, 94%); aspect-ratio: 1.3;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%,
+              color-mix(in srgb, var(--amber) 28%, transparent) 0%,
+              color-mix(in srgb, var(--rosette) 13%, transparent) 46%, transparent 72%);
+  filter: blur(58px);
+  animation: abHalo 9s var(--ease) infinite;
+}
+@keyframes abHalo {
+  0%, 100% { transform: translateX(-50%) scale(0.93); opacity: 0.68; }
+  50%      { transform: translateX(-50%) scale(1.08); opacity: 1; }
+}
+
+.ab-hero__motes { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+.ab-mote {
+  position: absolute; border-radius: 50%;
+  background: color-mix(in srgb, var(--amber) 85%, transparent);
+  opacity: 0; animation: abMote linear infinite;
+}
+@keyframes abMote {
+  0%   { transform: translate3d(0, 20px, 0) scale(0.5); opacity: 0; }
+  18%  { opacity: 0.8; }
+  76%  { opacity: 0.4; }
+  100% { transform: translate3d(var(--mx, 14px), -110px, 0) scale(1.05); opacity: 0; }
+}
+
+/* نشان خانه — لوگوی رُزِت */
+.ab-crest {
+  display: flex; justify-content: center;
+  margin-bottom: 1.75rem;
+  opacity: 0; animation: abFadeUp 0.9s var(--ease-out) 0.1s forwards;
+}
+/* display:flex بر [hidden] پیش‌فرض مرورگر غلبه می‌کند؛ پس صریح خاموشش می‌کنیم
+   وگرنه وقتی فایل لوگو نباشد کادر خالی سرجایش می‌ماند. */
+.ab-crest[hidden] { display: none; }
+
+/* آدرس تصویر را about.js تعیین می‌کند: چند نام و پسوند را امتحان می‌کند و
+   اولین فایل موجود در assets/logo را می‌نشاند. اگر هیچ فایلی نبود، کادر
+   پنهان می‌شود تا بالای صفحه خالی نماند. */
+.ab-crest__logo {
+  width: clamp(176px, 27vw, 264px);
+  aspect-ratio: 5 / 4;   /* نسبت واقعی فایل لوگو */
+  background: center / contain no-repeat;
+  animation: abCrest 6s var(--ease) infinite;
+}
+@keyframes abCrest {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.035); }
+}
+
+.ab-eyebrow {
+  font-family: var(--font); font-size: var(--text-xs);
+  text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 1.35rem;
+  opacity: 0; animation: abFadeUp 0.9s var(--ease-out) 0.2s forwards;
+}
+@keyframes abLine {
+  0%, 100% { opacity: 0.35; transform: scaleX(0.8); }
+  50%      { opacity: 0.9;  transform: scaleX(1); }
+}
+
+.ab-hero__title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 5.4vw, 3.9rem);
+  font-weight: 700; line-height: 1.24;
+  color: var(--text);
+  max-width: 15ch; margin-inline: auto; margin-bottom: 1.5rem;
+  text-wrap: balance;
+}
+/* ظهور کلمه‌به‌کلمه — JS هر کلمه را در یک span می‌گذارد */
+.ab-word { display: inline-block; }
+.ab-word > span {
+  display: inline-block;
+  opacity: 0; transform: translateY(0.6em);
+  animation: abWord 0.8s var(--ease-out) forwards;
+}
+@keyframes abWord { to { opacity: 1; transform: none; } }
+
+.ab-hero__sub {
+  font-family: var(--font); font-size: var(--text-md); line-height: 2.05;
+  color: var(--text-muted);
+  max-width: 560px; margin-inline: auto;
+  text-wrap: pretty;
+  opacity: 0; animation: abFadeUp 0.9s var(--ease-out) 0.75s forwards;
+}
+@keyframes abFadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+.ab-draw {
+  display: block;
+  width: min(220px, 55%);
+  margin: clamp(2.25rem, 5vw, 3.5rem) auto 0;
+  overflow: visible;
+}
+.ab-draw__p {
+  fill: none; stroke: var(--amber);
+  stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+  opacity: 0.8;
+  /* JS طول واقعی هر مسیر را می‌سنجد و در --len می‌گذارد */
+  stroke-dasharray: var(--len, 400);
+  stroke-dashoffset: var(--len, 400);
+}
+.ab-draw.is-drawing .ab-draw__p {
+  animation: abDraw 1.6s var(--ease-out) forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes abDraw { to { stroke-dashoffset: 0; } }
+
+/* ─────────── ۳. نوار روان ─────────── */
+.ab-marquee {
+  overflow: hidden;
+  padding-block: 1.2rem;
+  border-block: 1px solid var(--border);
+  background: color-mix(in srgb, var(--amber) 6%, transparent);
+  margin-block: clamp(1.5rem, 4vw, 2.75rem);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+}
+.ab-marquee__track {
+  display: flex; align-items: center; gap: 1.8rem;
+  width: max-content;
+  animation: abMarquee 38s linear infinite;
+}
+.ab-marquee__track span {
+  font-family: var(--font-heading); font-size: var(--text-sm); font-weight: 700;
+  color: var(--text); white-space: nowrap;
+}
+.ab-marquee__track i {
+  font-style: normal; font-size: 0.8rem;
+  color: var(--amber); opacity: 0.7;
+}
+html[data-theme="light"] .ab-marquee__track i { color: #7E6034; }
+/* دو نسخه پشت هم چیده شده؛ ۵۰٪ حرکت یعنی حلقه بی‌درز */
+@keyframes abMarquee { to { transform: translateX(50%); } }
+
+/* ─────────── ۴. بیانیه ─────────── */
+.ab-manifesto {
+  position: relative;
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  text-align: center;
+}
+.ab-manifesto__q {
+  font-family: var(--font-brand);
+  font-size: clamp(3rem, 7vw, 5rem);
+  line-height: 0.6;
+  color: var(--amber); opacity: 0.32;
+  margin-bottom: 1.25rem;
+}
+.ab-manifesto__text {
+  font-family: var(--font);
+  font-size: clamp(1.05rem, 1.9vw, 1.38rem);
+  line-height: 2.1;
+  color: var(--text-muted);
+  max-width: 660px; margin-inline: auto;
+  text-wrap: pretty;
+}
+.ab-manifesto__text strong { color: var(--text); font-weight: 500; }
+
+.ab-manifesto__sign {
+  margin-top: 1.75rem;
+  font-family: var(--font-brand);
+  font-size: 1.35rem;
+  color: var(--amber);
+}
+html[data-theme="light"] .ab-manifesto__sign { color: #7E6034; }
+
+/* ─────────── ۵. معیارهای خانه ─────────── */
+.ab-standards { padding-block: clamp(2.25rem, 5vw, 3.75rem); }
+
+.ab-list {
+  position: relative;
+  list-style: none; margin: 0; padding: 0;
+  padding-inline-start: clamp(3.25rem, 7vw, 4.75rem);
+}
+/* خط پس‌زمینه */
+.ab-list::before {
+  content: '';
+  position: absolute; inset-block: 0.9rem 0.9rem;
+  inset-inline-start: clamp(1.55rem, 3.4vw, 2.3rem);
+  width: 1px;
+  background: color-mix(in srgb, var(--text) 11%, transparent);
+}
+/* خط طلایی که با اسکرول پر می‌شود — JS ارتفاعش را می‌دهد */
+.ab-list::after {
+  content: '';
+  position: absolute; top: 0.9rem;
+  inset-inline-start: clamp(1.55rem, 3.4vw, 2.3rem);
+  width: 1px; height: var(--progress, 0%);
+  background: linear-gradient(180deg, var(--amber), var(--rosette));
+  transition: height 0.25s linear;
+}
+
+.ab-item {
+  position: relative;
+  padding-bottom: clamp(2rem, 4vw, 3rem);
+}
+.ab-item:last-child { padding-bottom: 0; }
+
+.ab-item__n {
+  position: absolute; top: 0;
+  inset-inline-start: calc(clamp(3.25rem, 7vw, 4.75rem) * -1);
+  width: clamp(3.1rem, 6.8vw, 4.6rem);
+  text-align: center;
+  font-family: var(--font-num);
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--dur-base) var(--ease);
+}
+/* نقطه‌ی روی خط */
+.ab-item::before {
+  content: '';
+  position: absolute; top: 0.52rem;
+  inset-inline-start: calc(clamp(1.55rem, 3.4vw, 2.3rem) - clamp(3.25rem, 7vw, 4.75rem) - 5px);
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--bg);
+  border: 1.5px solid color-mix(in srgb, var(--amber) 50%, transparent);
+  transition: background-color var(--dur-base) var(--ease),
+              transform var(--dur-base) var(--ease-out);
+}
+.ab-item.is-on::before { background: var(--amber); transform: scale(1.3); }
+.ab-item.is-on .ab-item__n { color: var(--amber); }
+html[data-theme="light"] .ab-item.is-on .ab-item__n { color: #7E6034; }
+
+.ab-item__body h3 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.05rem, 1.9vw, 1.32rem); font-weight: 700;
+  color: var(--text); margin-bottom: 0.55rem;
+}
+.ab-item__body p {
+  font-family: var(--font); font-size: var(--text-sm); line-height: 2.05;
+  color: var(--text-muted); max-width: 560px; text-wrap: pretty;
+}
+
+/* ─────────── ۶. تصویر کافه ─────────── */
+.ab-shop {
+  padding-block: clamp(2.25rem, 5vw, 4rem);
+  padding-inline: var(--gutter);
+}
+.ab-shop__frame {
+  position: relative; margin: 0 auto;
+  max-width: 1040px;
+  isolation: isolate;
+}
+.ab-shop__frame img {
+  width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block;
+  border-radius: 20px;
+  border: 1px solid color-mix(in srgb, var(--amber) 26%, transparent);
+  box-shadow: 0 38px 76px -36px rgba(0, 0, 0, 0.58);
+  /* پارالاکس ملایم — JS مقدار را با اسکرول می‌دهد */
+  transform: translateY(var(--par, 0px)) scale(1.04);
+  will-change: transform;
+}
+.ab-shop__frame figcaption {
+  margin-top: 1.1rem; text-align: center;
+  font-family: var(--font); font-size: var(--text-sm);
+  color: var(--text-muted); line-height: 1.9;
+}
+.ab-shop__frame figcaption strong {
+  display: block;
+  font-family: var(--font-heading); font-size: var(--text-base);
+  color: var(--text); margin-bottom: 0.2rem;
+}
+
+.ab-shop__seal {
+  position: absolute; z-index: 3;
+  top: -20px; inset-inline-end: 26px;
+  width: clamp(84px, 11vw, 110px); aspect-ratio: 1;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--amber) 34%, transparent);
+}
+.ab-shop__seal svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  animation: abSpin 30s linear infinite;
+}
+@keyframes abSpin { to { transform: rotate(360deg); } }
+.ab-shop__sealtext {
+  font-family: var(--font-brand); font-size: 9.4px;
+  letter-spacing: 0.17em; fill: var(--amber); text-transform: uppercase;
+}
+
+/* ─────────── ۷. تماس ─────────── */
+.ab-contact { padding-block: clamp(2.5rem, 5vw, 4rem) clamp(3rem, 7vw, 6rem); }
+
+.ab-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(232px, 1fr));
+  gap: 0.9rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+}
+.ab-card {
+  display: flex; align-items: center; gap: 0.95rem;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid var(--border); border-radius: 18px;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+  text-decoration: none; color: inherit;
+  transition: transform var(--dur-slow) var(--ease-out),
+              border-color var(--dur-base) var(--ease),
+              box-shadow var(--dur-slow) var(--ease-out);
+}
+.ab-card:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--amber) 50%, transparent);
+  box-shadow: 0 22px 44px -24px rgba(0, 0, 0, 0.45);
+}
+.ab-card__ic {
+  width: 46px; height: 46px; flex-shrink: 0;
+  display: grid; place-items: center; border-radius: 50%;
+  background: color-mix(in srgb, var(--amber) 14%, transparent);
+  color: var(--amber);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+html[data-theme="light"] .ab-card__ic { color: #7E6034; }
+.ab-card:hover .ab-card__ic { transform: scale(1.08) rotate(-6deg); }
+.ab-card__ic svg { width: 21px; height: 21px; }
+
+.ab-card__body { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+.ab-card__label {
+  font-family: var(--font); font-size: 0.88rem;
+  color: var(--text-muted);
+}
+.ab-card__value {
+  font-family: var(--font-heading); font-size: var(--text-base); font-weight: 700;
+  color: var(--text); word-break: break-word;
+}
+.ab-card__meta { font-family: var(--font); font-size: 0.86rem; color: var(--text-muted); }
+
+.ab-map {
+  border-radius: 20px; overflow: hidden;
+  border: 1px solid var(--border-mid);
+  aspect-ratio: 16 / 8;
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+}
+.ab-map iframe { width: 100%; height: 100%; border: 0; display: block; }
+/* نقشه گوگل همیشه روشن است؛ در تم تیره ملایمش می‌کنیم تا نزند */
+html[data-theme="dark"] .ab-map iframe { filter: invert(0.9) hue-rotate(180deg) saturate(0.75) brightness(0.95); }
+
+.ab-cta {
+  display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;
+  margin-top: clamp(1.75rem, 3.5vw, 2.75rem);
+}
+
+/* ─────────── ۸. واکنش‌گرایی ─────────── */
+@media (max-width: 620px) {
+  .ab-hero__title { max-width: 100%; }
+  .ab-list { padding-inline-start: 2.6rem; }
+  .ab-list::before, .ab-list::after { inset-inline-start: 1.2rem; }
+  .ab-item__n { inset-inline-start: -2.6rem; width: 2.45rem; text-align: start; }
+  .ab-item::before { inset-inline-start: -1.45rem; }
+  .ab-shop__seal { width: 72px; top: -14px; inset-inline-end: 14px; }
+  .ab-map { aspect-ratio: 4 / 3.4; }
+  .ab-cta .btn { flex: 1 1 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ab-hero__halo, .ab-mote, .ab-kicker__line, .ab-marquee__track,
+  .ab-shop__seal svg, .ab-word > span, .ab-hero__sub, .ab-crest, .ab-eyebrow,
+  .ab-crest__logo, .ab-draw.is-drawing .ab-draw__p {
+    animation: none !important;
+  }
+  .ab-word > span, .ab-hero__sub, .ab-crest, .ab-eyebrow {
+    opacity: 1 !important; transform: none !important;
+  }
+  .ab-draw__p { stroke-dashoffset: 0 !important; }
+  .ab-hero__motes { display: none; }
+  .ab-shop__frame img { transform: none !important; }
+  .ab-card { transition-duration: 0.01ms !important; }
+}

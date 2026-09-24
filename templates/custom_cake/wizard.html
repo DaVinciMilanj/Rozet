@@ -1,0 +1,449 @@
+{% load static %}<!DOCTYPE html>
+{% comment %}
+  رُزِت — کیک اختصاصی
+
+  ویزارد شش‌مرحله‌ای. مثل صفحه‌ی پرداخت و پنل کاربری، از _base.html ارث
+  نمی‌برد: هدرش کوتاه است و کشوی سبد ندارد.
+
+  دیدن و پرکردن ویزارد برای همه آزاد است، ولی **ثبت نهایی فقط برای
+  کاربر واردشده**: این سفارش بیعانه می‌گیرد و مشتری باید بتواند وضعیتش
+  را در پنل دنبال کند. مرحله‌ی تأیید برای مهمان، به‌جای دکمه‌ی ثبت،
+  دعوت به ورود نشان می‌دهد.
+{% endcomment %}
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/logo/favicon-32.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/logo/favicon-180.png' %}">
+  <meta name="theme-color" content="#FAF6F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#17120F" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="{% url 'webmanifest' %}">
+{% include "seo/_head.html" %}
+
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{% static 'assets/font/YekanBakh-Regular/YekanBakh-Regular.woff2' %}">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{% static 'assets/font/Kalameh-Bold/Kalameh-Bold.woff2' %}">
+
+  <link id="theme-light" rel="stylesheet" href="{% static 'styles/style-light.css' %}">
+  <link id="theme-dark"  rel="stylesheet" href="{% static 'styles/style-dark.css' %}" disabled>
+  <link rel="stylesheet" href="{% static 'styles/theme-toggle.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/custom-cake.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/rozet-django.css' %}">
+
+  <style>:root { --logo-icon: url('{% static "assets/logo/rozet-icon.webp" %}'); }</style>
+
+  <script>
+    window.ROZET = {
+      wizardApi: '{% url "custom_cake:wizard_api" %}',
+      csrf: '{{ csrf_token }}'
+    };
+  </script>
+
+  <script>
+    (function () {
+      var saved;
+      try { saved = localStorage.getItem('rozet-theme'); } catch (e) { saved = null; }
+      if (!saved) saved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+      document.getElementById('theme-light').disabled = (saved === 'dark');
+      document.getElementById('theme-dark').disabled  = (saved !== 'dark');
+    })();
+  </script>
+</head>
+<body class="page-custom">
+
+<div class="grain-overlay" aria-hidden="true"></div>
+<a href="#wizard" class="skip-link">پرش به فرم سفارش</a>
+
+<header class="site-header scrolled-light" role="banner">
+  <div class="header-inner">
+    <a href="{% url 'pages:home' %}" class="brand-wordmark" aria-label="رُزِت — صفحه اصلی"><span class="brand-mark" aria-hidden="true"></span>ROZET</a>
+    <nav class="header-nav" aria-label="منوی اصلی">
+      <a href="{% url 'pages:home' %}">خانه</a>
+      <a href="{% url 'catalog:product_list' %}">محصولات</a>
+      <a href="{% url 'custom_cake:wizard' %}" class="active" aria-current="page">کیک سفارشی</a>
+      <a href="{% url 'pages:about' %}">درباره ما</a>
+    </nav>
+    <div class="header-actions">
+      <!-- ورود / ثبت‌نام -->
+      <a class="icon-btn account-btn" href="{% url 'accounts:account' %}"
+         aria-label="حساب کاربری" title="حساب کاربری">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20.2c0-3.6 3.2-5.8 7.2-5.8s7.2 2.2 7.2 5.8"/></svg>
+      </a>
+      <button class="icon-btn theme-toggle" type="button" role="switch" aria-checked="false"
+              aria-label="تغییر تم به تیره" title="تغییر تم">
+        <span class="theme-track" aria-hidden="true">
+          <span class="theme-knob">
+            <svg class="cupcake" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <g class="cupcake-body">
+                <circle class="cupcake-cherry" cx="12" cy="3.6" r="1.35"/>
+                <path class="cupcake-frosting" d="M6.4 11.4c0-3.1 2.5-5.6 5.6-5.6s5.6 2.5 5.6 5.6z"/>
+                <path d="M5.5 11.4h13l-1.35 7.3a1.7 1.7 0 0 1-1.67 1.4H8.52a1.7 1.7 0 0 1-1.67-1.4z"/>
+                <path d="M10.4 12.7 9.75 20.1"/><path d="M13.6 12.7l.65 7.4"/>
+              </g>
+              <g class="cupcake-sparks">
+                <path d="M3.3 6.2v1.7M2.45 7.05h1.7"/><path d="M20.9 8.6v1.4M20.2 9.3h1.4"/>
+              </g>
+            </svg>
+          </span>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="cc-main">
+  <div class="cc-container">
+
+    <!-- ═══ سربرگ ═══ -->
+    <div class="cc-head">
+      <div class="cc-head__text">
+        <p class="cc-eyebrow"><span class="cc-eyebrow__line" aria-hidden="true"></span>سفارش اختصاصی</p>
+        <h1 class="cc-title">کیک مراسم شما، <br>از صفر با شما طراحی می‌شود.</h1>
+        <p class="cc-lede">
+          طرح مورد نظرتان را ارسال کنید یا تصویری که می‌خواهید روی کیک چاپ شود. اندازه، طعم،
+          فیلینگ و طعم روکش را خودتان انتخاب می‌کنید و باقی کار با ماست.
+        </p>
+        <ul class="cc-trust">
+          <li><span class="cc-trust__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>پخت روز، بدون مواد آماده</li>
+          <li><span class="cc-trust__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6z"/></svg></span>امکان انصراف تا ۱۸ ساعت</li>
+          <li><span class="cc-trust__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>حداقل ۳ روز قبل از مراسم</li>
+        </ul>
+      </div>
+
+      <!-- تصویر با مهر چرخان و ذرات شکر -->
+      <figure class="cc-hero">
+        <div class="cc-hero__halo" aria-hidden="true"></div>
+        <div class="cc-hero__motes" aria-hidden="true"></div>
+        <div class="cc-hero__seal" aria-hidden="true">
+          <svg viewBox="0 0 120 120">
+            <defs><path id="ccSealPath" d="M60,60 m-43,0 a43,43 0 1,1 86,0 a43,43 0 1,1 -86,0"/></defs>
+            <text class="cc-hero__sealtext">
+              <!-- طول متن باید از محیط مسیر (≈۲۷۰ واحد) کمتر بماند،
+                   وگرنه بخش اضافی روی مسیر جا نمی‌شود و رندر نمی‌گردد -->
+              <textPath href="#ccSealPath" startOffset="0">ROZET · سفارش اختصاصی · ROZET · سفارش اختصاصی ·</textPath>
+            </text>
+          </svg>
+        </div>
+        <img src="{% static 'assets/images/custom-cake.webp' %}" alt="کیک چندطبقه دست‌ساز در کارگاه رُزِت" width="1200" height="896" loading="lazy" decoding="async">
+      </figure>
+    </div>
+
+    <!-- ═══ نوار مراحل ═══ -->
+    <nav class="cc-steps" id="stepBar" aria-label="مراحل سفارش">
+      <ol class="cc-steps__list" id="stepList"></ol>
+      <div class="cc-steps__track" aria-hidden="true"><div class="cc-steps__fill" id="stepFill"></div></div>
+    </nav>
+
+    <form class="cc-wizard" id="wizard" novalidate>
+
+      <!-- ═══════════ مرحله ۱: شرایط ═══════════ -->
+      <section class="cc-step is-active" data-step="1" aria-label="شرایط سفارش">
+        <h2 class="cc-step__title">قبل از شروع، این شرایط را بخوانید</h2>
+        <p class="cc-step__sub">
+          سفارش اختصاصی با سفارش معمولی متفاوت است و برای هر کیک از ابتدا برنامه‌ریزی می‌شود.
+          لطفاً پیش از ادامه، شرایط زیر را مطالعه و تأیید بفرمایید.
+        </p>
+
+        <div class="cc-terms" id="termsList"></div>
+
+        <label class="cc-agree" for="agreeAll">
+          <input type="checkbox" id="agreeAll">
+          <span class="cc-agree__box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </span>
+          <span class="cc-agree__text">
+            <strong>این شرایط را خواندم و قبول دارم.</strong>
+            <small>سفارش شما بر همین اساس ثبت خواهد شد.</small>
+          </span>
+        </label>
+        <p class="cc-error" id="termsError" role="alert" hidden>برای ادامه، لطفاً شرایط را تأیید کنید.</p>
+      </section>
+
+      <!-- ═══════════ مرحله ۲: مشخصات ═══════════ -->
+      <section class="cc-step" data-step="2" aria-label="مشخصات شما" hidden>
+        <h2 class="cc-step__title">مشخصات شما</h2>
+        <p class="cc-step__sub">این اطلاعات برای هماهنگی سفارش و اعلام قیمت نهایی مورد نیاز است.</p>
+
+        <div class="cc-grid">
+          <div class="cc-field">
+            <label for="fName">نام <span class="cc-req" aria-hidden="true">*</span></label>
+            <input type="text" id="fName" name="fName" autocomplete="given-name" placeholder="مثلاً: مریم">
+            <p class="cc-error" data-for="fName" role="alert" hidden></p>
+          </div>
+          <div class="cc-field">
+            <label for="fFamily">نام خانوادگی <span class="cc-req" aria-hidden="true">*</span></label>
+            <input type="text" id="fFamily" name="fFamily" autocomplete="family-name" placeholder="مثلاً: رضایی">
+            <p class="cc-error" data-for="fFamily" role="alert" hidden></p>
+          </div>
+          <div class="cc-field">
+            <label for="fPhone">شماره تماس <span class="cc-req" aria-hidden="true">*</span></label>
+            <input type="tel" id="fPhone" name="fPhone" inputmode="numeric" dir="ltr"
+                   autocomplete="tel" placeholder="09xxxxxxxxx" maxlength="11">
+            <p class="cc-hint">پیگیری قیمت و هماهنگی تحویل از طریق همین شماره انجام می‌شود.</p>
+            <p class="cc-error" data-for="fPhone" role="alert" hidden></p>
+          </div>
+          <div class="cc-field">
+            <label for="fPhone2">شماره دوم <span class="cc-opt">اختیاری</span></label>
+            <input type="tel" id="fPhone2" name="fPhone2" inputmode="numeric" dir="ltr"
+                   placeholder="09xxxxxxxxx" maxlength="11">
+          </div>
+          <div class="cc-field cc-field--full">
+            <label for="fAddress">آدرس <span class="cc-req" aria-hidden="true">*</span></label>
+            <textarea id="fAddress" name="fAddress" rows="3" placeholder="شهر، محله، خیابان و نشانی کامل"></textarea>
+            <p class="cc-hint">تحویل سفارش حضوری در شعبه انجام می‌شود؛ آدرس صرفاً برای ثبت پرونده و تماس ضروری دریافت می‌گردد.</p>
+            <p class="cc-error" data-for="fAddress" role="alert" hidden></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════ مرحله ۳: طرح کیک ═══════════ -->
+      <section class="cc-step" data-step="3" aria-label="طرح کیک" hidden>
+        <h2 class="cc-step__title">طرح کیک را مشخص کنید</h2>
+        <p class="cc-step__sub">یکی از دو حالت زیر را انتخاب کنید. امکان استفاده هم‌زمان از هر دو نیز وجود دارد.</p>
+
+        <div class="cc-modes" role="radiogroup" aria-label="نوع طرح">
+          <button type="button" class="cc-mode is-selected" data-mode="reference" role="radio" aria-checked="true">
+            <span class="cc-mode__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="m3 17 5-4 3.5 3 3-2.5L21 18"/></svg>
+            </span>
+            <span class="cc-mode__body">
+              <span class="cc-mode__title">طرح نمونه دارم</span>
+              <span class="cc-mode__desc">تصویر کیک مورد نظرتان را ارسال کنید تا بر همان اساس تهیه شود.</span>
+            </span>
+          </button>
+
+          <button type="button" class="cc-mode" data-mode="print" role="radio" aria-checked="false">
+            <span class="cc-mode__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="4" y="9" width="16" height="7" rx="2"/><path d="M8 16h8v5H8z"/></svg>
+            </span>
+            <span class="cc-mode__body">
+              <span class="cc-mode__title">چاپ عکس روی کیک</span>
+              <span class="cc-mode__desc">تصویر دلخواه شما با جوهر خوراکی روی کیک چاپ می‌شود.</span>
+            </span>
+          </button>
+        </div>
+
+        <!-- آپلود -->
+        <div class="cc-upload-wrap">
+          <div class="cc-uploader" id="dropZone" tabindex="0" role="button"
+               aria-label="انتخاب یا کشیدن تصویر">
+            <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" multiple hidden>
+            <svg class="cc-uploader__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 16V4M8 8l4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+            </svg>
+            <p class="cc-uploader__title">تصویر را اینجا رها کنید یا کلیک کنید</p>
+            <p class="cc-uploader__hint">JPG یا PNG · حداکثر ۵ مگابایت · تا ۴ تصویر</p>
+          </div>
+          <p class="cc-error" id="fileError" role="alert" hidden></p>
+          <div class="cc-previews" id="previews"></div>
+        </div>
+
+        <!-- راهنمای چاپ عکس، فقط وقتی حالت چاپ فعال است -->
+        <div class="cc-callout cc-callout--print" id="printGuide" hidden>
+          <h3>برای چاپ خوب روی کیک</h3>
+          <ul>
+            <li>تصویر باید واضح و باکیفیت باشد؛ عکسِ عکس یا اسکرین‌شات نتیجه مطلوبی ندارد.</li>
+            <li>بهتر است چهره‌ها نزدیک و در نور مناسب باشند؛ تصاویر تیره روی روکش به‌خوبی نمایش داده نمی‌شوند.</li>
+            <li>رنگ چاپ خوراکی با رنگ نمایشگر تفاوت جزئی دارد که امری طبیعی است.</li>
+          </ul>
+        </div>
+
+        <div class="cc-field cc-field--full">
+          <label for="fDesignNote">توضیح طرح <span class="cc-opt">اختیاری</span></label>
+          <textarea id="fDesignNote" rows="3" placeholder="مثلاً: مثل عکس باشد ولی رنگ روبان‌ها صورتی، بدون گل‌های بالای کیک"></textarea>
+        </div>
+
+        <div class="cc-callout">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+          <p>
+            <strong>طرح ارسالی مبنای کار است، نه کپی دقیق.</strong>
+            کیک به صورت دست‌ساز تهیه می‌شود و جزئیاتی مانند سایه رنگ‌ها یا فرم تزیینات
+            ممکن است تفاوت جزئی داشته باشد.
+          </p>
+        </div>
+      </section>
+
+      <!-- ═══════════ مرحله ۴: جزئیات ═══════════ -->
+      <section class="cc-step" data-step="4" aria-label="جزئیات کیک" hidden>
+        <h2 class="cc-step__title">جزئیات کیک</h2>
+        <p class="cc-step__sub">هرچه انتخاب‌ها دقیق‌تر باشد، برآورد قیمت به مبلغ نهایی نزدیک‌تر خواهد بود.</p>
+
+        <div class="cc-grid">
+          <div class="cc-field">
+            <label for="fDate">تاریخ تحویل <span class="cc-req" aria-hidden="true">*</span></label>
+            <input type="date" id="fDate" dir="ltr">
+            <p class="cc-hint" id="dateHint">حداقل ۳ روز بعد از امروز.</p>
+            <p class="cc-error" data-for="fDate" role="alert" hidden></p>
+          </div>
+          <div class="cc-field">
+            <label for="fOccasion">مناسبت</label>
+            <div class="cc-select">
+              <select id="fOccasion">
+                <option value="تولد">تولد</option>
+                <option value="سالگرد">سالگرد ازدواج</option>
+                <option value="عروسی">عروسی و نامزدی</option>
+                <option value="تولد کودک">تولد کودک</option>
+                <option value="مراسم شرکتی">مراسم شرکتی</option>
+                <option value="سایر">سایر</option>
+              </select>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <fieldset class="cc-fieldset">
+          <legend>تعداد نفرات <span class="cc-req" aria-hidden="true">*</span></legend>
+          <div class="cc-choices" id="sizeChoices"></div>
+        </fieldset>
+
+        <fieldset class="cc-fieldset">
+          <legend>طعم کیک <span class="cc-req" aria-hidden="true">*</span></legend>
+          <div class="cc-choices" id="flavorChoices"></div>
+        </fieldset>
+
+        <fieldset class="cc-fieldset">
+          <legend>فیلینگ میانی <span class="cc-req" aria-hidden="true">*</span></legend>
+          <div class="cc-choices" id="fillingChoices"></div>
+        </fieldset>
+
+        <fieldset class="cc-fieldset">
+          <legend>طعم روکش <span class="cc-req" aria-hidden="true">*</span></legend>
+          <div class="cc-choices" id="textureChoices"></div>
+          <p class="cc-hint">
+            جنس روکش (خامه یا فوندانت) بر اساس طرح انتخابی شما و توسط سرقناد تعیین می‌شود؛
+            در این بخش فقط طعم آن را مشخص کنید.
+          </p>
+        </fieldset>
+
+        <div class="cc-grid">
+          <div class="cc-field cc-field--full">
+            <label for="fMessage">پیام روی کیک <span class="cc-opt">اختیاری · حداکثر ۳۰ حرف</span></label>
+            <div class="cc-count-wrap">
+              <input type="text" id="fMessage" maxlength="30" placeholder="مثلاً: تولدت مبارک بابایی">
+              <span class="cc-count" id="msgCount">۰/۳۰</span>
+            </div>
+          </div>
+          <div class="cc-field cc-field--full">
+            <label for="fAllergy">حساسیت غذایی یا نکته‌ی مهم <span class="cc-opt">اختیاری</span></label>
+            <textarea id="fAllergy" rows="2" placeholder="مثلاً: بدون آجیل — یکی از مهمان‌ها حساسیت دارد"></textarea>
+            <p class="cc-hint">در صورت وجود حساسیت حتماً قید بفرمایید؛ کافه ما با آجیل، گلوتن و لبنیات کار می‌کند.</p>
+          </div>
+        </div>
+
+        <!-- برآورد قیمت زنده -->
+        <div class="cc-estimate" id="estimateBox">
+          <div class="cc-estimate__row">
+            <span class="cc-estimate__label">برآورد اولیه</span>
+            <span class="cc-estimate__value" id="estimateValue">—</span>
+          </div>
+          <p class="cc-estimate__note">
+            این عدد فقط یک <strong>برآورد</strong> است و قیمت قطعی نیست. قیمت نهایی را
+            سرقناد پس از بررسی طرح اعلام می‌کند.
+          </p>
+        </div>
+      </section>
+
+      <!-- ═══════════ مرحله ۵: تأیید و پیش‌پرداخت ═══════════ -->
+      <section class="cc-step" data-step="5" aria-label="تأیید و پرداخت" hidden>
+        <h2 class="cc-step__title">یک بار مرور کنید</h2>
+        <p class="cc-step__sub">در صورت نیاز به اصلاح، با دکمه «ویرایش» به مرحله مربوطه بازگردید.</p>
+
+        <div class="cc-summary" id="summary"></div>
+
+        <div class="cc-pay">
+          <div class="cc-pay__row">
+            <span>پیش‌پرداخت</span>
+            <strong id="depositAmount">۴۰۰٬۰۰۰ تومان</strong>
+          </div>
+          <div class="cc-pay__row cc-pay__row--muted">
+            <span>باقی مبلغ</span>
+            <span>هنگام تحویل حضوری</span>
+          </div>
+          <p class="cc-pay__note">
+            پس از ثبت سفارش، <strong>شماره سفارش</strong> به شما اعلام می‌شود. بین ۳ تا ۵ ساعت بعد
+            با شعبه تماس بگیرید و با اعلام شماره سفارش، قیمت نهایی را دریافت کنید.
+            در صورت انصراف تا ۱۸ ساعت پس از ثبت سفارش، پیش‌پرداخت به طور کامل بازگردانده می‌شود.
+          </p>
+          <button type="button" class="btn btn-primary cc-submit" id="submitBtn">
+            پرداخت پیش‌پرداخت و ثبت سفارش
+          </button>
+          <p class="cc-error" id="submitError" role="alert" hidden></p>
+        </div>
+      </section>
+
+      <!-- ═══════════ نتیجه ═══════════ -->
+      <section class="cc-step cc-done" data-step="6" aria-label="سفارش ثبت شد" hidden>
+        <div class="cc-done__seal" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6 9 17l-5-5"/>
+          </svg>
+        </div>
+        <h2 class="cc-step__title">سفارش شما ثبت شد</h2>
+        <p class="cc-step__sub">لطفاً شماره سفارش را یادداشت کنید؛ برای پیگیری قیمت به آن نیاز خواهید داشت.</p>
+
+        <div class="cc-ordercode">
+          <span class="cc-ordercode__label">شماره سفارش</span>
+          <strong class="cc-ordercode__value" id="orderCode">—</strong>
+          <button type="button" class="cc-ordercode__copy" id="copyCode">کپی</button>
+        </div>
+
+        {% comment %}
+          وضعیت پیش‌پرداخت — متنش را سرور می‌دهد، چون سرور است که
+          می‌داند پرداخت موفق بوده یا نه.
+        {% endcomment %}
+        <p class="cc-step__sub" id="depositNote" hidden></p>
+
+        <ol class="cc-next">
+          <li><strong>۳ تا ۵ ساعت بعد</strong> با شعبه تماس بگیرید و با اعلام شماره سفارش، قیمت نهایی را دریافت کنید.</li>
+          <li><strong>تا ۱۸ ساعت</strong> پس از ثبت سفارش، امکان انصراف و بازگشت کامل پیش‌پرداخت وجود دارد.</li>
+          <li><strong>روز تحویل</strong> به صورت حضوری در شعبه، مابقی مبلغ پرداخت می‌شود.</li>
+        </ol>
+
+        <div class="cc-done__actions">
+          <a class="btn btn-outline" href="{% url 'catalog:product_list' %}">دیدن محصولات آماده</a>
+          <button type="button" class="btn btn-primary" id="newOrder">ثبت سفارش جدید</button>
+        </div>
+      </section>
+
+      <!-- ═══ ناوبری مراحل ═══ -->
+      <div class="cc-nav" id="wizardNav">
+        <button type="button" class="btn btn-outline cc-nav__back" id="backBtn" hidden>مرحله قبل</button>
+        <div class="cc-nav__spacer"></div>
+        <p class="cc-nav__saved" id="savedNote" hidden>پیش‌نویس ذخیره شد</p>
+        <button type="button" class="btn btn-primary cc-nav__next" id="nextBtn">مرحله بعد</button>
+      </div>
+
+    </form>
+  </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-sign">
+      <span class="footer-sign__mark" aria-hidden="true"></span>
+      <span class="footer-sign__rule" aria-hidden="true"></span>
+    </div>
+    <div class="footer-bottom" style="border-top:0; margin-top:0; padding-top:0;">
+      <div class="footer-tagline"><strong>با حوصله پخته می‌شود،</strong> با اشتها خورده می‌شود.</div>
+      <p class="footer-legal">© ۱۴۰۴ رُزِت — تمام حقوق محفوظ است.</p>
+    </div>
+  </div>
+</footer>
+
+{% comment %}
+  داده‌ی ویزارد — بندهای شرایط، اندازه‌ها، طعم‌ها، نرخ‌ها، قواعد تاریخ و
+  وضعیت ورود کاربر. همگام و پیش از اسکریپت می‌نشیند.
+{% endcomment %}
+{{ wizard_data|json_script:"wizard-data" }}
+{% comment %}
+  تقویم شمسی. پیش از اسکریپت صفحه می‌آید چون همان‌جا به فیلد تاریخ
+  وصل می‌شود.
+{% endcomment %}
+<script src="{% static 'js/jalali-picker.js' %}"></script>
+<script src="{% static 'js/custom-cake.js' %}"></script>
+</body>
+</html>

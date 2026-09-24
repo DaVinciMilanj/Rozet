@@ -1,0 +1,440 @@
+{% load static rozet %}<!DOCTYPE html>
+{% comment %}
+  رُزِت — پنل حساب کاربری (Account)
+
+  ستون کناری + پنج بخش که هر بار یکی دیده می‌شود:
+    overview  → سلام، آمار، باشگاه رُزِت، سفارش در جریان
+    orders    → سابقه‌ی سفارش‌ها با فیلتر، جست‌وجو و جزئیات بازشونده
+    favorites → کیک‌های نشان‌شده
+    addresses → دفترچه‌ی آدرس‌ها
+    profile   → ویرایش اطلاعات، رمز، اطلاع‌رسانی
+
+  این صفحه از _base.html ارث نمی‌برد و نباید ببرد: هدرش کوتاه است (بدون
+  مگامنو، بدون کشوی سبد) و پاورقی‌اش دو خط. همان تمپلیت ساکن است، فقط با
+  مسیرهای جنگو و داده‌ای که از دیتابیس می‌آید.
+{% endcomment %}
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% comment %} صفحه‌ی کاربری — نباید در نتایج جست‌وجو بیاید {% endcomment %}
+  <meta name="robots" content="noindex, follow">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/logo/favicon-32.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/logo/favicon-180.png' %}">
+  <title>حساب کاربری — رُزِت</title>
+  <meta name="description" content="سابقه‌ی سفارش‌ها، آدرس‌ها، علاقه‌مندی‌ها و اطلاعات حساب شما در رُزِت.">
+
+  {% comment %} فونت‌های متن و تیتر زودتر شروع شوند: مرورگر تا پارس‌شدن CSS
+     سراغشان نمی‌رود و همین یک رفت‌وبرگشت، متن را دیر می‌آورد. {% endcomment %}
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{% static 'assets/font/YekanBakh-Regular/YekanBakh-Regular.woff2' %}">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{% static 'assets/font/Kalameh-Bold/Kalameh-Bold.woff2' %}">
+
+  <link id="theme-light" rel="stylesheet" href="{% static 'styles/style-light.css' %}">
+  <link id="theme-dark"  rel="stylesheet" href="{% static 'styles/style-dark.css' %}" disabled>
+  <link rel="stylesheet" href="{% static 'styles/theme-toggle.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/account.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/rozet-django.css' %}">
+
+  {% comment %}
+    نشان برند از یک متغیر CSS می‌آید و مسیرش در استایل‌شیت مطلق نوشته
+    شده؛ روی جنگو فایل‌ها زیر /static/ می‌نشینند، پس اینجا بازنویسی
+    می‌شود.
+  {% endcomment %}
+  <style>:root { --logo-icon: url('{% static "assets/logo/rozet-icon.webp" %}'); }</style>
+
+  {% comment %}
+    پلِ جاوااسکریپت. {% templatetag openblock %} url {% templatetag closeblock %}
+    داخل فایل .js اجرا نمی‌شود، پس نشانی اندپوینت، توکن CSRF و لینک
+    صفحه‌های دیگر باید از اینجا برسند.
+  {% endcomment %}
+  <script>
+    window.ROZET = {
+      accountApi: '{% url "accounts:account_api" %}',
+      csrf: '{{ csrf_token }}',
+      passwordMin: {{ PASSWORD_MIN }},
+      links: {
+        products: '{% url "catalog:product_list" %}',
+        contact: '{% url "pages:about" %}#contact'
+      }
+    };
+  </script>
+
+  {% comment %} تم ذخیره‌شده پیش از اولین رنگ‌آمیزی اعمال می‌شود تا تم روشن
+     برای یک لحظه جلوی چشم کاربرِ تم‌تیره ظاهر نشود. {% endcomment %}
+  <script>
+    (function () {
+      var saved;
+      try { saved = localStorage.getItem('rozet-theme'); } catch (e) { saved = null; }
+      if (!saved) saved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+      document.getElementById('theme-light').disabled = (saved === 'dark');
+      document.getElementById('theme-dark').disabled  = (saved !== 'dark');
+    })();
+  </script>
+</head>
+<body class="page-account">
+
+<div class="grain-overlay" aria-hidden="true"></div>
+<a href="#acBody" class="skip-link">پرش به محتوای حساب</a>
+
+<header class="site-header scrolled-light" role="banner">
+  <div class="header-inner">
+    <a href="{% url 'pages:home' %}" class="brand-wordmark" aria-label="رُزِت — صفحه اصلی"><span class="brand-mark" aria-hidden="true"></span>ROZET</a>
+    <nav class="header-nav" aria-label="منوی اصلی">
+      <a href="{% url 'pages:home' %}">خانه</a>
+      <a href="{% url 'catalog:product_list' %}">محصولات</a>
+      <a href="{% url 'custom_cake:wizard' %}">کیک سفارشی</a>
+      <a href="{% url 'pages:about' %}">درباره ما</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn theme-toggle" type="button" role="switch" aria-checked="false"
+              aria-label="تغییر تم به تیره" title="تغییر تم">
+        <span class="theme-track" aria-hidden="true">
+          <span class="theme-knob">
+            <svg class="cupcake" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <g class="cupcake-body">
+                <circle class="cupcake-cherry" cx="12" cy="3.6" r="1.35"/>
+                <path class="cupcake-frosting" d="M6.4 11.4c0-3.1 2.5-5.6 5.6-5.6s5.6 2.5 5.6 5.6z"/>
+                <path d="M5.5 11.4h13l-1.35 7.3a1.7 1.7 0 0 1-1.67 1.4H8.52a1.7 1.7 0 0 1-1.67-1.4z"/>
+                <path d="M10.4 12.7 9.75 20.1"/><path d="M13.6 12.7l.65 7.4"/>
+              </g>
+              <g class="cupcake-sparks">
+                <path d="M3.3 6.2v1.7M2.45 7.05h1.7"/><path d="M20.9 8.6v1.4M20.2 9.3h1.4"/>
+              </g>
+            </svg>
+          </span>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="ac-main">
+  <div class="ac-shell">
+
+    <!-- ═══════════ ستون کناری ═══════════ -->
+    <aside class="ac-side">
+      <div class="ac-id">
+        <span class="ac-id__avatar" id="acAvatar" aria-hidden="true"></span>
+        <p class="ac-id__name" id="acName">—</p>
+        <p class="ac-id__phone" id="acPhone" dir="ltr">—</p>
+        <span class="ac-id__tier" id="acTier">—</span>
+      </div>
+
+      <nav class="ac-nav" aria-label="بخش‌های حساب">
+        <button class="ac-nav__item is-on" type="button" data-view="overview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 11.2 12 4.5l8 6.7"/><path d="M6.3 10.2V19h11.4v-8.8"/></svg>
+          نمای کلی
+        </button>
+        <button class="ac-nav__item" type="button" data-view="orders">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5.5 7.5h13l-1 12h-11z"/><path d="M9 7.5V6a3 3 0 0 1 6 0v1.5"/></svg>
+          سفارش‌ها
+          <span class="ac-nav__count" id="navOrders"></span>
+        </button>
+        <button class="ac-nav__item" type="button" data-view="favorites">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 20s-7-4.4-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.6-7 9-7 9z"/></svg>
+          علاقه‌مندی‌ها
+          <span class="ac-nav__count" id="navFavs"></span>
+        </button>
+        <button class="ac-nav__item" type="button" data-view="addresses">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          آدرس‌ها
+          <span class="ac-nav__count" id="navAddr"></span>
+        </button>
+        <button class="ac-nav__item" type="button" data-view="profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20.2c0-3.6 3.2-5.8 7.2-5.8s7.2 2.2 7.2 5.8"/></svg>
+          اطلاعات من
+        </button>
+      </nav>
+
+      {% comment %}
+        خروج با POST، نه لینک: یک <img src="/logout/"> در هر صفحه‌ی دیگری
+        کاربر را بیرون می‌انداخت، و جنگو هم از نسخه‌ی ۵ خروجِ GET را
+        نمی‌پذیرد. ظاهرش همان است؛ .ac-out این بار روی دکمه می‌نشیند.
+      {% endcomment %}
+      <form class="ac-out-form" method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button class="ac-out" type="submit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14 7.5V5.6H5.5v12.8H14V16.5"/><path d="M10.5 12h8"/><path d="M16 9.4 18.6 12 16 14.6"/></svg>
+          خروج از حساب
+        </button>
+      </form>
+    </aside>
+
+    <!-- ═══════════ محتوا ═══════════ -->
+    <section class="ac-body" id="acBody">
+
+      <!-- ── نمای کلی ── -->
+      <div class="ac-view is-on" data-view="overview">
+        <header class="ac-head">
+          <p class="ac-kicker">حساب من</p>
+          <h1 class="ac-h1" id="acGreet">سلام</h1>
+          <p class="ac-lead" id="acGreetSub">اینجا همه‌چیزِ سفارش‌هایتان یک‌جاست.</p>
+        </header>
+
+        <div class="ac-stats">
+          <div class="ac-stat">
+            <span class="ac-stat__n" id="stOrders">۰</span>
+            <span class="ac-stat__l">سفارش ثبت‌شده</span>
+          </div>
+          <div class="ac-stat">
+            <span class="ac-stat__n" id="stSpent">۰</span>
+            <span class="ac-stat__l">مجموع خرید (تومان)</span>
+          </div>
+          <div class="ac-stat">
+            <span class="ac-stat__n" id="stFav">۰</span>
+            <span class="ac-stat__l">کیک نشان‌شده</span>
+          </div>
+        </div>
+
+        <!-- باشگاه رُزِت -->
+        <div class="ac-card ac-club">
+          <div class="ac-club__ring">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="ac-club__track" cx="60" cy="60" r="52"/>
+              <circle class="ac-club__fill" id="clubFill" cx="60" cy="60" r="52"/>
+            </svg>
+            <span class="ac-club__mark" aria-hidden="true"></span>
+          </div>
+          <div class="ac-club__text">
+            <p class="ac-club__tier" id="clubTier">—</p>
+            <p class="ac-club__note" id="clubNote">—</p>
+            <div class="ac-club__steps" id="clubSteps"></div>
+          </div>
+        </div>
+
+        <!-- سفارش در جریان -->
+        <h2 class="ac-h2">سفارش در جریان</h2>
+        <div id="liveOrder"></div>
+
+        <h2 class="ac-h2">دم دست</h2>
+        <div class="ac-quick">
+          <a class="ac-quick__i" href="{% url 'custom_cake:wizard' %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4.5 20h15"/><path d="M6 20v-6.5h12V20"/><path d="M7.5 13.5c0-2.5 2-4.5 4.5-4.5s4.5 2 4.5 4.5"/><path d="M12 9V6.5"/><circle cx="12" cy="5" r="1.3"/></svg>
+            سفارش کیک اختصاصی
+          </a>
+          <a class="ac-quick__i" href="{% url 'catalog:product_list' %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="4.5" y="7.5" width="15" height="12" rx="2"/><path d="M9 7.5V6a3 3 0 0 1 6 0v1.5"/></svg>
+            ویترین امروز
+          </a>
+          <a class="ac-quick__i" href="{% url 'pages:about' %}#contact">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 4.8h3l1.4 3.6-1.8 1.3a10 10 0 0 0 4.7 4.7l1.3-1.8 3.6 1.4v3a1.5 1.5 0 0 1-1.7 1.5A14 14 0 0 1 4.5 6.5 1.5 1.5 0 0 1 6 4.8z"/></svg>
+            تماس با کافه
+          </a>
+        </div>
+      </div>
+
+      <!-- ── سفارش‌ها ── -->
+      <div class="ac-view" data-view="orders" hidden>
+        <header class="ac-head">
+          <p class="ac-kicker">سابقه</p>
+          <h1 class="ac-h1">سفارش‌های من</h1>
+          <p class="ac-lead">روی هر سفارش بزنید تا جزئیات و مسیر آماده‌سازی‌اش باز شود.</p>
+        </header>
+
+        <div class="ac-tools">
+          <div class="ac-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="6.2"/><path d="m15.6 15.6 3.4 3.4"/></svg>
+            <input type="search" id="ordSearch" placeholder="کد سفارش یا نام کیک…" aria-label="جست‌وجو در سفارش‌ها">
+          </div>
+          <div class="ac-chips" id="ordFilters" role="group" aria-label="فیلتر وضعیت">
+            <button class="ac-chip is-on" type="button" data-f="all">همه</button>
+            <button class="ac-chip" type="button" data-f="active">در جریان</button>
+            <button class="ac-chip" type="button" data-f="delivered">تحویل‌شده</button>
+            <button class="ac-chip" type="button" data-f="canceled">لغوشده</button>
+          </div>
+        </div>
+
+        <div class="ac-orders" id="ordList"></div>
+      </div>
+
+      <!-- ── علاقه‌مندی‌ها ── -->
+      <div class="ac-view" data-view="favorites" hidden>
+        <header class="ac-head">
+          <p class="ac-kicker">نشان‌شده‌ها</p>
+          <h1 class="ac-h1">علاقه‌مندی‌ها</h1>
+          <p class="ac-lead">کیک‌هایی که برای بعد کنار گذاشته‌اید.</p>
+        </header>
+        <div class="ac-favs" id="favList"></div>
+      </div>
+
+      <!-- ── آدرس‌ها ── -->
+      <div class="ac-view" data-view="addresses" hidden>
+        <header class="ac-head">
+          <p class="ac-kicker">دفترچه</p>
+          <h1 class="ac-h1">آدرس‌ها</h1>
+          <p class="ac-lead">آدرس پیش‌فرض هنگام ثبت سفارش خودکار انتخاب می‌شود.</p>
+        </header>
+        <div class="ac-addrs" id="addrList"></div>
+        <button class="btn btn-outline ac-addbtn" type="button" id="addrNew">افزودن آدرس تازه</button>
+      </div>
+
+      <!-- ── اطلاعات من ── -->
+      <div class="ac-view" data-view="profile" hidden>
+        <header class="ac-head">
+          <p class="ac-kicker">حساب</p>
+          <h1 class="ac-h1">اطلاعات من</h1>
+          <p class="ac-lead">هرچه اینجا کامل‌تر باشد، سفارش‌دادن دفعه‌ی بعد کوتاه‌تر می‌شود.</p>
+        </header>
+
+        <form class="ac-card ac-form" id="profileForm" novalidate>
+          <h2 class="ac-card__t">مشخصات</h2>
+
+          <div class="ac-grid2">
+            <div class="ac-field">
+              <label for="pfFirst">نام</label>
+              <input type="text" id="pfFirst" autocomplete="given-name" required>
+            </div>
+            <div class="ac-field">
+              <label for="pfLast">نام خانوادگی</label>
+              <input type="text" id="pfLast" autocomplete="family-name" required>
+            </div>
+          </div>
+
+          <div class="ac-field">
+            <label for="pfPhone">شماره موبایل</label>
+            <div class="ac-locked">
+              <input type="tel" id="pfPhone" dir="ltr" readonly>
+              <button type="button" class="ac-link" id="pfPhoneChange">تغییر شماره</button>
+            </div>
+            <p class="ac-hint">شماره، شناسه‌ی ورود شماست؛ تغییرش با تأیید پیامکی انجام می‌شود.</p>
+          </div>
+
+          <div class="ac-field">
+            <label for="pfEmail">ایمیل <span class="ac-opt">(اختیاری)</span></label>
+            <input type="email" id="pfEmail" dir="ltr" autocomplete="email" placeholder="you@example.com">
+          </div>
+
+          <div class="ac-field">
+            <label>تاریخ تولد <span class="ac-opt">(اختیاری)</span></label>
+            <div class="ac-date">
+              <select id="pfDay" aria-label="روز تولد"></select>
+              <select id="pfMonth" aria-label="ماه تولد"></select>
+              <select id="pfYear" aria-label="سال تولد"></select>
+            </div>
+            <p class="ac-hint">یک هفته قبلش یادمان می‌افتد و کیک تولدتان را پیشنهاد می‌دهیم.</p>
+          </div>
+
+          <p class="ac-err" id="pfErr" role="alert"></p>
+          <button type="submit" class="btn btn-primary ac-save"><span class="ac-save__l">ذخیره‌ی تغییرات</span></button>
+        </form>
+
+        <form class="ac-card ac-form" id="passForm" novalidate>
+          <h2 class="ac-card__t">تغییر رمز عبور</h2>
+          <div class="ac-field">
+            <label for="pwOld">رمز فعلی</label>
+            <input type="password" id="pwOld" autocomplete="current-password">
+          </div>
+          <div class="ac-grid2">
+            <div class="ac-field">
+              <label for="pwNew">رمز تازه</label>
+              <input type="password" id="pwNew" autocomplete="new-password" placeholder="دست‌کم {{ PASSWORD_MIN|fa }} نویسه">
+            </div>
+            <div class="ac-field">
+              <label for="pwNew2">تکرار رمز تازه</label>
+              <input type="password" id="pwNew2" autocomplete="new-password">
+            </div>
+          </div>
+          <p class="ac-err" id="pwErr" role="alert"></p>
+          <button type="submit" class="btn btn-outline ac-save"><span class="ac-save__l">تغییر رمز</span></button>
+        </form>
+
+        <div class="ac-card">
+          <h2 class="ac-card__t">اطلاع‌رسانی</h2>
+          <label class="ac-switch">
+            <input type="checkbox" id="nfSms" checked>
+            <span class="ac-switch__track" aria-hidden="true"><span></span></span>
+            <span class="ac-switch__text">
+              <b>پیامک وضعیت سفارش</b>
+              <small>وقتی کیک در فر رفت و وقتی آماده شد.</small>
+            </span>
+          </label>
+          <label class="ac-switch">
+            <input type="checkbox" id="nfNews">
+            <span class="ac-switch__track" aria-hidden="true"><span></span></span>
+            <span class="ac-switch__text">
+              <b>خبر ویترین فصلی</b>
+              <small>ماهی یکی دو پیام، وقتی چیز تازه‌ای می‌پزیم.</small>
+            </span>
+          </label>
+        </div>
+
+        <div class="ac-card ac-danger">
+          <h2 class="ac-card__t">حذف حساب</h2>
+          <p class="ac-lead">با حذف حساب، سابقه‌ی سفارش‌ها و آدرس‌هایتان برگشت‌ناپذیر پاک می‌شود.</p>
+          <button class="ac-dangerbtn" type="button" id="delAcc">می‌خواهم حسابم حذف شود</button>
+        </div>
+      </div>
+
+    </section>
+  </div>
+</main>
+
+<!-- ═══════════ کشوی آدرس ═══════════ -->
+<div class="ac-modal" id="addrModal" role="dialog" aria-modal="true" aria-labelledby="addrModalT" hidden>
+  <div class="ac-modal__scrim" data-close></div>
+  <form class="ac-modal__box" id="addrForm" novalidate>
+    <button type="button" class="ac-modal__x" data-close aria-label="بستن">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <h2 class="ac-card__t" id="addrModalT">آدرس تازه</h2>
+
+    <div class="ac-field">
+      <label for="adTitle">عنوان</label>
+      <input type="text" id="adTitle" placeholder="خانه، محل کار، خانه‌ی مادر…" required>
+    </div>
+    <div class="ac-field">
+      <label for="adText">نشانی کامل</label>
+      <textarea id="adText" rows="3" placeholder="خیابان، کوچه، پلاک، واحد" required></textarea>
+    </div>
+    <div class="ac-grid2">
+      <div class="ac-field">
+        <label for="adReceiver">تحویل‌گیرنده</label>
+        <input type="text" id="adReceiver" autocomplete="name">
+      </div>
+      <div class="ac-field">
+        <label for="adPhone">شماره تماس</label>
+        <input type="tel" id="adPhone" dir="ltr" inputmode="numeric" maxlength="11" placeholder="09xxxxxxxxx">
+      </div>
+    </div>
+    <label class="ac-check">
+      <input type="checkbox" id="adDefault">
+      <span class="ac-check__box" aria-hidden="true"></span>
+      <span>این آدرس پیش‌فرض من باشد</span>
+    </label>
+
+    <p class="ac-err" id="adErr" role="alert"></p>
+    <div class="ac-modal__foot">
+      <button type="submit" class="btn btn-primary">ذخیره</button>
+      <button type="button" class="btn btn-outline" data-close>انصراف</button>
+    </div>
+  </form>
+</div>
+
+<div class="ac-toast" id="acToast" role="status" aria-live="polite" hidden></div>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-sign">
+      <span class="footer-sign__mark" aria-hidden="true"></span>
+      <span class="footer-sign__rule" aria-hidden="true"></span>
+    </div>
+    <div class="footer-bottom" style="border-top:0; margin-top:0; padding-top:0;">
+      <div class="footer-tagline"><strong>با حوصله پخته می‌شود،</strong> با اشتها خورده می‌شود.</div>
+      <p class="footer-legal">© ۱۴۰۴ رُزِت — تمام حقوق محفوظ است.</p>
+    </div>
+  </div>
+</footer>
+
+{% comment %}
+  داده پیش از اسکریپت و به‌صورت همگام در صفحه می‌نشیند: json_script هم
+  ترتیب اجرا را دست‌نخورده نگه می‌دارد و هم فرار کاراکترها را درست انجام
+  می‌دهد، پس نام محصولی که کوتیشن دارد صفحه را نمی‌شکند.
+{% endcomment %}
+{{ account_data|json_script:"account-data" }}
+<script src="{% static 'js/account.js' %}"></script>
+</body>
+</html>

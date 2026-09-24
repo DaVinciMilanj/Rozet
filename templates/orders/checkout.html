@@ -1,0 +1,321 @@
+{% load static %}<!DOCTYPE html>
+{% comment %}
+  رُزِت — ثبت سفارش
+
+  پنج مرحله در یک صفحه، با ستون خلاصه‌ی چسبان. مثل پنل کاربری و صفحه‌ی
+  ورود، این صفحه از _base.html ارث نمی‌برد: هدرش کوتاه است و کشوی سبد
+  ندارد (سبد خودش اینجا روی صفحه است).
+
+  همه‌ی نرخ‌ها و بازه‌ها و تاریخ‌ها از سرور می‌آیند؛ چیزی در جاوااسکریپت
+  ثابت نیست. درگاه پرداخت هنوز وصل نشده و جایش در checkout.py علامت
+  خورده است.
+{% endcomment %}
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/logo/favicon-32.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/logo/favicon-180.png' %}">
+  <title>ثبت سفارش — رُزِت</title>
+  <meta name="description" content="تکمیل سفارش از کافه‌قنادی رُزِت: انتخاب روز و ساعت تحویل، نشانی، کد تخفیف و پرداخت آنلاین یا در محل.">
+
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{% static 'assets/font/YekanBakh-Regular/YekanBakh-Regular.woff2' %}">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{% static 'assets/font/Kalameh-Bold/Kalameh-Bold.woff2' %}">
+
+  <link id="theme-light" rel="stylesheet" href="{% static 'styles/style-light.css' %}">
+  <link id="theme-dark"  rel="stylesheet" href="{% static 'styles/style-dark.css' %}" disabled>
+  <link rel="stylesheet" href="{% static 'styles/theme-toggle.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/checkout.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/rozet-django.css' %}">
+
+  <style>:root { --logo-icon: url('{% static "assets/logo/rozet-icon.webp" %}'); }</style>
+
+  <script>
+    window.ROZET = {
+      checkoutApi: '{% url "orders:checkout_api" %}',
+      cartApi: '{% url "orders:cart_api" %}',
+      csrf: '{{ csrf_token }}'
+    };
+  </script>
+
+  <script>
+    (function () {
+      var saved;
+      try { saved = localStorage.getItem('rozet-theme'); } catch (e) { saved = null; }
+      if (!saved) saved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+      document.getElementById('theme-light').disabled = (saved === 'dark');
+      document.getElementById('theme-dark').disabled  = (saved !== 'dark');
+    })();
+  </script>
+</head>
+<body class="page-checkout">
+
+<div class="grain-overlay" aria-hidden="true"></div>
+<a href="#coMain" class="skip-link">پرش به فرم سفارش</a>
+
+<header class="site-header scrolled-light" role="banner">
+  <div class="header-inner">
+    <a href="{% url 'pages:home' %}" class="brand-wordmark" aria-label="رُزِت — صفحه اصلی"><span class="brand-mark" aria-hidden="true"></span>ROZET</a>
+    <nav class="header-nav" aria-label="منوی اصلی">
+      <a href="{% url 'pages:home' %}">خانه</a>
+      <a href="{% url 'catalog:product_list' %}">محصولات</a>
+      <a href="{% url 'custom_cake:wizard' %}">کیک سفارشی</a>
+      <a href="{% url 'pages:about' %}">درباره ما</a>
+    </nav>
+    <div class="header-actions">
+      <a class="icon-btn account-btn" href="{% url 'accounts:account' %}" aria-label="حساب کاربری" title="حساب کاربری">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20.2c0-3.6 3.2-5.8 7.2-5.8s7.2 2.2 7.2 5.8"/></svg>
+      </a>
+      <button class="icon-btn theme-toggle" type="button" role="switch" aria-checked="false"
+              aria-label="تغییر تم به تیره" title="تغییر تم">
+        <span class="theme-track" aria-hidden="true">
+          <span class="theme-knob">
+            <svg class="cupcake" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <g class="cupcake-body">
+                <circle class="cupcake-cherry" cx="12" cy="3.6" r="1.35"/>
+                <path class="cupcake-frosting" d="M6.4 11.4c0-3.1 2.5-5.6 5.6-5.6s5.6 2.5 5.6 5.6z"/>
+                <path d="M5.5 11.4h13l-1.35 7.3a1.7 1.7 0 0 1-1.67 1.4H8.52a1.7 1.7 0 0 1-1.67-1.4z"/>
+                <path d="M10.4 12.7 9.75 20.1"/><path d="M13.6 12.7l.65 7.4"/>
+              </g>
+              <g class="cupcake-sparks">
+                <path d="M3.3 6.2v1.7M2.45 7.05h1.7"/><path d="M20.9 8.6v1.4M20.2 9.3h1.4"/>
+              </g>
+            </svg>
+          </span>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="co-main" id="coMain">
+
+  <!-- ═══ سبد خالی ═══ -->
+  <section class="co-void" id="coEmpty" hidden>
+    <span class="co-void__mark" aria-hidden="true"></span>
+    <h1 class="co-h1">سبد خریدتان خالی است</h1>
+    <p class="co-lead">اول از ویترین چیزی انتخاب کنید، بعد اینجا سفارش را کامل می‌کنیم.</p>
+    <div class="co-void__acts">
+      <a class="btn btn-primary" href="{% url 'catalog:product_list' %}">رفتن به ویترین</a>
+      <a class="btn btn-outline" href="{% url 'custom_cake:wizard' %}">سفارش کیک اختصاصی</a>
+    </div>
+  </section>
+
+  <!-- ═══ سفارش ثبت شد ═══ -->
+  <section class="co-void co-done" id="coDone" hidden>
+    <span class="co-done__ring" aria-hidden="true">
+      <svg viewBox="0 0 64 64" fill="none" stroke="currentColor">
+        <circle class="co-done__circle" cx="32" cy="32" r="29" stroke-width="1.4"/>
+        <path class="co-done__tick" d="M20 33.5 28.5 42 44.5 24" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <h1 class="co-h1">سفارشتان ثبت شد</h1>
+    <p class="co-lead" id="doneText">—</p>
+    <p class="co-code">کد پیگیری: <b id="doneCode" dir="ltr">—</b></p>
+    <div class="co-void__acts">
+      <a class="btn btn-primary" href="{% url 'accounts:account' %}#orders">پیگیری در حساب کاربری</a>
+      <a class="btn btn-outline" href="{% url 'catalog:product_list' %}">ادامه‌ی خرید</a>
+    </div>
+  </section>
+
+  <!-- ═══ فرم ═══ -->
+  <div class="co-shell" id="coShell" hidden>
+
+    <!-- ─────────── ستون مراحل ─────────── -->
+    <div class="co-flow">
+      <header class="co-head">
+        <p class="co-kicker">ثبت سفارش</p>
+        <h1 class="co-h1">چند قدم تا کیکتان</h1>
+        <p class="co-lead">هر بخش را که کامل کنید، تیک می‌خورد. چیزی گم نمی‌شود.</p>
+      </header>
+
+      <!-- ── ۱. نحوه‌ی دریافت ── -->
+      <section class="co-step" data-step="method">
+        <h2 class="co-step__t"><span class="co-step__n">۱</span> چطور تحویل بگیرید؟</h2>
+        <div class="co-picks" id="methodPicks" role="radiogroup" aria-label="نحوه‌ی دریافت">
+          <button class="co-pick is-on" type="button" role="radio" aria-checked="true" data-method="pickup">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 20h16"/><path d="M5.5 20V9.5h13V20"/><path d="M3.5 9.5 12 4l8.5 5.5"/></svg>
+            <b>تحویل حضوری در کافه</b>
+            <small>بلوار قرنی مشهد — بدون هزینه</small>
+          </button>
+          <button class="co-pick" type="button" role="radio" aria-checked="false" data-method="courier">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3.5 16.5V7.5h10v9"/><path d="M13.5 10.5h4l3 3.2v2.8h-7"/><circle cx="7" cy="17.5" r="1.9"/><circle cx="17" cy="17.5" r="1.9"/></svg>
+            <b>ارسال با پیک</b>
+            <small>داخل مشهد — <span id="feeHint">۶۵٬۰۰۰ تومان</span></small>
+          </button>
+        </div>
+        <p class="co-note" id="methodNote">کیک را در جعبه‌ی مخصوص و سرد تحویل می‌گیرید.</p>
+      </section>
+
+      <!-- ── ۲. زمان ── -->
+      <section class="co-step" data-step="when">
+        <h2 class="co-step__t"><span class="co-step__n">۲</span> کِی می‌خواهیدش؟</h2>
+        <p class="co-sub">روز</p>
+        <div class="co-days" id="dayPicks" role="radiogroup" aria-label="روز دریافت"></div>
+        <p class="co-sub">بازه‌ی ساعت</p>
+        <div class="co-slots" id="slotPicks" role="radiogroup" aria-label="ساعت دریافت"></div>
+        <p class="co-err" id="whenErr" role="alert"></p>
+      </section>
+
+      <!-- ── ۳. مشخصات و نشانی ── -->
+      <section class="co-step" data-step="who">
+        <h2 class="co-step__t"><span class="co-step__n">۳</span> مشخصات شما</h2>
+
+        <div class="co-grid2">
+          <div class="co-field">
+            <label for="coName">نام و نام خانوادگی</label>
+            <input type="text" id="coName" autocomplete="name" required>
+          </div>
+          <div class="co-field">
+            <label for="coPhone">شماره تماس</label>
+            <input type="tel" id="coPhone" dir="ltr" inputmode="numeric" maxlength="11"
+                   autocomplete="tel" placeholder="09xxxxxxxxx" required>
+          </div>
+        </div>
+
+        <div id="addrBlock" hidden>
+          <p class="co-sub">نشانی تحویل</p>
+          <div class="co-addrs" id="addrPicks"></div>
+          <div class="co-field" id="newAddrField" hidden>
+            <label for="coAddr">نشانی کامل</label>
+            <textarea id="coAddr" rows="3" placeholder="خیابان، کوچه، پلاک، واحد"></textarea>
+          </div>
+        </div>
+
+        <p class="co-err" id="whoErr" role="alert"></p>
+      </section>
+
+      <!-- ── ۴. جزئیات ── -->
+      <section class="co-step" data-step="extra">
+        <h2 class="co-step__t"><span class="co-step__n">۴</span> جزئیات <span class="co-opt">(اختیاری)</span></h2>
+
+        <div class="co-field">
+          <label for="coPlaque">پیام روی کیک</label>
+          <input type="text" id="coPlaque" maxlength="40" placeholder="مثلاً: تولدت مبارک، مامان">
+          <p class="co-hint"><span id="plaqueCount">۰</span> از ۴۰ نویسه — با شکلات روی کیک نوشته می‌شود.</p>
+        </div>
+
+        <label class="co-toggle">
+          <input type="checkbox" id="coGift">
+          <span class="co-toggle__box" aria-hidden="true"></span>
+          <span class="co-toggle__t">
+            <b>بسته‌بندی هدیه</b>
+            <small>جعبه‌ی پارچه‌ای، روبان و کارت دست‌نویس — <span id="giftFee">۸۵٬۰۰۰</span> تومان</small>
+          </span>
+        </label>
+
+        <div class="co-field">
+          <label for="coAllergy">حساسیت غذایی</label>
+          <input type="text" id="coAllergy" placeholder="مثلاً: آجیل، تخم‌مرغ، لاکتوز">
+          <p class="co-hint">اگر بنویسید، سرقناد پیش از پخت آن را می‌بیند.</p>
+        </div>
+
+        <div class="co-field">
+          <label for="coNote">یادداشت برای ما</label>
+          <textarea id="coNote" rows="2" placeholder="هر چیزی که باید بدانیم"></textarea>
+        </div>
+      </section>
+
+      <!-- ── ۵. پرداخت ── -->
+      <section class="co-step" data-step="pay">
+        <h2 class="co-step__t"><span class="co-step__n">۵</span> پرداخت</h2>
+        <div class="co-picks" id="payPicks" role="radiogroup" aria-label="روش پرداخت">
+          <button class="co-pick is-on" type="button" role="radio" aria-checked="true" data-pay="online">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18"/></svg>
+            <b>پرداخت آنلاین</b>
+            <small>کل مبلغ، همین حالا</small>
+          </button>
+          <button class="co-pick" type="button" role="radio" aria-checked="false" data-pay="onsite">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M12 3.5v17"/><path d="M15.8 7.2c-.6-1.2-2-1.9-3.8-1.9-2.2 0-3.6 1-3.6 2.6 0 3.6 7.6 2 7.6 5.6 0 1.7-1.5 2.8-3.9 2.8-2 0-3.5-.8-4.1-2.1"/></svg>
+            <b>پرداخت در محل</b>
+            <small>هنگام تحویل، نقدی یا کارت</small>
+          </button>
+        </div>
+        <p class="co-note" id="payNote">پس از پرداخت، کد پیگیری برایتان پیامک می‌شود.</p>
+
+        <label class="co-toggle co-toggle--terms">
+          <input type="checkbox" id="coTerms">
+          <span class="co-toggle__box" aria-hidden="true"></span>
+          <span class="co-toggle__t">
+            <b>شرایط سفارش را خوانده‌ام و می‌پذیرم.</b>
+            <small>تا ۱۸ ساعت پس از ثبت می‌توانید سفارش را لغو کنید و مبلغ برمی‌گردد.</small>
+          </span>
+        </label>
+        <p class="co-err" id="payErr" role="alert"></p>
+      </section>
+    </div>
+
+    <!-- ─────────── ستون خلاصه ─────────── -->
+    <aside class="co-side" aria-label="خلاصه‌ی سفارش">
+      <div class="co-sum">
+        <h2 class="co-sum__t">سبد شما</h2>
+        <div class="co-items" id="coItems"></div>
+
+        <div class="co-promo">
+          <input type="text" id="coPromo" placeholder="کد تخفیف" aria-label="کد تخفیف">
+          <button class="co-promo__b" type="button" id="promoBtn">اعمال</button>
+        </div>
+        <p class="co-promo__msg" id="promoMsg" role="status"></p>
+
+        <dl class="co-totals">
+          <div><dt>جمع اقلام</dt><dd id="tSub">۰</dd></div>
+          <div id="rowGift" hidden><dt>بسته‌بندی هدیه</dt><dd id="tGift">۰</dd></div>
+          <div id="rowShip" hidden><dt>هزینه‌ی ارسال</dt><dd id="tShip">۰</dd></div>
+          <div id="rowOff" hidden class="is-off"><dt>تخفیف</dt><dd id="tOff">۰</dd></div>
+          <div class="co-totals__grand"><dt>قابل پرداخت</dt><dd id="tGrand">۰</dd></div>
+        </dl>
+
+        <button class="btn btn-primary co-place" type="button" id="placeBtn">
+          <span class="co-place__l">ثبت سفارش</span>
+        </button>
+        <p class="co-sum__note">با ثبت سفارش، شماره‌تان برای هماهنگی ذخیره می‌شود.</p>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- نوار چسبان موبایل -->
+<div class="co-bar" id="coBar" hidden>
+  <div class="co-bar__i">
+    <span class="co-bar__l">قابل پرداخت</span>
+    <span class="co-bar__v" id="barGrand">۰</span>
+  </div>
+  <button class="btn btn-primary" type="button" id="barPlace">ثبت سفارش</button>
+</div>
+
+<div class="co-toast" id="coToast" role="status" aria-live="polite" hidden></div>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-sign">
+      <span class="footer-sign__mark" aria-hidden="true"></span>
+      <span class="footer-sign__rule" aria-hidden="true"></span>
+    </div>
+    <div class="footer-bottom" style="border-top:0; margin-top:0; padding-top:0;">
+      <div class="footer-tagline"><strong>با حوصله پخته می‌شود،</strong> با اشتها خورده می‌شود.</div>
+      <p class="footer-legal">© ۱۴۰۴ رُزِت — تمام حقوق محفوظ است.</p>
+    </div>
+  </div>
+</footer>
+
+{% comment %}
+  cart.js سبد را از #cart-data می‌خواند. این صفحه از _base ارث نمی‌برد،
+  پس همان آرایه‌ی داده‌ی صفحه اینجا هم گذاشته می‌شود — وگرنه سبد خالی
+  دیده می‌شد.
+{% endcomment %}
+{{ checkout_data.items|json_script:"cart-data" }}
+<script src="{% static 'js/cart.js' %}"></script>
+{% comment %}
+  داده‌ی صفحه — سبد، بازه‌های تحویل، روزها، نرخ‌ها و مشخصات کاربر. همگام
+  و پیش از اسکریپت می‌نشیند تا صفحه بدون رفت‌وبرگشت شبکه بالا بیاید.
+{% endcomment %}
+{{ checkout_data|json_script:"checkout-data" }}
+<script src="{% static 'js/checkout.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   رُزِت — استایل جزئیات سفارش (پنل مدیریت)
+   ───────────────────────────────────────────────────────────────────────────
+   روی orders.css سوار می‌شود، پس نوار بالا، توست و توکن‌ها همان‌جا تعریف
+   شده‌اند و اینجا فقط چیزهای مخصوص این صفحه می‌آید.
+
+   ۱. سربرگ سفارش
+   ۲. چیدمان دو ستونی
+   ۳. کارت هر قلم و مشخصاتش
+   ۴. عکس‌های مرجع و چاپ
+   ۵. تاریخچه
+   ۶. ستون کناری
+   ۷. بزرگ‌نمایی عکس
+   ۸. واکنش‌گرایی و چاپ
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.od-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.3s var(--ease), gap 0.3s var(--ease);
+}
+.od-back svg { width: 16px; height: 16px; }
+.od-back:hover { color: var(--amber); gap: 0.7rem; }
+
+.od-main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(1.25rem, 3vw, 2rem) var(--gutter) 4rem;
+}
+
+/* ─────────── ۱. سربرگ سفارش ─────────── */
+.od-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+  padding: clamp(1.25rem, 3vw, 1.85rem);
+  border: 1px solid var(--border-mid);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+  margin-bottom: 1.5rem;
+}
+.od-hero[data-late="1"] {
+  border-color: color-mix(in srgb, var(--rosette) 50%, transparent);
+  background: color-mix(in srgb, var(--rosette) 8%, transparent);
+}
+.od-hero[data-s="delivered"] { opacity: 0.75; border-style: dashed; }
+
+.od-when {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 0.75rem 1.15rem;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--amber) 15%, transparent);
+}
+.od-when__t {
+  display: block;
+  font-family: var(--font-num);
+  font-size: 2.35rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--amber);
+  font-variant-numeric: tabular-nums;
+}
+.od-when__d {
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+.od-hero[data-late="1"] .od-when { background: color-mix(in srgb, var(--rosette) 16%, transparent); }
+.od-hero[data-late="1"] .od-when__t { color: var(--rosette); }
+.od-hero[data-s="delivered"] .od-when { background: color-mix(in srgb, var(--text) 8%, transparent); }
+.od-hero[data-s="delivered"] .od-when__t { color: var(--text-muted); }
+
+.od-hero__who { flex: 1; min-width: 190px; }
+.od-hero__n {
+  font-family: var(--font-heading);
+  font-size: clamp(1.35rem, 2.6vw, 1.75rem);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.3rem;
+}
+.od-hero__meta {
+  font-family: var(--font-num);
+  font-size: var(--text-sm);
+  color: var(--text-subtle);
+}
+
+/* خط زمانی وضعیت */
+.od-track {
+  display: flex;
+  flex: 1 1 260px;
+  min-width: 240px;
+}
+.od-track__s {
+  flex: 1;
+  position: relative;
+  text-align: center;
+  padding-top: 1.9rem;
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+.od-track__s::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;                /* عمداً فیزیکی: با translateX(-50%) جفت است */
+  transform: translateX(-50%);
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--border-mid);
+  border-radius: 50%;
+  background: var(--bg);
+  z-index: 1;
+}
+.od-track__s::after {
+  content: '';
+  position: absolute;
+  top: 10.5px;
+  right: 50%;
+  width: 100%;
+  height: 1.5px;
+  background: var(--border-mid);
+}
+.od-track__s:first-child::after { display: none; }
+.od-track__s.is-on { color: var(--text); }
+.od-track__s.is-on::before { border-color: var(--amber); background: var(--amber); }
+.od-track__s.is-on::after { background: var(--amber); }
+
+.od-hero__act { flex-basis: 100%; display: flex; gap: 0.6rem; }
+.od-hero__act .bd-next { flex: 1; max-width: 320px; }
+
+/* ─────────── ۲. چیدمان ─────────── */
+.od-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  align-items: start;
+}
+.od-h {
+  font-family: var(--font-heading);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.9rem;
+}
+.od-col .od-h:not(:first-child) { margin-top: 2rem; }
+
+/* ─────────── ۳. کارت هر قلم ─────────── */
+.od-item {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+  overflow: hidden;
+  margin-bottom: 0.9rem;
+}
+.od-item--custom { border-color: color-mix(in srgb, var(--rosette) 38%, transparent); }
+
+.od-item__top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.15rem;
+}
+.od-item__img {
+  width: 84px;
+  height: 84px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1px solid var(--border-mid);
+  cursor: zoom-in;
+}
+.od-item__h { flex: 1; min-width: 0; }
+.od-item__n {
+  font-family: var(--font-heading);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+.od-item__s {
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+.od-item__q {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 0.45rem 0.75rem;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--text) 9%, transparent);
+}
+.od-item__q b {
+  display: block;
+  font-family: var(--font-num);
+  font-size: 1.2rem;
+  color: var(--text);
+}
+.od-item__q small {
+  font-family: var(--font);
+  font-size: 0.6875rem;
+  color: var(--text-subtle);
+}
+
+/* جدول مشخصات — همان چیزی که مشتری انتخاب کرده */
+.od-spec {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  border-top: 1px solid var(--border);
+}
+/* خطوط جداکننده با inset shadow کشیده می‌شوند، نه با gap رنگی؛ وگرنه وقتی
+   تعداد مشخصات مضربِ ستون‌ها نباشد، خانه‌ی خالیِ آخر یک بلوکِ تیره می‌شود. */
+.od-spec > div {
+  padding: 0.8rem 1.15rem;
+  box-shadow: inset 0 -1px 0 var(--border), inset 1px 0 0 var(--border);
+}
+.od-spec dt {
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+  margin-bottom: 0.2rem;
+}
+.od-spec dd {
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.od-item__foot { padding: 1rem 1.15rem; border-top: 1px solid var(--border); }
+
+/* ─────────── ۴. عکس‌ها ─────────── */
+.od-shots { margin-top: 0.9rem; }
+.od-shots:first-child { margin-top: 0; }
+.od-shots__h {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: var(--text);
+}
+.od-shots__h svg { width: 17px; height: 17px; color: var(--amber); flex-shrink: 0; }
+.od-shots__h span { color: var(--text-subtle); font-size: var(--text-xs); }
+
+.od-shots__row { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.od-shot {
+  position: relative;
+  width: 124px;
+  border: 0;
+  padding: 0;
+  background: none;
+  border-radius: 13px;
+  overflow: hidden;
+  cursor: zoom-in;
+  transition: transform 0.35s var(--ease-out);
+}
+.od-shot img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 1px solid var(--border-mid);
+  border-radius: 13px;
+}
+.od-shot:hover { transform: translateY(-3px); }
+.od-shot__z {
+  position: absolute;
+  bottom: 6px;
+  inset-inline-end: 6px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: var(--bg);
+  background: color-mix(in srgb, var(--text) 65%, transparent);
+}
+.od-shot__z svg { width: 13px; height: 13px; }
+
+/* عکس چاپ روی کیک — این یکی باید فرق داشته باشد چون به چاپگر می‌رود */
+.od-print {
+  display: flex;
+  gap: 1rem;
+  padding: 0.9rem;
+  border: 1px dashed color-mix(in srgb, var(--rosette) 45%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--rosette) 7%, transparent);
+}
+.od-print img {
+  width: 108px;
+  height: 108px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 11px;
+  cursor: zoom-in;
+}
+.od-print__x {
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  line-height: 1.9;
+  color: var(--text);
+}
+.od-print__x b { display: block; color: var(--rosette); margin-bottom: 0.25rem; }
+
+.od-refnote {
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  line-height: 1.85;
+  color: var(--text-muted);
+}
+
+/* ─────────── ۵. تاریخچه ─────────── */
+.od-hist {
+  list-style: none;
+  padding-inline-start: 1.35rem;
+  border-inline-start: 1.5px solid var(--border-mid);
+}
+.od-hist li {
+  position: relative;
+  padding-bottom: 1.15rem;
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: var(--text);
+}
+.od-hist li:last-child { padding-bottom: 0; }
+.od-hist li::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: calc(-1.35rem - 5.5px);
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+.od-hist small {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+  margin-top: 0.2rem;
+}
+
+/* ─────────── ۶. ستون کناری ─────────── */
+.od-side { display: grid; gap: 0.9rem; position: sticky; top: 5.5rem; }
+.od-box {
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+.od-box__t {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.95rem;
+}
+.od-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  line-height: 1.8;
+}
+.od-row + .od-row { border-top: 1px solid var(--border); }
+.od-row dt { color: var(--text-subtle); flex-shrink: 0; }
+.od-row dd { color: var(--text); text-align: end; }
+.od-row--total { border-top: 1px solid var(--border-mid) !important; margin-top: 0.35rem; padding-top: 0.85rem; }
+.od-row--total dd { font-family: var(--font-num); font-size: var(--text-base); color: var(--amber); }
+.od-row--due dd { color: var(--rosette); font-family: var(--font-num); }
+
+.od-call {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.9rem;
+  padding: 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+  border-radius: 12px;
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--amber);
+  text-decoration: none;
+  transition: background-color 0.3s var(--ease);
+}
+.od-call svg { width: 17px; height: 17px; }
+.od-call:hover { background: color-mix(in srgb, var(--amber) 13%, transparent); }
+
+/* ─────────── ۷. بزرگ‌نمایی ─────────── */
+.od-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  background: rgba(8, 5, 3, 0.9);
+  backdrop-filter: blur(6px);
+  animation: odFade 0.28s var(--ease) both;
+}
+@keyframes odFade { from { opacity: 0; } to { opacity: 1; } }
+.od-lightbox img {
+  max-width: min(94vw, 900px);
+  max-height: 78vh;
+  border-radius: 16px;
+  box-shadow: 0 40px 90px -40px rgba(0, 0, 0, 0.9);
+}
+.od-lightbox__cap {
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: rgba(250, 246, 240, 0.85);
+  text-align: center;
+}
+.od-lightbox__x {
+  position: absolute;
+  top: 1.25rem;
+  inset-inline-end: 1.25rem;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(250, 246, 240, 0.28);
+  border-radius: 50%;
+  background: rgba(250, 246, 240, 0.08);
+  color: #FAF6F0;
+  transition: background-color 0.3s var(--ease);
+}
+.od-lightbox__x svg { width: 19px; height: 19px; }
+.od-lightbox__x:hover { background: rgba(250, 246, 240, 0.2); }
+
+/* ─────────── ۸. واکنش‌گرایی و چاپ ─────────── */
+@media (max-width: 900px) {
+  .od-grid { grid-template-columns: 1fr; }
+  .od-side { position: static; }
+}
+@media (max-width: 640px) {
+  /* نوار بالا در عرض کم شلوغ می‌شود؛ متن بازگشت می‌رود و فلش می‌ماند */
+  .od-back__t { display: none; }
+  .bd-clock { margin-inline-start: 0; }
+  .bd-clock b, .bd-clock span { display: inline; }
+  .bd-clock b::after { content: ' · '; color: var(--text-subtle); }
+}
+@media (max-width: 520px) {
+  .od-when__t { font-size: 1.85rem; }
+  .od-item__top { flex-wrap: wrap; }
+  .od-item__img { width: 64px; height: 64px; }
+  .od-shot { width: 96px; }
+  .od-print { flex-direction: column; }
+}
+
+@media print {
+  .bd-top, .od-hero__act, .od-lightbox, .bd-toast, .od-call { display: none !important; }
+  .od-main { padding: 0; max-width: none; }
+  .od-grid { grid-template-columns: 1fr 260px; }
+  .od-item, .od-box, .od-hero { break-inside: avoid; border-color: #999; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .od-lightbox { animation: none !important; }
+  .od-shot:hover { transform: none; }
+}

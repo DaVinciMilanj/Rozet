@@ -1,0 +1,2804 @@
+﻿/* ═══════════════════════════════════════════════════════════════════════════════════════
+   استایل‌شیت جامع و یکپارچه وب‌سایت رُزِت (ROZET Master Stylesheet)
+   طراحی لوکس، مینیمال و اشرافی — استاندارد Awwwards & Haute Couture
+   ═══════════════════════════════════════════════════════════════════════════════════════
+   فهرست بخش‌های این فایل:
+   بخش ۱: بارگذاری فونت‌های محلی و متغیرهای دیزاین توکن (@font-face & :root)
+   بخش ۲: ریست استایل‌ها، تایپوگرافی پایه و اسکرول‌بار مرورگر (Reset & Base)
+   بخش ۳: افکت‌های بصری سراسری (بافت فیلم سینمایی و نشانگر ماوس اختصاصی)
+   بخش ۴: هدر شیشه‌ای، منوی دسکتاپ و مگامنوی آبشاری (Header & Dropdown)
+   بخش ۵: کشوی سبد خرید شناور و اقلام خرید (Cart Drawer)
+   بخش ۶: سیستم جامع انیمیشن‌ها، ترنزیشن‌ها و اعلان‌ها (Animation System)
+   بخش ۷: استایل‌های اشتراکی سکشن‌ها، تیترها و دکمه‌ها (Shared UI Components)
+   بخش ۸: سکشن‌های ۱ و ۲: اسکرول ویدیوی ۲۵۰ عکسی با Canvas و متن هرو (Canvas Scrub)
+   بخش ۹: سکشن ۳: ویترین کیک‌های امضا با کارت‌های نمایشگاهی آتلیه (Signature Cakes)
+   بخش ۱۰: سکشن ۴: شیرینی‌های اصیل ایرانی و تصویر پارالاکس (Traditional Sweets)
+   بخش ۱۱: سکشن ۵: آتلیه طراحی کیک اختصاصی (Bespoke Cake Atelier)
+   بخش ۱۲: سکشن ۶: دسرهای انفرادی و شیرینی‌های تر (Pastries & Cupcakes)
+   بخش ۱۳: سکشن ۷: بنر سینمایی کلکسیون فصلی (Seasonal Collection)
+   بخش ۱۴: سکشن ۸: داستان برند و کارگاه نیاوران (Brand Story & Heritage)
+   بخش ۱۵: سکشن ۹: نوار گالری تصاویر اینستاگرام (Instagram Strip)
+   بخش ۱۶: سکشن ۱۰: فوتر جامع وب‌سایت و خبرنامه (Site Footer)
+   بخش ۱۷: قوانین واکنش‌گرایی و ریسپانسیو در تبلت و موبایل (Responsive Breakpoints)
+   ═══════════════════════════════════════════════════════════════════════════════════════ */
+
+
+
+
+/* =================================================================
+   ROZET — Base Styles & Local Typography
+   Variables · Reset · Typography · Film Grain · Custom Cursor
+   ================================================================= */
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۱.۱: فونت‌های اختصاصی محلی (یکان‌بخ، کلمه بولد، پلی‌فر دیسپلی، اوتفیت)
+   ═══════════════════════════════════════════════════════════════ */
+@font-face {
+  font-family: 'YekanBakh';
+  src: url('../assets/font/YekanBakh-Regular/YekanBakh-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Kalameh';
+  src: url('../assets/font/Kalameh-Bold/Kalameh-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Outfit';
+  src: url('../assets/font/Outfit/Outfit-VariableFont_wght.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('../assets/font/Playfair_Display/PlayfairDisplay-VariableFont_wght.woff2') format('woff2-variations');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('../assets/font/Playfair_Display/PlayfairDisplay-Italic-VariableFont_wght.woff2') format('woff2-variations');
+  font-weight: 400 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۱.۲: متغیرهای طراحی و پالت رنگی لوکس (Design Tokens)
+   شامل: رنگ‌های خامه، کاکائو، رز مخملی، طلای کهربایی و مقیاس تایپوگرافی
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  /* Brand Luxury Palette */
+  --cream: #FAF6F0;
+  --cream-mid: #F0E8DF;
+  --cream-dark: #E5D8CB;
+  --cocoa: #2A1B16;
+  --cocoa-mid: #4A3429;
+  --rosette: #BA4E64;
+  --rosette-dark: #9A3B52;
+  --rosette-light: #E8A5B2;
+  --amber: #DDA15E;
+  --pistachio: #8E9E82;
+
+  /* Semantic */
+  --bg: var(--cream);
+  --bg-alt: var(--cream-mid);
+  --text: var(--cocoa);
+  --text-muted: #7A5E52;
+  --text-subtle: #A08878;
+  --border: rgba(42, 27, 22, 0.08);
+  --border-mid: rgba(42, 27, 22, 0.14);
+
+  /* Typography */
+  --font: 'YekanBakh', 'Vazirmatn', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Kalameh', 'Vazirmatn', var(--font);
+  --font-brand: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  --font-num: 'Outfit', var(--font);
+
+  /* Brand mark (نسخه‌ی بدون سایه، برای هدر و فوتر)
+     مسیر عمداً از ریشه‌ی سایت نوشته شده است: url() داخل یک متغیر CSS نسبت به
+     «صفحه‌ای که از متغیر استفاده می‌کند» حل می‌شود، نه نسبت به همین فایل. با
+     مسیر نسبی، صفحه‌های یک پوشه پایین‌تر (مثل admin/auth-admin) به
+     /admin/assets/... می‌رسیدند و لوگو ۴۰۴ می‌شد. */
+  --logo-icon: url('/assets/logo/rozet-icon.webp');
+
+  /* Type Scale */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1rem;
+  --text-md: 1.1875rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+  --text-hero: clamp(2.5rem, 5.5vw, 5rem);
+  --text-disp: clamp(2rem, 4vw, 3.75rem);
+
+  /* Spacing */
+  --sp-1: 0.5rem;
+  --sp-2: 1rem;
+  --sp-3: 1.5rem;
+  --sp-4: 2rem;
+  --sp-6: 3rem;
+  --sp-8: 4rem;
+  --sp-12: 6rem;
+  --sp-16: 8rem;
+
+  /* Motion */
+  --dur-fast: 180ms;
+  --dur-base: 350ms;
+  --dur-slow: 650ms;
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout */
+  --header-h: 76px;
+  --container-max: 1440px;
+  --gutter: clamp(1.5rem, 4.5vw, 5rem);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۲: ریست استایل‌ها، تنظیمات پیش‌فرض بدنه و اسکرول‌بار مرورگر
+   ═══════════════════════════════════════════════════════════════ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font);
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--text);
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  position: relative;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+  border: none;
+  outline: none;
+}
+
+/* ─── Typography Defaults ─── */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.hero-headline,
+.brand-intro-heading,
+.section-heading,
+.sweets-heading,
+.custom-heading,
+.story-headline,
+.seasonal-heading,
+.product-card__name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+p {
+  font-family: var(--font);
+  font-weight: 400;
+}
+
+.font-num,
+.price,
+.product-card__price,
+.sweet-item-price,
+.custom-step-num {
+  font-family: var(--font-num);
+}
+
+::selection {
+  background-color: var(--rosette);
+  color: #fff;
+}
+
+/* ─── Luxury Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cocoa-mid);
+  border-radius: 3px;
+}
+
+/* ─── Container ─── */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۳.۱: لایه بافت نویز فیلم سینمایی (Film Grain) با افکت SVG Noise
+   ═══════════════════════════════════════════════════════════════ */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۳.۲: نشانگر ماوس اختصاصی لوکس (نقطه مرکزی و حلقه شناور دنبال‌کننده)
+   ═══════════════════════════════════════════════════════════════ */
+@media (hover: hover) and (pointer: fine) {
+  /* فقط صفحه‌ی اصلی المان .custom-cursor را دارد؛ اگر cursor:none سراسری
+     بماند، در بقیه‌ی صفحه‌ها ماوس کاملاً ناپدید می‌شود. */
+  body.page-home {
+    cursor: none;
+  }
+
+  .page-home a,
+  .page-home button,
+  .page-home input,
+  .page-home [role="button"] {
+    cursor: none;
+  }
+
+  .custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 99999;
+    mix-blend-mode: difference;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease;
+  }
+
+  .cursor-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 0.2s ease;
+  }
+
+  .cursor-ring {
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.3s ease,
+      background-color 0.3s ease;
+  }
+
+  /* Hover state */
+  .custom-cursor.is-hover .cursor-dot {
+    transform: translate(-50%, -50%) scale(0);
+  }
+
+  .custom-cursor.is-hover .cursor-ring {
+    width: 54px;
+    height: 54px;
+    border-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(2px);
+  }
+
+  .custom-cursor.is-hidden {
+    opacity: 0;
+  }
+}
+
+@media (hover: none) or (pointer: coarse) {
+  .custom-cursor {
+    display: none !important;
+  }
+}
+
+/* =================================================================
+   ROZET — Layout Styles
+   Header · Nav · Dropdown · Cart Drawer · Mobile Nav · Footer
+   ================================================================= */
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۴.۱: هدر اصلی سایت و ناوبری شیشه‌ای (Site Header & Navigation)
+   دارای تغییر ظاهر هوشمند هنگام اسکرول از روی ویدیوی تیره به سکشن‌های روشن
+   ═══════════════════════════════════════════════════════════════ */
+.site-header {
+  position: fixed;
+  top: 0;
+  inset-inline: 0;
+  z-index: 900;
+  height: var(--header-h);
+  transition: background-color 0.4s var(--ease),
+              backdrop-filter 0.4s var(--ease),
+              box-shadow 0.4s var(--ease);
+}
+
+/* بالای صفحه هدر شفاف است و زیرش فریم روشن ویدیو — پس متنش تیره می‌شود */
+.site-header:not(.scrolled-dark):not(.scrolled-light) .brand-wordmark,
+.site-header:not(.scrolled-dark):not(.scrolled-light) .header-nav a,
+.site-header:not(.scrolled-dark):not(.scrolled-light) .header-nav .shop-trigger-text,
+.site-header:not(.scrolled-dark):not(.scrolled-light) .shop-trigger-icon,
+.site-header:not(.scrolled-dark):not(.scrolled-light) .icon-btn {
+  color: #16110F;
+}
+.site-header:not(.scrolled-dark):not(.scrolled-light) .menu-toggle span {
+  background-color: #16110F;
+}
+
+/* Header over dark hero/video (default or dark glass) */
+.site-header.scrolled-dark {
+  background-color: rgba(18, 10, 6, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 rgba(250, 246, 240, 0.08);
+}
+
+/* Header over cream content (Section 3 onwards) */
+.site-header.scrolled-light {
+  background-color: rgba(250, 246, 240, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 var(--border-mid);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding-inline: var(--gutter);
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+/* Brand Wordmark */
+.brand-wordmark {
+  font-family: var(--font-brand);
+  font-size: 1.85rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: var(--cream);
+  flex-shrink: 0;
+  transition: color 0.35s var(--ease), opacity 0.2s ease;
+}
+.brand-wordmark:hover { opacity: 0.7; }
+.site-header.scrolled-light .brand-wordmark { color: var(--cocoa); }
+
+/* Main Navigation */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+}
+
+.header-nav a,
+.header-nav .shop-trigger-text {
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: rgba(250, 246, 240, 0.9);
+  position: relative;
+  transition: color 0.35s var(--ease), opacity 0.2s ease;
+  padding-block: 0.3rem;
+}
+
+.header-nav a::after,
+.header-nav .shop-trigger-text::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  inset-inline-start: 0;
+  width: 0;
+  height: 1px;
+  background-color: currentColor;
+  transition: width 0.35s var(--ease);
+}
+.header-nav a:hover::after,
+.shop-trigger:hover .shop-trigger-text::after {
+  width: 100%;
+}
+.header-nav a.active {
+  opacity: 0.6;
+}
+
+.site-header.scrolled-light .header-nav a,
+.site-header.scrolled-light .shop-trigger-text {
+  color: var(--cocoa);
+}
+
+/* Shop Trigger */
+.shop-nav-item { position: relative; }
+.shop-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+.shop-trigger-icon {
+  width: 11px;
+  height: 11px;
+  color: rgba(250, 246, 240, 0.9);
+  transition: transform 0.35s var(--ease), color 0.35s var(--ease);
+}
+.site-header.scrolled-light .shop-trigger-icon { color: var(--cocoa); }
+.shop-trigger[aria-expanded="true"] .shop-trigger-icon { transform: rotate(180deg); }
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۴.۲: مگامنوی آبشاری فروشگاه (دسته‌بندی‌های کیک، دسر و کالکشن‌ها)
+   ═══════════════════════════════════════════════════════════════ */
+.shop-dropdown {
+  position: fixed;
+  top: var(--header-h);
+  inset-inline: 0;
+  z-index: 890;
+  background-color: var(--cream);
+  border-top: 1px solid var(--border-mid);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 16px 50px rgba(42, 27, 22, 0.08);
+  padding: var(--sp-8) var(--gutter);
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+}
+.shop-dropdown.is-open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.shop-dropdown-inner {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-8);
+}
+
+.dropdown-col-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--text-subtle);
+  margin-bottom: var(--sp-3);
+  padding-bottom: var(--sp-1);
+  border-bottom: 1px solid var(--border);
+}
+.dropdown-col a {
+  display: block;
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: var(--cocoa);
+  padding: 0.4rem 0;
+  transition: opacity 0.2s ease, transform 0.25s var(--ease);
+}
+.dropdown-col a:hover {
+  opacity: 0.55;
+  transform: translateX(-4px);
+}
+
+/* ─── HEADER ACTIONS ─── */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  color: rgba(250, 246, 240, 0.9);
+  position: relative;
+  border-radius: 50%;
+  transition: color 0.4s var(--ease), background-color 0.4s var(--ease),
+              transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.icon-btn svg { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.icon-btn:hover {
+  background-color: rgba(221, 161, 94, 0.16);
+  transform: scale(1.08);
+  box-shadow: 0 0 0 1px rgba(221, 161, 94, 0.3), 0 6px 18px -4px rgba(221, 161, 94, 0.35);
+}
+.icon-btn:hover svg { transform: scale(1.1); }
+.icon-btn:active { transform: scale(0.94); }
+.site-header.scrolled-light .icon-btn {
+  color: var(--cocoa);
+}
+.site-header.scrolled-light .icon-btn:hover {
+  background-color: rgba(221, 161, 94, 0.14);
+  box-shadow: 0 0 0 1px rgba(221, 161, 94, 0.35), 0 6px 16px -4px rgba(221, 161, 94, 0.28);
+}
+
+.cart-count {
+  position: absolute;
+  top: 5px;
+  inset-inline-start: 3px;
+  min-width: 17px;
+  height: 17px;
+  background-color: var(--rosette);
+  color: #fff;
+  font-family: var(--font-num);
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.cart-count.has-items {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Hamburger */
+/* ─── Hamburger Menu (Hidden on Desktop by default) ─── */
+/* ─── Hamburger Menu (Hidden on Desktop) ─── */
+.menu-toggle {
+  display: none !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+.menu-toggle span {
+  display: block;
+  height: 1.5px;
+  background-color: rgba(250, 246, 240, 0.9);
+  transition: width 0.35s var(--ease), transform 0.35s var(--ease), opacity 0.2s ease, background-color 0.35s var(--ease);
+}
+.menu-toggle span:nth-child(1) { width: 22px; }
+.menu-toggle span:nth-child(2) { width: 15px; }
+.menu-toggle span:nth-child(3) { width: 22px; }
+.site-header.scrolled-light .menu-toggle span { background-color: var(--cocoa); }
+.menu-toggle.is-open span:nth-child(1) { transform: translateY(6px) rotate(45deg); width: 22px; }
+.menu-toggle.is-open span:nth-child(2) { opacity: 0; }
+.menu-toggle.is-open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); width: 22px; }
+.menu-toggle span {
+  display: block;
+  height: 1px;
+  background-color: rgba(250, 246, 240, 0.9);
+  transition: width 0.35s var(--ease), transform 0.35s var(--ease), opacity 0.2s ease, background-color 0.35s var(--ease);
+}
+.menu-toggle span:nth-child(1) { width: 22px; }
+.menu-toggle span:nth-child(2) { width: 15px; }
+.menu-toggle span:nth-child(3) { width: 22px; }
+.site-header.scrolled-light .menu-toggle span { background-color: var(--cocoa); }
+
+.menu-toggle.is-open span:nth-child(1) { transform: translateY(6px) rotate(45deg); width: 22px; }
+.menu-toggle.is-open span:nth-child(2) { opacity: 0; }
+.menu-toggle.is-open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); width: 22px; }
+
+/* ─── MOBILE NAV OVERLAY ─── */
+.mobile-nav {
+  position: fixed;
+  inset: 0;
+  z-index: 850;
+  background-color: var(--cream);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s var(--ease);
+}
+.mobile-nav.is-open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.mobile-nav a {
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--cocoa);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease), color 0.2s ease;
+}
+.mobile-nav.is-open a { opacity: 1; transform: none; }
+.mobile-nav.is-open a:nth-child(2) { transition-delay: 60ms; }
+.mobile-nav.is-open a:nth-child(3) { transition-delay: 120ms; }
+.mobile-nav.is-open a:nth-child(4) { transition-delay: 180ms; }
+.mobile-nav.is-open a:nth-child(5) { transition-delay: 240ms; }
+.mobile-nav.is-open a:nth-child(6) { transition-delay: 300ms; }
+.mobile-nav a:hover { color: var(--rosette); }
+
+.mobile-nav-close {
+  position: absolute;
+  top: var(--sp-6);
+  inset-inline-end: var(--sp-6);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cocoa);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.mobile-nav.is-open .mobile-nav-close { opacity: 1; }
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۵: کشوی سبد خرید شناور (Cart Drawer) با بلور شیشه‌ای عمیق
+   شامل: سایدبار متحرک، دکمه‌های کنترل تعداد، وضعیت خالی و جمع کل
+   ═══════════════════════════════════════════════════════════════ */
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  background-color: rgba(42, 27, 22, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease);
+}
+.cart-overlay.is-open { opacity: 1; pointer-events: all; }
+
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  inset-inline-start: 0;
+  z-index: 960;
+  width: min(420px, 94vw);
+  height: 100%;
+  background-color: var(--cream);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(105%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: -10px 0 40px rgba(42, 27, 22, 0.15);
+}
+[dir="rtl"] .cart-drawer { transform: translateX(105%); }
+.cart-drawer.is-open { transform: translateX(0); }
+
+.cart-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-6) var(--sp-6) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+}
+.cart-drawer-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+.cart-drawer-close:hover { opacity: 0.6; }
+
+.cart-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-6);
+}
+
+.cart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: var(--sp-4);
+  text-align: center;
+  color: var(--text-muted);
+}
+.cart-empty-icon { opacity: 0.3; color: var(--text-subtle); }
+.cart-empty p { font-size: var(--text-sm); }
+
+.cart-drawer-footer {
+  padding: var(--sp-4) var(--sp-6) var(--sp-6);
+  border-top: 1px solid var(--border);
+  background-color: var(--cream-mid);
+}
+.cart-subtotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sp-4);
+  font-size: var(--text-sm);
+  color: var(--text);
+}
+.cart-subtotal-amount {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: var(--text-md);
+  color: var(--cocoa);
+}
+
+.btn-checkout {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 1rem var(--sp-4);
+  background-color: var(--cocoa);
+  color: var(--cream);
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: 0 8px 20px -8px rgba(42, 27, 22, 0.3);
+  transition: background-color 0.4s var(--ease), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1), word-spacing 0.4s var(--ease);
+}
+.btn-checkout:hover {
+  background-color: #1a0f0a;
+  transform: translateY(-3px);
+  word-spacing: 0.16em;
+  box-shadow: 0 16px 32px -10px rgba(42, 27, 22, 0.4), 0 4px 16px -2px rgba(221, 161, 94, 0.3);
+}
+.btn-checkout:active { transform: translateY(0) scale(0.98); }
+
+/* Cart Items */
+.cart-items { display: flex; flex-direction: column; gap: var(--sp-4); }
+.cart-item {
+  display: flex;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--border);
+}
+.cart-item-img {
+  width: 70px;
+  height: 90px;
+  flex-shrink: 0;
+  background-color: var(--cream-dark);
+  overflow: hidden;
+}
+.cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
+.cart-item-info { flex: 1; }
+.cart-item-name {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.cart-item-price {
+  font-family: var(--font-num);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+.cart-item-qty { display: flex; align-items: center; gap: var(--sp-2); }
+.cart-qty-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-mid);
+  font-size: 1rem;
+  line-height: 1;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.cart-qty-btn:hover {
+  background-color: var(--cocoa);
+  color: var(--cream);
+  border-color: var(--cocoa);
+}
+.cart-item-qty span {
+  font-family: var(--font-num);
+  font-size: var(--text-sm);
+  min-width: 24px;
+  text-align: center;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۶: سیستم جامع انیمیشن‌ها، ترنزیشن‌ها و اعلان‌ها (Animation System)
+   استاندارد ۶۰ فریم بر ثانیه Awwwards · فیزیک نرم و جلوه‌های محو
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes clipReveal {
+  from { clip-path: inset(100% 0 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(186, 78, 100, 0.4); }
+  50%      { box-shadow: 0 0 0 12px rgba(186, 78, 100, 0); }
+}
+
+/* ─── Hero Entry Stagger ─── */
+.hero-label    { animation: fadeIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+.hero-headline { animation: fadeUp 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
+.hero-sub      { animation: fadeUp 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both; }
+.hero-actions  { animation: fadeUp 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.8s both; }
+.scroll-hint   { animation: fadeIn 1.0s cubic-bezier(0.16, 1, 0.3, 1) 1.2s both; }
+.site-header   { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both; }
+
+/* ─── Scroll Hint Line Animation ─── */
+.scroll-hint-line {
+  animation: scrollHintPulse 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes scrollHintPulse {
+  0%   { transform: scaleY(0); transform-origin: top; opacity: 0; }
+  25%  { opacity: 1; }
+  50%  { transform: scaleY(1); transform-origin: top; }
+  50.1%{ transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+}
+
+/* ─── Scroll Reveal System ─── */
+[data-reveal] {
+  opacity: 0;
+  transition-property: opacity, transform, filter;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: 0.95s;
+  will-change: opacity, transform;
+}
+
+[data-reveal].revealed {
+  opacity: 1;
+}
+
+/* Reveal Variations */
+[data-reveal="fade-up"] { transform: translateY(36px); }
+[data-reveal="fade-up"].revealed { transform: translateY(0); }
+
+[data-reveal="fade-down"] { transform: translateY(-30px); }
+[data-reveal="fade-down"].revealed { transform: translateY(0); }
+
+[data-reveal="fade-right"] { transform: translateX(40px); }
+[data-reveal="fade-right"].revealed { transform: translateX(0); }
+
+[data-reveal="fade-left"] { transform: translateX(-40px); }
+[data-reveal="fade-left"].revealed { transform: translateX(0); }
+
+/* حالت اولیه‌ی fade-left/right المان را ۴۰ پیکسل بیرون از قاب می‌برد و تا
+   پیش از اسکرول‌شدنِ آن بخش، همان بیرون‌زدگی به صفحه می‌رسد و اسکرول افقی
+   می‌سازد. clip (برخلاف hidden) اسکرول‌کانتینر نمی‌سازد، پس sticky و اسکرول
+   عمودی دست‌نخورده می‌مانند. */
+.section { overflow-x: clip; }
+
+[data-reveal="scale"] { transform: scale(0.94); filter: blur(3px); }
+[data-reveal="scale"].revealed { transform: scale(1); filter: blur(0px); }
+
+/* Clip reveals with fallback safety */
+[data-reveal="clip-up"] { transform: translateY(28px); }
+[data-reveal="clip-up"].revealed { transform: translateY(0); }
+
+/* Delays */
+[data-delay="50"]  { transition-delay: 50ms; }
+[data-delay="100"] { transition-delay: 100ms; }
+[data-delay="150"] { transition-delay: 150ms; }
+[data-delay="180"] { transition-delay: 180ms; }
+[data-delay="200"] { transition-delay: 200ms; }
+[data-delay="220"] { transition-delay: 220ms; }
+[data-delay="250"] { transition-delay: 250ms; }
+[data-delay="260"] { transition-delay: 260ms; }
+[data-delay="300"] { transition-delay: 300ms; }
+[data-delay="340"] { transition-delay: 340ms; }
+[data-delay="350"] { transition-delay: 350ms; }
+[data-delay="380"] { transition-delay: 380ms; }
+[data-delay="400"] { transition-delay: 400ms; }
+[data-delay="420"] { transition-delay: 420ms; }
+[data-delay="450"] { transition-delay: 450ms; }
+[data-delay="500"] { transition-delay: 500ms; }
+[data-delay="550"] { transition-delay: 550ms; }
+
+/* Duration Presets */
+[data-dur="fast"]   { transition-duration: 0.55s; }
+[data-dur="normal"] { transition-duration: 0.85s; }
+[data-dur="slow"]   { transition-duration: 1.15s; }
+[data-dur="slower"] { transition-duration: 1.45s; }
+
+/* ─── Image Curtain Wipe ─── */
+.img-reveal {
+  position: relative;
+  overflow: hidden;
+}
+.img-reveal::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--cream);
+  transform: scaleY(1);
+  transform-origin: top;
+  transition: transform 1.25s cubic-bezier(0.77, 0, 0.175, 1);
+  z-index: 2;
+  pointer-events: none;
+}
+.img-reveal.revealed::after {
+  transform: scaleY(0);
+  transform-origin: bottom;
+}
+
+/* ─── Magnetic Buttons ─── */
+.btn-magnetic {
+  display: inline-flex;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+/* ─── Wishlist Button Pop ─── */
+.product-card__wishlist.pop {
+  animation: heartPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes heartPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+/* ─── Toast Notification ─── */
+.rozet-toast {
+  position: fixed;
+  bottom: 2.5rem;
+  inset-inline-start: 2.5rem;
+  z-index: 9999;
+  background: rgba(42, 27, 22, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--cream);
+  padding: 0.9rem 1.6rem;
+  border-radius: 4px;
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(250, 246, 240, 0.12);
+  animation: toastIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: auto;
+}
+.rozet-toast.is-hiding {
+  animation: toastOut 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.rozet-toast-icon {
+  color: var(--rosette-light);
+  display: flex;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes toastOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(18px) scale(0.96); }
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۷: استایل‌های اشتراکی سکشن‌ها، تیترها و دکمه‌ها (Shared UI Components)
+   ═══════════════════════════════════════════════════════════════ */
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block: clamp(5rem, 10vw, 10rem);
+  position: relative;
+}
+.section-sm {
+  padding-block: clamp(3rem, 6vw, 6rem);
+}
+
+.section-header {
+  margin-bottom: clamp(2.5rem, 5vw, 5rem);
+}
+.section-header--center {
+  text-align: center;
+}
+
+/* هدر دو ستونه سکشن کیک‌های امضا: تیتر در یک سو، لینک «مشاهده همه» در سوی دیگر */
+.cakes-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-6);
+  flex-wrap: wrap;
+  margin-bottom: clamp(2.5rem, 5vw, 5rem);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+}
+/* بلوک تیتر کفِ min-content دارد و کنار دکمه‌ی ثابت‌عرض، ردیف را در عرض
+   تبلت از صفحه بیرون می‌زد؛ اجازه‌ی جمع‌شدن حلش می‌کند. */
+.cakes-header > div {
+  min-width: 0;
+  flex: 1 1 240px;
+}
+.cakes-header .section-heading {
+  margin: 0;
+}
+.cakes-header .btn-link {
+  flex-shrink: 0;
+  padding-bottom: 0.35rem;
+}
+
+.section-label {
+  display: inline-block;
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--rosette);
+  margin-bottom: var(--sp-3);
+  text-transform: uppercase;
+}
+
+.section-heading {
+  font-family: var(--font-heading);
+  font-size: var(--text-disp);
+  font-weight: 700;
+  line-height: 1.18;
+  color: var(--cocoa);
+}
+
+.section-sub {
+  font-family: var(--font);
+  font-size: var(--text-md);
+  color: var(--text-muted);
+  line-height: 1.9;
+  max-width: 520px;
+  margin-top: var(--sp-4);
+}
+
+/* این پاراگراف با اندازه‌ی سطر ۵۲۰px به ۵۰۳/۱۳۷ می‌شکست و خط دوم یتیم می‌ماند */
+.section-sweets .section-sub {
+  max-width: 370px;
+}
+
+.section-cta {
+  text-align: center;
+  margin-top: clamp(2.5rem, 5vw, 5rem);
+}
+
+/* ─── Buttons ─── */
+/* ══════════════════════════════════════════════════════════════
+   دکمه‌های اصلی سایت (Signature Button System)
+   فرم قرصی · پرشدن نرم از پایین · هاله نور طلایی
+   ══════════════════════════════════════════════════════════════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 1.05rem 2.6rem;
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.45s var(--ease-out),
+              border-color 0.55s var(--ease-out),
+              box-shadow 0.55s var(--ease-out),
+              transform 0.5s var(--ease-out),
+              text-shadow 0.4s var(--ease-out);
+}
+
+/* لایه پرشونده که هنگام هاور از کف دکمه بالا می‌آید */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  transform: translateY(101%);
+  transition: transform 0.6s var(--ease-out);
+  pointer-events: none;
+}
+.btn:hover::before { transform: translateY(0); }
+
+.btn:active { transform: scale(0.97); transition-duration: 0.14s; }
+.btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+/* Gold shine sweep — shared luxury hover flourish for all solid buttons */
+.btn-checkout::before,
+.product-card__quick-btn::before,
+.product-card__order-btn::before,
+.filter-pill::before,
+.footer-newsletter button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.4) 50%, transparent 60%);
+  transform: translateX(-130%) skewX(-15deg);
+  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.btn-checkout:hover::before,
+.product-card__quick-btn:hover::before,
+.product-card__order-btn:hover::before,
+.filter-pill:hover::before,
+.footer-newsletter button:hover::before {
+  transform: translateX(130%) skewX(-15deg);
+}
+
+/* دکمه اصلی: کاکائویی تیره ← هنگام هاور با طلای مذاب پر می‌شود */
+.btn-primary {
+  background-color: var(--cocoa);
+  color: var(--cream);
+  border: 1px solid var(--cocoa);
+  box-shadow: 0 10px 26px -12px rgba(42, 27, 22, 0.55);
+}
+.btn-primary::before {
+  background: linear-gradient(135deg, #EFC689 0%, var(--amber) 52%, #C68C42 100%);
+}
+.btn-primary:hover {
+  color: #23150E;
+  border-color: var(--amber);
+  box-shadow: 0 24px 46px -18px rgba(198, 140, 66, 0.7),
+              0 8px 20px -10px rgba(42, 27, 22, 0.45);
+}
+
+/* دکمه خطی: قاب نازک ← هنگام هاور با کاکائویی پر می‌شود */
+.btn-outline {
+  background-color: transparent;
+  color: var(--cocoa);
+  border: 1px solid rgba(42, 27, 22, 0.28);
+}
+.btn-outline::before {
+  background: linear-gradient(135deg, #3C271E 0%, var(--cocoa) 100%);
+}
+.btn-outline:hover {
+  color: var(--cream);
+  border-color: rgba(221, 161, 94, 0.55);
+  box-shadow: 0 22px 42px -20px rgba(42, 27, 22, 0.6),
+              0 4px 16px -8px rgba(221, 161, 94, 0.4);
+}
+
+/* دکمه شیشه‌ای روی ویدیو: شیشه دودی ← هنگام هاور با خامه‌ای روشن پر می‌شود */
+.btn-ghost-light {
+  background-color: rgba(18, 11, 7, 0.38);
+  color: var(--cream);
+  border: 1px solid rgba(250, 246, 240, 0.42);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  box-shadow: 0 10px 28px -14px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+.btn-ghost-light::before {
+  background: linear-gradient(135deg, #FFFFFF 0%, var(--cream) 58%, #EFE2D2 100%);
+}
+.btn-ghost-light:hover {
+  color: #23150E;
+  border-color: rgba(250, 246, 240, 0.9);
+  text-shadow: none;
+  box-shadow: 0 24px 46px -20px rgba(0, 0, 0, 0.55),
+              0 4px 20px -8px rgba(250, 246, 240, 0.4);
+}
+
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--cocoa);
+  text-decoration: none;
+  position: relative;
+  padding-bottom: 2px;
+  transition: color 0.35s var(--ease), word-spacing 0.35s var(--ease), gap 0.35s var(--ease);
+}
+.btn-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  inset-inline-start: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, var(--amber), currentColor);
+  transform: scaleX(0);
+  transform-origin: end;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-link:hover {
+  color: var(--amber);
+  word-spacing: 0.10em;
+  gap: 0.7rem;
+}
+.btn-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: start;
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۸: سکشن‌های ۱ و ۲: اسکرول ویدیوی ۲۵۰ عکسی با Canvas و متن هرو
+   (Smart Canvas 250-Frame Scroll Frame Scrub Engine)
+   ═══════════════════════════════════════════════════════════════ */
+
+.scroll-frame-container {
+  position: relative;
+  height: 480vh;
+  background-color: #0d0705;
+}
+
+.scroll-frame-sticky {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-frame-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.scroll-frame-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--rosette), var(--amber));
+  z-index: 9998;
+  pointer-events: none;
+  transition: width 0.08s linear;
+}
+
+.scroll-frame-darkener {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(13, 7, 5, 0.2) 0%, rgba(13, 7, 5, 0.65) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.scroll-frame-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(13, 7, 5, 0.85) 0%, transparent 40%),
+              linear-gradient(to bottom, rgba(13, 7, 5, 0.7) 0%, transparent 30%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.scroll-frame-secondary-darkener {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(13, 7, 5, 0.75);
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease-out;
+}
+
+/* پرده نور ملایم پشت متن سکشن‌های ۱ و ۲ — زمینه روشن می‌ماند تا متن تیره جدا شود.
+   (JS روی .hero-overlay-dark رنگ تیره inline می‌گذارد؛ اینجا خنثی می‌شود) */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(ellipse 80% 65% at center,
+              rgba(250, 246, 240, 0.78) 0%,
+              rgba(250, 246, 240, 0.62) 38%,
+              rgba(250, 246, 240, 0.3) 62%,
+              rgba(250, 246, 240, 0) 82%);
+}
+
+.hero-overlay-dark {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-color: transparent !important;
+}
+
+/* ── Section 1: Hero Content ── */
+.hero-content {
+  position: relative;
+  z-index: 4;
+  text-align: center;
+  max-width: 860px;
+  padding-inline: var(--gutter);
+  pointer-events: auto;
+  will-change: opacity, transform;
+}
+
+.hero-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: #6E1220;
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+  text-shadow: 0 1px 10px rgba(250, 246, 240, 0.7);
+}
+
+/* خط مویی کنار لیبل — کیکر را لنگر می‌کند تا بالای تیتر معلق نماند */
+.hero-label::after {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.45;
+}
+
+.hero-headline {
+  font-family: var(--font-heading);
+  font-size: clamp(2.75rem, 6.5vw, 5.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #16110F;
+  margin-bottom: 2rem;
+  text-shadow: 0 2px 26px rgba(250, 246, 240, 0.65);
+}
+
+.hero-headline em {
+  font-family: var(--font-brand);
+  font-style: italic;
+  font-weight: 400;
+  color: #6E1220;
+}
+
+.hero-sub {
+  font-family: var(--font);
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  color: rgba(22, 17, 15, 0.82);
+  line-height: 1.75;
+  max-width: 540px;
+  margin-inline: auto;
+  margin-bottom: 2.75rem;
+  text-shadow: 0 1px 14px rgba(250, 246, 240, 0.75);
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 2.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.scroll-hint-text {
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: rgba(22, 17, 15, 0.7);
+  text-transform: uppercase;
+}
+
+.scroll-hint-track {
+  width: 1px;
+  height: 44px;
+  background-color: rgba(22, 17, 15, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-hint-line {
+  position: absolute;
+  top: -45%;
+  left: 0;
+  width: 100%;
+  height: 45%;
+  background: linear-gradient(180deg, transparent, var(--amber) 50%, transparent);
+  animation: scrollHintFall 1.9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes scrollHintFall {
+  0%   { top: -45%; }
+  100% { top: 100%; }
+}
+
+/* ── Section 2: Brand Intro Overlay ── */
+.brand-intro-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  padding-inline: var(--gutter);
+  will-change: opacity, transform;
+}
+
+.brand-intro-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 780px;
+}
+
+.brand-intro-divider {
+  width: 56px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--amber), transparent);
+  margin: 0 auto 2.25rem;
+}
+.brand-intro-divider:last-child {
+  margin: 2.25rem auto 0;
+}
+
+.brand-intro-heading {
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.25;
+  color: #16110F;
+  margin-bottom: 2rem;
+  text-shadow: 0 2px 24px rgba(250, 246, 240, 0.65);
+}
+
+.brand-intro-heading em {
+  font-family: var(--font-brand);
+  font-style: italic;
+  font-weight: 400;
+  color: #6E1220;
+}
+
+.brand-intro-text {
+  font-family: var(--font);
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  color: rgba(22, 17, 15, 0.84);
+  line-height: 1.9;
+  margin-inline: auto;
+  max-width: 580px;
+  text-shadow: 0 1px 14px rgba(250, 246, 240, 0.75);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   HAUTE PÂTISSERIE ATELIER PRODUCT CARDS
+   High-Jewelry Exhibition Design · Editorial Photography · Liquid Glass
+   ═══════════════════════════════════════════════════════════════ */
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(2.5rem, 4.5vw, 4rem) clamp(1.8rem, 3vw, 2.75rem);
+}
+
+.product-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(2rem, 3.5vw, 3.25rem) clamp(1.4rem, 2.2vw, 2rem);
+}
+
+/* ── Card Shell ── */
+.product-card {
+  position: relative;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FCFAF7 100%);
+  border: 1px solid rgba(197, 160, 89, 0.22);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(197, 160, 89, 0.48);
+  box-shadow: 0 24px 50px -12px rgba(42, 27, 22, 0.13),
+              0 0 0 1px rgba(197, 160, 89, 0.4);
+}
+
+/* ── Visual Frame ── */
+.product-card__visual {
+  position: relative;
+  aspect-ratio: 4 / 3.6;
+  overflow: hidden;
+  background-color: #F7EFE9;
+}
+
+.product-card--pastry .product-card__visual {
+  aspect-ratio: 4 / 3.8;
+}
+
+.product-card__visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(28, 25, 23, 0.16) 0%, transparent 45%);
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.product-card:hover .product-card__visual::after {
+  opacity: 0.8;
+}
+
+.product-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.6s ease;
+}
+
+.product-card:hover .product-card__image {
+  transform: scale(1.055);
+  filter: brightness(1.02);
+}
+
+/* ── Edition Badge ── */
+.product-card__badge {
+  position: absolute;
+  top: 1rem;
+  inset-inline-end: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.8rem;
+  background: rgba(253, 251, 247, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  border-radius: 20px;
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #231815;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  z-index: 4;
+}
+
+.product-card__badge .badge-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #C5A059;
+  box-shadow: 0 0 6px rgba(197, 160, 89, 0.85);
+  animation: badgeGlow 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes badgeGlow {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  100% { transform: scale(1.2); opacity: 1; }
+}
+
+/* ── Wishlist Button ── */
+.product-card__wishlist {
+  position: absolute;
+  top: 1rem;
+  inset-inline-start: 1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(42, 27, 22, 0.55);
+  background: rgba(253, 251, 247, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(197, 160, 89, 0.24);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-card__wishlist:hover {
+  color: #A34E54;
+  border-color: #A34E54;
+  background: #FFFFFF;
+  transform: scale(1.1);
+  box-shadow: 0 6px 18px rgba(163, 78, 84, 0.2);
+}
+
+.product-card__wishlist.is-liked {
+  color: #A34E54 !important;
+  border-color: #A34E54 !important;
+  background: #FFFFFF !important;
+}
+
+/* ── Hover Action Pill ── */
+.product-card__hover-action {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(14px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.35s ease;
+  z-index: 6;
+}
+
+.product-card:hover .product-card__hover-action {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.product-card__quick-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 1.4rem;
+  background: rgba(253, 251, 247, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  color: #201614;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 700;
+  border: 1px solid rgba(197, 160, 89, 0.38);
+  border-radius: 30px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: background-color 0.45s var(--ease), color 0.4s var(--ease), border-color 0.45s var(--ease),
+              box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              gap 0.35s var(--ease);
+}
+
+.product-card__quick-btn:hover {
+  background: #201614;
+  color: #FAF6F0;
+  border-color: #201614;
+  transform: scale(1.06);
+  gap: 0.85rem;
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.32), 0 4px 16px -2px rgba(221, 161, 94, 0.35);
+}
+.product-card__quick-btn:active { transform: scale(0.98); }
+
+/* ── Card Editorial Info ── */
+.product-card__info {
+  padding: 1.15rem 1.3rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.product-card__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.product-card__origin {
+  font-family: var(--font);
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: #8C7355;
+}
+
+.product-card__servings {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  color: #6E5A4E;
+  background: rgba(197, 160, 89, 0.1);
+  padding: 0.18rem 0.6rem;
+  border-radius: 12px;
+  border: 1px solid rgba(197, 160, 89, 0.2);
+}
+
+.product-card__name {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1C1917;
+  line-height: 1.3;
+  margin-bottom: 0.2rem;
+  transition: color 0.25s ease;
+}
+
+.product-card__name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.product-card:hover .product-card__name {
+  color: var(--rosette);
+}
+
+.product-card__name-en {
+  font-family: var(--font-brand);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #9E856E;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.6rem;
+  display: block;
+}
+
+/* ── Tasting Pyramid ── */
+.product-card__notes-pyramid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+  font-size: 0.88rem;
+  color: #55443C;
+  line-height: 1.5;
+}
+
+.pyramid-item {
+  transition: color 0.2s ease;
+}
+
+.pyramid-sep {
+  color: #C5A059;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* ── Gold Hairline Divider ── */
+.product-card__divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(197, 160, 89, 0.3), transparent);
+  margin-top: auto;
+  margin-bottom: 0.85rem;
+}
+
+/* ── Price and Order Action ── */
+.product-card__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.product-card__price-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card__price-label {
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.15rem;
+}
+
+.product-card__price {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1C1917;
+  line-height: 1;
+}
+
+.product-card__price small {
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-inline-start: 0.25rem;
+}
+
+.product-card__order-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.15rem;
+  background: transparent;
+  border: 1px solid rgba(42, 27, 22, 0.2);
+  border-radius: 20px;
+  color: var(--cocoa);
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: background-color 0.4s var(--ease), color 0.4s var(--ease), border-color 0.4s var(--ease),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-card__order-btn:hover {
+  background: #231815;
+  color: #FAF6F0;
+  border-color: #231815;
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 12px 26px -6px rgba(35, 24, 21, 0.32), 0 4px 14px -2px rgba(221, 161, 94, 0.3);
+}
+.product-card__order-btn:active { transform: translateY(0) scale(0.97); }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۱۰: سکشن ۴: شیرینی‌های سنتی اصیل ایرانی و تصویر پارالاکس
+   (Section 4: Traditional Sweets · Heritage Persian Confectionery)
+   ═══════════════════════════════════════════════════════════════ */
+
+.section-sweets {
+  background-color: var(--cream-mid);
+  padding-block: clamp(5rem, 9vw, 9.5rem);
+  position: relative;
+}
+
+.sweets-inner {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(3.5rem, 6vw, 7rem);
+  align-items: center;
+}
+
+.sweets-heading {
+  font-family: var(--font-heading);
+  font-size: var(--text-disp);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--cocoa);
+  margin-bottom: var(--sp-4);
+}
+
+.sweets-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem 1.5rem;
+  margin-block: 2rem 2.5rem;
+}
+
+.sweet-item {
+  background: #FCFAF7;
+  border: 1px solid rgba(197, 160, 89, 0.22);
+  border-radius: 4px;
+  padding: 1.2rem 1.4rem;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sweet-item:hover {
+  transform: translateY(-4px);
+  border-color: rgba(197, 160, 89, 0.5);
+  box-shadow: 0 14px 30px -10px rgba(42, 27, 22, 0.08);
+  background: #FFFFFF;
+}
+
+.sweet-item-name {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1C1917;
+  margin-bottom: 0.25rem;
+}
+
+.sweet-item-origin {
+  font-family: var(--font);
+  font-size: 0.86rem;
+  color: #8C7355;
+}
+
+.sweet-item-price {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: #A16207;
+  margin-top: 0.5rem;
+  font-weight: 700;
+}
+
+.sweets-editorial-img {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid rgba(197, 160, 89, 0.25);
+  box-shadow: 0 25px 60px -15px rgba(42, 27, 22, 0.15);
+}
+
+.sweets-editorial-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sweets-editorial-img:hover img {
+  transform: scale(1.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۱۱: سکشن ۵: آتلیه سفارش کیک اختصاصی (Bespoke Cake Atelier)
+   ═══════════════════════════════════════════════════════════════ */
+
+.section-custom {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  min-height: 85vh;
+  overflow: hidden;
+  position: relative;
+  background-color: #FAF8F5;
+}
+
+.custom-content-side {
+  display: flex;
+  align-items: center;
+  padding: clamp(4rem, 7vw, 8rem) clamp(2.5rem, 5vw, 6rem);
+  background-color: #FAF8F5;
+  order: 1;
+}
+
+.custom-content {
+  max-width: 580px;
+}
+
+.custom-heading {
+  font-family: var(--font-heading);
+  font-size: var(--text-disp);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--cocoa);
+  margin-bottom: var(--sp-4);
+}
+
+.custom-text {
+  font-family: var(--font);
+  font-size: var(--text-md);
+  color: var(--text-muted);
+  line-height: 1.9;
+  margin-bottom: 2rem;
+}
+
+.custom-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+  margin-block: 1.75rem 2.25rem;
+}
+
+.custom-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.1rem 0.65rem;
+  background: #FFFFFF;
+  border: 1px solid rgba(197, 160, 89, 0.22);
+  border-radius: 4px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.custom-step:hover {
+  transform: translateY(-4px);
+  border-color: rgba(197, 160, 89, 0.5);
+  box-shadow: 0 12px 25px rgba(42, 27, 22, 0.08);
+}
+
+.custom-step-num {
+  font-family: var(--font-brand);
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #C5A059;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+
+.custom-step-label {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1C1917;
+  margin-bottom: 0.25rem;
+}
+
+.custom-step-desc {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.custom-action-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.custom-lead-time {
+  font-family: var(--font);
+  font-size: 0.84rem;
+  color: #8C7355;
+  font-weight: 500;
+}
+
+.custom-image-side {
+  position: relative;
+  overflow: hidden;
+  min-height: 550px;
+  order: 2;
+}
+
+.custom-image-side img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.custom-image-side:hover img {
+  transform: scale(1.04);
+}
+
+.custom-image-badge {
+  position: absolute;
+  bottom: 2rem;
+  inset-inline-end: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: rgba(253, 251, 247, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(197, 160, 89, 0.35);
+  border-radius: 4px;
+  padding: 0.85rem 1.4rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+  z-index: 3;
+}
+
+.custom-image-badge .seal-icon {
+  font-size: 1.5rem;
+  color: #C5A059;
+}
+
+.custom-image-badge .seal-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-image-badge .seal-text strong {
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1C1917;
+}
+
+.custom-image-badge .seal-text small {
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: #7A5E52;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۱۲: سکشن ۶: دسرهای انفرادی و شیرینی‌های تر (Pastries & Cupcakes)
+   ═══════════════════════════════════════════════════════════════ */
+
+.section-pastries {
+  background-color: var(--cream);
+  padding-block: clamp(5rem, 8vw, 8.5rem);
+  position: relative;
+}
+
+.pastries-filter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.65rem;
+  margin-block: 2rem 3.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-pill {
+  padding: 0.55rem 1.35rem;
+  border-radius: 30px;
+  border: 1px solid rgba(42, 27, 22, 0.15);
+  background: transparent;
+  color: #2A1B16;
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: background-color 0.4s var(--ease), color 0.4s var(--ease), border-color 0.4s var(--ease),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.filter-pill.active,
+.filter-pill:hover {
+  background: #231815;
+  color: #FAF6F0;
+  border-color: #231815;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 26px -8px rgba(35, 24, 21, 0.35), 0 3px 14px -2px rgba(221, 161, 94, 0.3);
+}
+.filter-pill:active { transform: translateY(0) scale(0.96); }
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۱۳: سکشن ۷: بنر سینمایی کلکسیون فصلی (Seasonal Collection)
+   ═══════════════════════════════════════════════════════════════ */
+
+.section-seasonal {
+  position: relative;
+  min-height: 750px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding-block: clamp(5rem, 8vw, 9rem);
+}
+
+.seasonal-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  filter: brightness(0.8);
+  transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.section-seasonal:hover .seasonal-bg {
+  transform: scale(1.03);
+}
+
+.seasonal-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(18, 10, 8, 0.85) 0%, rgba(32, 18, 14, 0.68) 50%, rgba(18, 10, 8, 0.88) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.seasonal-glass-card {
+  position: relative;
+  z-index: 3;
+  max-width: 620px;
+  background: rgba(28, 18, 15, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(197, 160, 89, 0.38);
+  border-radius: 6px;
+  padding: clamp(2.5rem, 5vw, 4rem);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+}
+
+.seasonal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.95rem;
+  background: rgba(197, 160, 89, 0.16);
+  border: 1px solid rgba(197, 160, 89, 0.38);
+  border-radius: 20px;
+  font-family: var(--font);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #E6C887;
+  margin-bottom: 1.5rem;
+}
+
+.seasonal-heading {
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  color: #FAF6F0;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.seasonal-sub {
+  font-family: var(--font);
+  font-size: 1.05rem;
+  color: rgba(250, 246, 240, 0.82);
+  line-height: 1.9;
+  margin-bottom: 1.75rem;
+}
+
+.seasonal-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-bottom: 2.25rem;
+}
+
+.seasonal-feat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font);
+  font-size: 0.95rem;
+  color: #E8DFD8;
+}
+
+.seasonal-feat-item svg {
+  color: #C5A059;
+  flex-shrink: 0;
+}
+
+.seasonal-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۱۴: سکشن ۸: داستان برند و کارگاه نیاوران (Brand Story & Heritage)
+   ═══════════════════════════════════════════════════════════════ */
+
+.section-story {
+  background-color: var(--cream);
+  padding-block: clamp(5rem, 9vw, 9.5rem);
+  position: relative;
+}
+
+.story-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(4rem, 7vw, 8rem);
+  align-items: center;
+}
+
+.story-headline {
+  font-family: var(--font-heading);
+  font-size: var(--text-disp);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--cocoa);
+  margin-bottom: var(--sp-6);
+}
+
+.story-headline em {
+  font-family: var(--font-brand);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--rosette);
+}
+
+.story-text {
+  font-family: var(--font);
+  font-size: var(--text-md);
+  color: var(--text-muted);
+  line-height: 2;
+  margin-bottom: var(--sp-8);
+  max-width: 560px;
+}
+
+.story-signature {
+  display: block;
+  font-family: var(--font-brand);
+  font-size: 1.75rem;
+  letter-spacing: 0.2em;
+  color: rgba(42, 27, 22, 0.35);
+  margin-top: 1.5rem;
+}
+
+.story-image-wrap {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid rgba(197, 160, 89, 0.25);
+  box-shadow: 0 25px 60px -15px rgba(42, 27, 22, 0.15);
+}
+
+.story-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.story-image-wrap:hover img {
+  transform: scale(1.04);
+}
+
+.story-image-caption {
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+  margin-top: var(--sp-3);
+  text-align: end;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۱۵: سکشن ۹: نوار گالری تصاویر اینستاگرام (Instagram Strip)
+   ═══════════════════════════════════════════════════════════════ */
+
+.section-gallery {
+  padding-block: var(--sp-8) var(--sp-12);
+  overflow: hidden;
+  background-color: var(--cream);
+}
+
+.gallery-header {
+  text-align: center;
+  margin-bottom: var(--sp-6);
+}
+
+.gallery-label {
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.gallery-instagram-link {
+  font-family: var(--font-brand);
+  font-weight: 600;
+  color: var(--rosette);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+.gallery-instagram-link:hover {
+  opacity: 0.8;
+}
+
+.gallery-strip {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--sp-3);
+  padding-inline: var(--gutter);
+}
+
+.gallery-item {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid rgba(197, 160, 89, 0.2);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-item:hover img {
+  transform: scale(1.08);
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۱۶: فوتر جامع وب‌سایت و خبرنامه (Site Footer)
+   ═══════════════════════════════════════════════════════════════ */
+
+.site-footer {
+  background-color: #170E0B;
+  color: var(--cream);
+  padding-block: clamp(4rem, 8vw, 7.5rem) 2.5rem;
+  border-top: 1px solid rgba(197, 160, 89, 0.2);
+  position: relative;
+}
+
+.footer-inner {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr 1.2fr;
+  gap: clamp(2.5rem, 5vw, 5rem);
+  margin-bottom: clamp(3rem, 6vw, 6rem);
+}
+
+.footer-brand-name {
+  display: inline-block;
+  font-family: var(--font-brand);
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--cream);
+  text-decoration: none;
+  margin-bottom: var(--sp-4);
+  transition: color 0.3s ease;
+}
+.footer-brand-name:hover {
+  color: var(--amber);
+}
+
+.footer-brand-desc {
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: rgba(250, 246, 240, 0.7);
+  line-height: 1.85;
+  max-width: 360px;
+  margin-bottom: var(--sp-6);
+}
+
+.footer-newsletter {
+  display: flex;
+  max-width: 380px;
+  background: rgba(250, 246, 240, 0.06);
+  border: 1px solid rgba(197, 160, 89, 0.25);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.footer-newsletter input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 0.85rem 1.2rem;
+  color: var(--cream);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  outline: none;
+}
+.footer-newsletter input::placeholder {
+  color: rgba(250, 246, 240, 0.4);
+}
+
+.footer-newsletter button {
+  background: var(--rosette);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.85rem 1.4rem;
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: background-color 0.4s var(--ease), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1), word-spacing 0.4s var(--ease);
+}
+.footer-newsletter button:hover {
+  background: var(--rosette-dark);
+  transform: translateY(-2px);
+  word-spacing: 0.12em;
+  box-shadow: 0 12px 26px -8px rgba(186, 78, 100, 0.5);
+}
+.footer-newsletter button:active { transform: translateY(0) scale(0.97); }
+
+.footer-col-title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--amber);
+  margin-bottom: var(--sp-4);
+}
+
+.footer-col a {
+  display: block;
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: rgba(250, 246, 240, 0.75);
+  text-decoration: none;
+  margin-bottom: 0.75rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.footer-col a:hover {
+  color: var(--cream);
+  transform: translateX(-3px);
+}
+
+.footer-info p {
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: rgba(250, 246, 240, 0.75);
+  line-height: 1.85;
+  margin-bottom: 0.5rem;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(250, 246, 240, 0.08);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-tagline {
+  font-family: var(--font);
+  font-size: 0.95rem;
+  color: rgba(250, 246, 240, 0.5);
+}
+.footer-tagline strong {
+  color: rgba(250, 246, 240, 0.8);
+}
+
+.footer-legal {
+  font-family: var(--font);
+  font-size: 0.85rem;
+  color: rgba(250, 246, 240, 0.4);
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۱۷: قوانین واکنش‌گرایی و ریسپانسیو در تبلت و موبایل
+   (Responsive Breakpoints & Accessibility)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Tablet Landscape & Small Desktop (<= 1100px) ── */
+@media (max-width: 1100px) {
+  .footer-top { grid-template-columns: 1fr 1fr; gap: var(--sp-8); }
+  .section-custom { grid-template-columns: 1fr; }
+  .custom-image-side { min-height: 420px; order: 1; }
+  .custom-content-side { order: 2; padding: 4rem 2rem; }
+  .custom-steps { grid-template-columns: repeat(2, 1fr); }
+  .sweets-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .sweets-editorial-img { order: -1; max-height: 450px; }
+  .gallery-strip { grid-template-columns: repeat(3, 1fr); }
+  .story-inner { grid-template-columns: 1fr; gap: 3rem; }
+}
+
+/* ── Tablet & Mobile (<= 900px): SHOW HAMBURGER MENU HERE ONLY ── */
+@media (max-width: 900px) {
+  :root { --header-h: 68px; --gutter: 1.25rem; }
+  .header-nav { display: none !important; }
+  .menu-toggle { display: flex !important; }
+  .product-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem 1.5rem; }
+  .product-grid-4 { grid-template-columns: repeat(2, 1fr); gap: 1.75rem 1.25rem; }
+}
+
+/* ── Small Mobile (<= 640px) ── */
+@media (max-width: 640px) {
+  .product-grid { grid-template-columns: 1fr; gap: 2.25rem; }
+  .product-grid-4 { grid-template-columns: 1fr; gap: 2rem; }
+  .sweets-grid { grid-template-columns: 1fr; }
+  .custom-steps { grid-template-columns: 1fr; }
+  .gallery-strip { grid-template-columns: repeat(2, 1fr); }
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+  .seasonal-glass-card { padding: 2rem 1.5rem; }
+  .rozet-toast { inset-inline: 1rem; bottom: 1rem; }
+}
+
+/* ── Accessibility: Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۲۰: تعادل خطوط متن (Line Balancing)
+   تنظیم دستی max-width فقط برای یک عرض صفحه جواب می‌دهد؛ این دو
+   خاصیت کار را به مرورگر می‌سپارند و در هر ویوپورت درست می‌مانند.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* تیترها و متن‌های کوتاه: خطوط تا حد ممکن هم‌وزن */
+.hero-headline,
+.brand-intro-heading,
+.section-heading,
+.sweets-heading,
+.custom-heading,
+.seasonal-heading,
+.story-headline,
+.hero-sub,
+.section-sub,
+.seasonal-sub,
+.footer-tagline,
+.footer-brand-desc,
+.custom-text,
+.brand-intro-text,
+.product-card__name,
+.sweet-item-name,
+.custom-step-label {
+  text-wrap: balance;
+}
+
+/* پاراگراف‌های بلندتر: جلوگیری از تک‌کلمه ماندن خط آخر */
+.story-text,
+.product-card__notes-pyramid,
+.custom-step-desc,
+.sweet-item-origin {
+  text-wrap: pretty;
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   بخش ۱۵: نشان برند در هدر و فوتر
+   نسخه‌ی بدون سایه‌ی لوگو استفاده می‌شود تا روی هر سه حالت هدر
+   (شفاف، شیشه‌ی تیره، شیشه‌ی روشن) و روی فوتر تیره یکسان بنشیند.
+   ═══════════════════════════════════════════════════════════════ */
+.brand-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.brand-mark {
+  display: block;
+  width: 44px;
+  aspect-ratio: 400 / 295;
+  background: var(--logo-icon) center / contain no-repeat;
+  flex-shrink: 0;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.brand-wordmark:hover .brand-mark { transform: scale(1.07) rotate(-2deg); }
+
+/* امضای فوتر — برای صفحه‌هایی که فوتر کوتاه دارند */
+.footer-sign {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  padding-bottom: 2.4rem;
+}
+.footer-sign__mark {
+  display: block;
+  width: 88px;
+  aspect-ratio: 400 / 295;
+  background: var(--logo-icon) center / contain no-repeat;
+}
+.footer-sign__rule {
+  width: 64px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--amber), transparent);
+  opacity: 0.55;
+}
+
+/* نشان بالای نام برند در فوتر کامل صفحه‌ی اصلی */
+.footer-brand__mark {
+  display: block;
+  width: 74px;
+  aspect-ratio: 400 / 295;
+  background: var(--logo-icon) center / contain no-repeat;
+  margin-bottom: 0.9rem;
+}
+
+@media (max-width: 560px) {
+  .brand-mark { width: 36px; }
+  .footer-sign__mark { width: 70px; }
+}
+
+/* دکمه‌ی ورود / ثبت‌نام در هدر — <a> است، پس زیرخط و رنگ پیش‌فرض لینک باید برود */
+.account-btn {
+  text-decoration: none;
+  color: inherit;
+}
+.account-btn svg { width: 20px; height: 20px; }
+
+/* ورود در منوی موبایل — با یک خط طلایی از بقیه جدا می‌شود */
+.mobile-nav-auth {
+  margin-top: 1.1rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid color-mix(in srgb, var(--amber) 30%, transparent);
+  color: var(--amber) !important;
+}
+
+/* ── ایمنی سراسری ──
+   صفت hidden فقط display:none در سطح مرورگر می‌دهد و هر display: flex/grid
+   نویسنده بر آن غلبه می‌کند؛ همین باعث می‌شد بعضی بخش‌ها با hidden=true باز
+   بمانند. این قانون همان کلاس اشتباه را یک‌جا می‌بندد. */
+[hidden] { display: none !important; }

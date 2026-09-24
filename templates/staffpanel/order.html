@@ -1,0 +1,128 @@
+{% load static %}<!DOCTYPE html>
+{% comment %}
+  رُزِت — جزئیات کامل یک سفارش
+
+  مارکاپ عیناً از admin/order-details/order-details.html است. دو کادر
+  به ستون کناری اضافه شده: «یادداشت داخلی» (همه‌ی کارکنان) و «کارهای
+  مدیر» (ثبت دریافت مانده، قیمت نهایی کیک اختصاصی، لغو) که فقط برای
+  مدیر پر می‌شود.
+{% endcomment %}
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/logo/favicon-32.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/logo/favicon-180.png' %}">
+  <title>جزئیات سفارش — رُزِت</title>
+
+  <link id="theme-light" rel="stylesheet" href="{% static 'styles/style-light.css' %}">
+  <link id="theme-dark"  rel="stylesheet" href="{% static 'styles/style-dark.css' %}" disabled>
+  <link rel="stylesheet" href="{% static 'styles/theme-toggle.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/staff-board.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/staff-order.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/rozet-django.css' %}">
+
+  <style>:root { --logo-icon: url('{% static "assets/logo/rozet-icon.webp" %}'); }</style>
+
+  {{ seed|json_script:"panel-data" }}
+  <script>
+    window.ROZET = { csrf: '{{ csrf_token }}' };
+  </script>
+
+  <script>
+    (function () {
+      var saved;
+      try { saved = localStorage.getItem('rozet-theme'); } catch (e) { saved = null; }
+      if (!saved) saved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+      document.getElementById('theme-light').disabled = (saved === 'dark');
+      document.getElementById('theme-dark').disabled  = (saved !== 'dark');
+    })();
+  </script>
+</head>
+<body class="page-board page-detail">
+
+<!-- ═══════════ نوار بالا ═══════════ -->
+<header class="bd-top" role="banner">
+  <div class="bd-top__in">
+    <a class="od-back" href="{% url 'staffpanel:board' %}" aria-label="بازگشت به تابلوی سفارش‌ها">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M10 5l7 7-7 7"/></svg>
+      <span class="od-back__t">تابلوی سفارش‌ها</span>
+    </a>
+
+    <p class="bd-clock">
+      <b id="odCode">—</b>
+      <span id="odDue">—</span>
+    </p>
+
+    <div class="bd-top__acts">
+      <button class="bd-iconbtn" type="button" id="odPrint" title="چاپ برگه‌ی سفارش" aria-label="چاپ برگه‌ی سفارش">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 9V4.5h10V9"/><rect x="4.5" y="9" width="15" height="7" rx="2"/><path d="M7 14h10v5.5H7z"/></svg>
+      </button>
+      <button class="icon-btn theme-toggle" type="button" role="switch" aria-checked="false"
+              aria-label="تغییر تم به تیره" title="تغییر تم">
+        <span class="theme-track" aria-hidden="true">
+          <span class="theme-knob">
+            <svg class="cupcake" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <g class="cupcake-body">
+                <circle class="cupcake-cherry" cx="12" cy="3.6" r="1.35"/>
+                <path class="cupcake-frosting" d="M6.4 11.4c0-3.1 2.5-5.6 5.6-5.6s5.6 2.5 5.6 5.6z"/>
+                <path d="M5.5 11.4h13l-1.35 7.3a1.7 1.7 0 0 1-1.67 1.4H8.52a1.7 1.7 0 0 1-1.67-1.4z"/>
+                <path d="M10.4 12.7 9.75 20.1"/><path d="M13.6 12.7l.65 7.4"/>
+              </g>
+              <g class="cupcake-sparks">
+                <path d="M3.3 6.2v1.7M2.45 7.05h1.7"/><path d="M20.9 8.6v1.4M20.2 9.3h1.4"/>
+              </g>
+            </svg>
+          </span>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="od-main" id="odMain">
+
+  <!-- ═══ سربرگ سفارش ═══ -->
+  <section class="od-hero" id="odHero"></section>
+
+  <div class="od-grid">
+    <!-- ═══ ستون اصلی ═══ -->
+    <div class="od-col">
+      <h2 class="od-h">چه چیزی باید آماده شود</h2>
+      <div id="odItems"></div>
+
+      <h2 class="od-h">تاریخچه</h2>
+      <ol class="od-hist" id="odHist"></ol>
+    </div>
+
+    <!-- ═══ ستون کناری ═══ -->
+    <aside class="od-side">
+      <div class="od-box" id="odCustomer"></div>
+      <div class="od-box" id="odDelivery"></div>
+      <div class="od-box" id="odPay"></div>
+      <div class="od-box" id="odNote"></div>
+      <div class="od-box od-box--manage" id="odManage" hidden></div>
+    </aside>
+  </div>
+</main>
+
+<!-- ═══ بزرگ‌نمایی عکس ═══ -->
+<div class="od-lightbox" id="odLightbox" role="dialog" aria-modal="true" aria-label="نمای بزرگ عکس" hidden>
+  <button class="od-lightbox__x" type="button" data-close aria-label="بستن">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+  <img id="odLightboxImg" src="" alt="">
+  <p class="od-lightbox__cap" id="odLightboxCap"></p>
+</div>
+
+<div class="bd-stack">
+  <div class="bd-toast" id="bdToast" role="status" aria-live="polite" hidden></div>
+</div>
+
+<script src="{% static 'js/staff-data.js' %}"></script>
+<script src="{% static 'js/staff-order.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,671 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   رُزِت — استایل صفحه سفارش کیک اختصاصی
+   ───────────────────────────────────────────────────────────────────────────
+   فقط از توکن‌های مشترک دو تم استفاده می‌کند، پس با سوییچ تم خودکار عوض
+   می‌شود و نیازی به تکرار در style-light.css و style-dark.css ندارد.
+
+   ۱. پایه و نشانگر ماوس
+   ۲. سربرگ صفحه
+   ۳. نوار مراحل
+   ۴. اسکلت مرحله و فیلدهای فرم
+   ۵. شرایط سفارش
+   ۶. انتخاب حالت طرح و آپلود
+   ۷. انتخاب‌های چندگزینه‌ای و برآورد قیمت
+   ۸. خلاصه، پرداخت و صفحه نتیجه
+   ۹. ناوبری، واکنش‌گرایی، کاهش حرکت
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────── ۱. پایه ─────────── */
+.page-custom { background-color: var(--bg); color: var(--text); }
+
+.cc-container {
+  width: 100%;
+  max-width: 940px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.cc-main { padding-top: var(--header-h); padding-bottom: clamp(3rem, 7vw, 6rem); }
+
+.skip-link {
+  position: absolute; inset-inline-start: -9999px; top: 0; z-index: 9999;
+  padding: 0.75rem 1.25rem; background: var(--cocoa); color: var(--cream);
+  border-radius: 0 0 6px 0; font-family: var(--font-heading); font-size: var(--text-sm);
+}
+.skip-link:focus { inset-inline-start: 0; }
+
+/* نشانگر ماوس — استایل مشترک سایت cursor:none می‌گذارد چون صفحه اصلی
+   نشانگر اختصاصی دارد؛ این صفحه ندارد، پس نشانگر بومی برمی‌گردد. */
+.page-custom, .page-custom a, .page-custom button, .page-custom input,
+.page-custom textarea, .page-custom select, .page-custom label,
+.page-custom [role="button"], .page-custom [role="switch"], .page-custom [role="radio"] { cursor: auto; }
+
+.page-custom a, .page-custom button, .page-custom select,
+.page-custom [role="button"], .page-custom [role="switch"], .page-custom [role="radio"],
+.page-custom .cc-agree, .page-custom .cc-choice { cursor: pointer; }
+
+.page-custom input[type="text"], .page-custom input[type="tel"],
+.page-custom textarea { cursor: text; }
+.page-custom input[type="date"] { cursor: pointer; }
+.page-custom button:disabled { cursor: not-allowed; }
+
+/* ─────────── ۲. سربرگ ─────────── */
+/* پس‌زمینه گرم پشت کل صفحه تا فرم روی سفیدِ خالی ننشیند */
+.page-custom::before {
+  content: '';
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(70% 55% at 82% 0%, color-mix(in srgb, var(--amber) 16%, transparent) 0%, transparent 62%),
+    radial-gradient(60% 50% at 8% 12%, color-mix(in srgb, var(--rosette) 11%, transparent) 0%, transparent 58%);
+}
+
+.cc-head {
+  padding-block: clamp(2rem, 4vw, 3.5rem) clamp(1.5rem, 3vw, 2.5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+}
+
+/* ── تصویر سربرگ ── */
+.cc-hero {
+  position: relative; margin: 0; isolation: isolate;
+  aspect-ratio: 4 / 4.2;
+}
+.cc-hero img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--amber) 28%, transparent);
+  box-shadow: 0 34px 64px -32px rgba(0, 0, 0, 0.55);
+}
+.cc-hero__halo {
+  position: absolute; inset: 6%; z-index: -1; border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%,
+              color-mix(in srgb, var(--amber) 40%, transparent) 0%,
+              color-mix(in srgb, var(--rosette) 18%, transparent) 46%, transparent 72%);
+  filter: blur(38px);
+  animation: ccHalo 7.5s var(--ease) infinite;
+}
+@keyframes ccHalo {
+  0%, 100% { transform: scale(0.94); opacity: 0.7; }
+  50%      { transform: scale(1.07); opacity: 1; }
+}
+
+.cc-hero__motes { position: absolute; inset: 0; z-index: 2; overflow: hidden; border-radius: 18px; }
+.cc-mote {
+  position: absolute; border-radius: 50%;
+  background: color-mix(in srgb, var(--amber) 88%, transparent);
+  opacity: 0; animation: ccMote linear infinite;
+}
+@keyframes ccMote {
+  0%   { transform: translate3d(0, 14px, 0) scale(0.5); opacity: 0; }
+  18%  { opacity: 0.85; }
+  75%  { opacity: 0.45; }
+  100% { transform: translate3d(var(--mx, 12px), -76px, 0) scale(1.05); opacity: 0; }
+}
+
+.cc-hero__seal {
+  position: absolute; z-index: 3;
+  bottom: -14px; inset-inline-start: -14px;
+  width: clamp(86px, 12vw, 112px); aspect-ratio: 1;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--amber) 34%, transparent);
+}
+.cc-hero__seal svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  animation: ccSpin 26s linear infinite;
+}
+@keyframes ccSpin { to { transform: rotate(360deg); } }
+.cc-hero__sealtext {
+  font-family: var(--font-brand); font-size: 9.2px;
+  letter-spacing: 0.15em; fill: var(--amber); text-transform: uppercase;
+}
+
+.cc-eyebrow {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-family: var(--font); font-size: var(--text-xs);
+  text-transform: uppercase;
+  color: var(--amber); margin-bottom: 0.85rem;
+}
+html[data-theme="light"] .cc-eyebrow { color: #7E6034; }
+.cc-eyebrow__line {
+  width: 26px; height: 1px; background: currentColor; opacity: 0.5;
+  animation: ccLine 3.6s var(--ease) infinite;
+}
+@keyframes ccLine {
+  0%, 100% { opacity: 0.35; transform: scaleX(0.82); }
+  50%      { opacity: 0.9;  transform: scaleX(1); }
+}
+
+.cc-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.8rem, 3.4vw, 2.9rem);
+  font-weight: 700; line-height: 1.28;
+  color: var(--text); margin-bottom: 0.9rem; text-wrap: balance;
+}
+.cc-lede {
+  font-family: var(--font); font-size: var(--text-md); line-height: 1.9;
+  color: var(--text-muted); max-width: 620px; text-wrap: pretty;
+}
+
+.cc-trust {
+  list-style: none; margin: 1.5rem 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 0.6rem 1.5rem;
+}
+.cc-trust li {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font); font-size: var(--text-xs); color: var(--text-muted);
+}
+.cc-trust svg { width: 15px; height: 15px; color: var(--amber); flex-shrink: 0; }
+html[data-theme="light"] .cc-trust svg { color: #7E6034; }
+
+/* ─────────── ۳. نوار مراحل ─────────── */
+.cc-steps { position: relative; margin-bottom: clamp(1.75rem, 3vw, 2.5rem); }
+
+.cc-steps__list {
+  list-style: none; margin: 0 0 0.9rem; padding: 0;
+  display: flex; justify-content: space-between; gap: 0.5rem;
+}
+.cc-steps__item {
+  display: flex; flex-direction: column; align-items: center; gap: 0.45rem;
+  flex: 1; min-width: 0; text-align: center;
+}
+.cc-steps__dot {
+  width: 30px; height: 30px; display: grid; place-items: center;
+  border: 1px solid var(--border-mid); border-radius: 50%;
+  background: var(--bg);
+  font-family: var(--font-num); font-size: 0.9rem;
+  color: var(--text-subtle);
+  transition: all var(--dur-base) var(--ease-out);
+}
+.cc-steps__label {
+  font-family: var(--font); font-size: 0.86rem; color: var(--text-subtle);
+  transition: color var(--dur-base) var(--ease);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+.cc-steps__item.is-current .cc-steps__dot {
+  border-color: var(--amber); color: var(--text);
+  background: color-mix(in srgb, var(--amber) 16%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--amber) 14%, transparent);
+}
+.cc-steps__item.is-current .cc-steps__label { color: var(--text); font-weight: 500; }
+.cc-steps__item.is-done .cc-steps__dot {
+  border-color: var(--rosette); background: var(--rosette); color: #fff;
+}
+.cc-steps__item.is-done .cc-steps__label { color: var(--text-muted); }
+
+.cc-steps__track {
+  height: 2px; border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  overflow: hidden;
+}
+.cc-steps__fill {
+  height: 100%; width: 0; border-radius: 999px;
+  background: linear-gradient(90deg, var(--rosette), var(--amber));
+  transition: width var(--dur-slow) var(--ease-out);
+}
+
+/* ─────────── ۴. مرحله و فیلدها ─────────── */
+.cc-step { animation: ccStepIn 0.42s var(--ease-out); }
+.cc-step[hidden] { display: none; }
+@keyframes ccStepIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+.cc-step__title {
+  font-family: var(--font-heading); font-size: var(--text-xl); font-weight: 700;
+  color: var(--text); margin-bottom: 0.6rem; text-wrap: balance;
+}
+.cc-step__sub {
+  font-family: var(--font); font-size: var(--text-sm); line-height: 1.95;
+  color: var(--text-muted); margin-bottom: 1.75rem; max-width: 620px; text-wrap: pretty;
+}
+
+.cc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.1rem; }
+.cc-field--full { grid-column: 1 / -1; }
+
+.cc-field { display: flex; flex-direction: column; }
+.cc-field label,
+.cc-fieldset legend {
+  font-family: var(--font-heading); font-size: var(--text-sm); font-weight: 700;
+  color: var(--text); margin-bottom: 0.5rem; padding: 0;
+}
+.cc-req { color: var(--rosette); }
+.cc-opt { font-family: var(--font); font-weight: 400; font-size: 0.9rem; color: var(--text-muted); }
+
+.cc-field input,
+.cc-field textarea,
+.cc-select select {
+  width: 100%;
+  padding: 0.78rem 1rem;
+  border: 1px solid var(--border-mid); border-radius: 12px;
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+  color: var(--text);
+  font-family: var(--font); font-size: var(--text-sm);
+  outline: none;
+  transition: border-color var(--dur-base) var(--ease), box-shadow var(--dur-base) var(--ease);
+}
+.cc-field textarea { resize: vertical; min-height: 84px; line-height: 1.8; }
+.cc-field input::placeholder,
+.cc-field textarea::placeholder { color: var(--text-subtle); }
+
+.cc-field input:focus,
+.cc-field textarea:focus,
+.cc-select select:focus {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--amber) 18%, transparent);
+}
+.cc-field input.is-invalid,
+.cc-field textarea.is-invalid {
+  border-color: var(--rosette);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rosette) 16%, transparent);
+}
+
+.cc-hint {
+  margin-top: 0.45rem;
+  font-family: var(--font); font-size: 0.88rem; line-height: 1.7; color: var(--text-muted);
+}
+.cc-error {
+  margin-top: 0.45rem;
+  font-family: var(--font); font-size: 0.9rem; color: var(--rosette);
+  animation: ccShake 0.32s var(--ease);
+}
+@keyframes ccShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.cc-select { position: relative; display: flex; align-items: center; }
+.cc-select select { appearance: none; padding-inline-start: 2.5rem; }
+.cc-select svg {
+  position: absolute; inset-inline-start: 1rem;
+  width: 15px; height: 15px; color: var(--text-subtle); pointer-events: none;
+}
+
+.cc-count-wrap { position: relative; display: flex; align-items: center; }
+.cc-count-wrap input { padding-inline-end: 3.6rem; }
+.cc-count {
+  position: absolute; inset-inline-end: 1rem;
+  font-family: var(--font-num); font-size: 0.86rem; color: var(--text-subtle);
+  font-variant-numeric: tabular-nums; pointer-events: none;
+}
+
+.cc-fieldset { border: 0; padding: 0; margin: 0 0 1.5rem; }
+
+/* ─────────── ۵. شرایط سفارش ─────────── */
+.cc-terms { display: grid; gap: 0.75rem; margin-bottom: 1.5rem; }
+
+.cc-term {
+  position: relative;
+  display: flex; gap: 0.85rem;
+  padding: 1.05rem 1.15rem;
+  border: 1px solid var(--border); border-radius: 14px;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+  overflow: hidden;
+  transition: border-color var(--dur-base) var(--ease),
+              background-color var(--dur-base) var(--ease),
+              transform var(--dur-base) var(--ease-out);
+}
+/* نوار رنگی کنار هر بند که با پذیرفتن، طلایی پر می‌شود */
+.cc-term::before {
+  content: '';
+  position: absolute; inset-block: 0; inset-inline-start: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--amber), var(--rosette));
+  transform: scaleY(0); transform-origin: top;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.cc-term:hover {
+  border-color: color-mix(in srgb, var(--amber) 32%, transparent);
+  transform: translateX(-2px);
+}
+.cc-term:hover::before { transform: scaleY(1); }
+/* شماره‌ی طلایی هر بند — بندها فقط خوانده می‌شوند، تیک ندارند */
+.cc-term__num {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--amber) 42%, transparent);
+  background: color-mix(in srgb, var(--amber) 13%, transparent);
+  font-family: var(--font-num); font-size: 0.86rem;
+  color: var(--text);
+}
+
+.cc-term__body { flex: 1; min-width: 0; }
+.cc-term__title {
+  font-family: var(--font-heading); font-size: var(--text-sm); font-weight: 700;
+  color: var(--text); margin-bottom: 0.3rem;
+}
+.cc-term__text {
+  font-family: var(--font); font-size: 0.95rem; line-height: 1.85;
+  color: var(--text-muted); text-wrap: pretty;
+}
+
+.cc-agree {
+  display: flex; align-items: flex-start; gap: 0.8rem;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--amber) 50%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--amber) 7%, transparent);
+  color: var(--text);
+  transition: background-color var(--dur-base) var(--ease),
+              border-color var(--dur-base) var(--ease);
+}
+.cc-agree:hover {
+  background: color-mix(in srgb, var(--amber) 13%, transparent);
+  border-color: color-mix(in srgb, var(--amber) 72%, transparent);
+}
+.cc-agree__text { display: flex; flex-direction: column; gap: 0.3rem; }
+.cc-agree__text strong {
+  font-family: var(--font-heading); font-size: var(--text-base); font-weight: 700;
+  color: var(--text);
+}
+.cc-agree__text small {
+  font-family: var(--font); font-size: 0.88rem; line-height: 1.7; color: var(--text-muted);
+}
+.cc-agree input { position: absolute; opacity: 0; width: 0; height: 0; }
+.cc-agree__box {
+  width: 22px; height: 22px; flex-shrink: 0; display: grid; place-items: center;
+  border: 1.5px solid var(--border-mid); border-radius: 6px;
+  transition: all var(--dur-fast) var(--ease);
+}
+.cc-agree__box svg { width: 13px; height: 13px; color: var(--cream); opacity: 0; transform: scale(0.5);
+  transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease-out); }
+.cc-agree input:checked + .cc-agree__box { background: var(--rosette); border-color: var(--rosette); }
+.cc-agree input:checked + .cc-agree__box svg { opacity: 1; transform: scale(1); }
+.cc-agree input:focus-visible + .cc-agree__box {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--amber) 30%, transparent);
+}
+
+/* ─────────── ۶. حالت طرح و آپلود ─────────── */
+.cc-modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.85rem; margin-bottom: 1.5rem; }
+
+.cc-mode {
+  display: flex; gap: 0.9rem; text-align: start;
+  padding: 1.1rem;
+  border: 1px solid var(--border-mid); border-radius: 14px;
+  background: transparent;
+  transition: all var(--dur-base) var(--ease-out);
+}
+.cc-mode:hover { border-color: var(--amber); transform: translateY(-2px); }
+.cc-mode.is-selected {
+  border-color: var(--amber);
+  background: color-mix(in srgb, var(--amber) 11%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--amber) 35%, transparent);
+}
+.cc-mode__icon {
+  width: 42px; height: 42px; flex-shrink: 0; display: grid; place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--amber) 15%, transparent);
+  color: var(--amber);
+}
+html[data-theme="light"] .cc-mode__icon { color: #7E6034; }
+.cc-mode__icon svg { width: 21px; height: 21px; }
+.cc-mode__body { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+.cc-mode__title { font-family: var(--font-heading); font-size: var(--text-sm); font-weight: 700; color: var(--text); }
+.cc-mode__desc { font-family: var(--font); font-size: 0.92rem; line-height: 1.7; color: var(--text-muted); }
+
+.cc-upload-wrap { margin-bottom: 1.35rem; }
+
+.cc-uploader {
+  display: grid; place-items: center; gap: 0.5rem;
+  padding: clamp(1.75rem, 4vw, 2.75rem) 1.25rem;
+  border: 1.5px dashed var(--border-mid); border-radius: 16px;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+  text-align: center;
+  transition: all var(--dur-base) var(--ease);
+}
+.cc-uploader:hover,
+.cc-uploader:focus-visible {
+  border-color: var(--amber);
+  background: color-mix(in srgb, var(--amber) 8%, transparent);
+  outline: none;
+}
+.cc-uploader.is-dragging {
+  border-color: var(--amber);
+  background: color-mix(in srgb, var(--amber) 14%, transparent);
+  transform: scale(1.01);
+}
+.cc-uploader__icon { width: 34px; height: 34px; color: var(--amber); }
+html[data-theme="light"] .cc-uploader__icon { color: #7E6034; }
+.cc-uploader__title { font-family: var(--font-heading); font-size: var(--text-sm); font-weight: 700; color: var(--text); }
+.cc-uploader__hint { font-family: var(--font); font-size: 0.88rem; color: var(--text-muted); }
+
+.cc-previews { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 0.9rem; }
+.cc-preview {
+  position: relative; width: 96px; aspect-ratio: 1;
+  border: 1px solid var(--border-mid); border-radius: 12px; overflow: hidden;
+  animation: ccPreviewIn 0.35s var(--ease-out);
+}
+@keyframes ccPreviewIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: none; } }
+.cc-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cc-preview__del {
+  position: absolute; top: 4px; inset-inline-end: 4px;
+  width: 24px; height: 24px; display: grid; place-items: center;
+  border: 0; border-radius: 50%;
+  background: color-mix(in srgb, var(--cocoa) 72%, transparent);
+  color: #fff;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+.cc-preview__del:hover { background: var(--rosette); }
+.cc-preview__del svg { width: 12px; height: 12px; }
+
+.cc-callout {
+  display: flex; gap: 0.8rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid color-mix(in srgb, var(--amber) 34%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--amber) 8%, transparent);
+  margin-top: 1.25rem;
+}
+.cc-callout svg { width: 19px; height: 19px; flex-shrink: 0; color: var(--amber); margin-top: 2px; }
+html[data-theme="light"] .cc-callout svg { color: #7E6034; }
+.cc-callout p {
+  font-family: var(--font); font-size: 0.95rem; line-height: 1.9;
+  color: var(--text-muted); text-wrap: pretty;
+}
+.cc-callout p strong { color: var(--text); }
+
+.cc-callout--print { display: block; margin-block: 1.25rem; }
+.cc-callout--print h3 {
+  font-family: var(--font-heading); font-size: var(--text-sm); font-weight: 700;
+  color: var(--text); margin-bottom: 0.6rem;
+}
+.cc-callout--print ul { margin: 0; padding-inline-start: 1.1rem; }
+.cc-callout--print li {
+  font-family: var(--font); font-size: 0.95rem; line-height: 1.95; color: var(--text-muted);
+}
+
+/* ─────────── ۷. انتخاب‌ها و برآورد ─────────── */
+.cc-choices { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.cc-choice {
+  display: inline-flex; flex-direction: column; gap: 0.15rem;
+  padding: 0.62rem 1rem;
+  border: 1px solid var(--border-mid); border-radius: 12px;
+  background: transparent; color: var(--text-muted);
+  font-family: var(--font); font-size: var(--text-sm); text-align: start;
+  transition: all var(--dur-base) var(--ease-out);
+}
+.cc-choice:hover { border-color: var(--amber); color: var(--text); transform: translateY(-2px); }
+.cc-choice[aria-pressed="true"] {
+  border-color: var(--amber); color: var(--text);
+  background: color-mix(in srgb, var(--amber) 13%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--amber) 35%, transparent);
+}
+.cc-choice__main { font-family: var(--font-heading); font-weight: 700; }
+.cc-choice__sub { font-family: var(--font-num); font-size: 0.86rem; color: var(--text-muted); }
+
+.cc-estimate {
+  margin-top: 1.5rem; padding: 1.15rem 1.25rem;
+  border: 1px solid var(--border-mid); border-radius: 14px;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+.cc-estimate__row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.cc-estimate__label { font-family: var(--font-heading); font-size: var(--text-sm); font-weight: 700; color: var(--text); }
+.cc-estimate__value {
+  font-family: var(--font-num); font-size: var(--text-lg); font-weight: 700;
+  color: var(--text); font-variant-numeric: tabular-nums;
+}
+.cc-estimate__note {
+  margin-top: 0.6rem;
+  font-family: var(--font); font-size: 0.9rem; line-height: 1.8; color: var(--text-muted);
+}
+.cc-estimate__note strong { color: var(--text); }
+
+/* ─────────── ۸. خلاصه، پرداخت، نتیجه ─────────── */
+.cc-summary { display: grid; gap: 0.75rem; margin-bottom: 1.5rem; }
+
+.cc-sum {
+  display: grid; grid-template-columns: 1fr auto; gap: 0.5rem 1rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--border); border-radius: 14px;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+.cc-sum__title {
+  grid-column: 1; font-family: var(--font-heading); font-size: var(--text-sm);
+  font-weight: 700; color: var(--text);
+}
+.cc-sum__edit {
+  grid-column: 2; grid-row: 1;
+  border: 0; background: transparent;
+  font-family: var(--font); font-size: 0.9rem; color: var(--amber);
+  text-decoration: underline; text-underline-offset: 3px;
+  transition: color var(--dur-fast) var(--ease);
+}
+html[data-theme="light"] .cc-sum__edit { color: #7E6034; }
+.cc-sum__edit:hover { color: var(--rosette); }
+.cc-sum__body { grid-column: 1 / -1; }
+.cc-sum__row {
+  display: flex; gap: 0.5rem; flex-wrap: wrap;
+  font-family: var(--font); font-size: 0.95rem; line-height: 1.95; color: var(--text-muted);
+}
+.cc-sum__row dt { color: var(--text-subtle); min-width: 92px; }
+.cc-sum__row dd { margin: 0; color: var(--text); }
+.cc-sum__thumbs { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
+.cc-sum__thumbs img { width: 48px; height: 48px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-mid); }
+
+.cc-pay {
+  padding: 1.35rem 1.35rem 1.5rem;
+  border: 1px solid color-mix(in srgb, var(--amber) 38%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--amber) 8%, transparent);
+}
+.cc-pay__row {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+  font-family: var(--font); font-size: var(--text-sm); color: var(--text);
+  padding-block: 0.35rem;
+}
+.cc-pay__row strong { font-family: var(--font-num); font-size: var(--text-lg); font-variant-numeric: tabular-nums; }
+.cc-pay__row--muted { color: var(--text-muted); }
+.cc-pay__note {
+  margin-block: 0.9rem 1.15rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid color-mix(in srgb, var(--amber) 28%, transparent);
+  font-family: var(--font); font-size: 0.92rem; line-height: 1.95; color: var(--text-muted);
+  text-wrap: pretty;
+}
+.cc-pay__note strong { color: var(--text); }
+.cc-submit { width: 100%; }
+
+/* صفحه نتیجه */
+.cc-done { text-align: center; }
+.cc-done__seal {
+  width: 68px; height: 68px; margin: 0 auto 1.25rem;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+  background: color-mix(in srgb, var(--amber) 14%, transparent);
+  color: var(--amber);
+  animation: ccSeal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+html[data-theme="light"] .cc-done__seal { color: #7E6034; }
+.cc-done__seal svg { width: 30px; height: 30px; }
+@keyframes ccSeal { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: none; } }
+
+.cc-ordercode {
+  display: inline-flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;
+  justify-content: center;
+  margin-block: 1.5rem;
+  padding: 0.9rem 1.35rem;
+  border: 1px dashed color-mix(in srgb, var(--amber) 55%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--amber) 9%, transparent);
+}
+.cc-ordercode__label { font-family: var(--font); font-size: 0.92rem; color: var(--text-muted); }
+.cc-ordercode__value {
+  font-family: var(--font-num); font-size: var(--text-lg); font-weight: 700;
+  color: var(--text); letter-spacing: 0.08em; font-variant-numeric: tabular-nums;
+}
+.cc-ordercode__copy {
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--border-mid); border-radius: 999px;
+  background: transparent; color: var(--text);
+  font-family: var(--font); font-size: 0.88rem;
+  transition: all var(--dur-base) var(--ease);
+}
+.cc-ordercode__copy:hover { background: var(--rosette); border-color: var(--rosette); color: #fff; }
+
+.cc-next {
+  margin: 0 auto 1.75rem; padding: 0; max-width: 520px;
+  list-style: none; counter-reset: n; text-align: start;
+  display: grid; gap: 0.75rem;
+}
+.cc-next li {
+  counter-increment: n;
+  display: flex; gap: 0.75rem;
+  font-family: var(--font); font-size: 1rem; line-height: 1.9; color: var(--text-muted);
+  text-wrap: pretty;
+}
+.cc-next li::before {
+  content: counter(n, persian);
+  flex-shrink: 0;
+  width: 24px; height: 24px; display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+  font-family: var(--font-num); font-size: 0.86rem; color: var(--text);
+}
+.cc-next strong { color: var(--text); }
+.cc-done__actions { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; }
+
+/* ─────────── ۹. ناوبری ─────────── */
+.cc-nav {
+  display: flex; align-items: center; gap: 0.7rem;
+  margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+.cc-nav__spacer { flex: 1; }
+.cc-nav__saved {
+  font-family: var(--font); font-size: 0.88rem; color: var(--text-muted);
+  animation: ccFade 0.35s var(--ease);
+}
+@keyframes ccFade { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 860px) {
+  /* تصویر سربرگ زیر متن می‌رود تا فرم روی موبایل جا بگیرد */
+  .cc-head { grid-template-columns: 1fr; }
+  .cc-hero { aspect-ratio: 16 / 10; max-width: 520px; }
+  .cc-hero__seal { width: 78px; bottom: -10px; inset-inline-start: -10px; }
+}
+
+@media (max-width: 620px) {
+  .cc-steps__label { display: none; }
+  .cc-steps__list { justify-content: center; gap: 0.9rem; }
+  .cc-steps__item { flex: 0 0 auto; }
+  .cc-nav { flex-wrap: wrap; }
+  .cc-nav__next, .cc-nav__back { flex: 1 1 auto; }
+  .cc-nav__saved { flex: 1 1 100%; order: -1; text-align: center; }
+  .cc-preview { width: 78px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-step, .cc-eyebrow__line, .cc-done__seal, .cc-preview, .cc-nav__saved,
+  .cc-steps__fill, .cc-error, .cc-hero__halo, .cc-hero__seal svg, .cc-mote {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+  .cc-hero__motes { display: none; }
+}

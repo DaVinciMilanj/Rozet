@@ -1,0 +1,173 @@
+{% load static %}<!DOCTYPE html>
+{% comment %}
+  رُزِت — تابلوی سفارش‌های آشپزخانه
+
+  مارکاپ عیناً از admin/orders/orders.html است؛ فقط منبع داده عوض شده:
+  به‌جای آرایه‌ی ثابت orders-data.js، سفارش‌های واقعی در json_script
+  «panel-data» می‌آیند و تابلو هر چند ثانیه از /staff/api/ تازه می‌شود.
+
+  دکمه‌ها بر اساس سطح دسترسی (seed.caps) نشان داده می‌شوند و سرور هم
+  هر کار را دوباره می‌سنجد — apps/staffpanel/permissions.py.
+{% endcomment %}
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/logo/favicon-32.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/logo/favicon-180.png' %}">
+  <title>سفارش‌های امروز — رُزِت</title>
+
+  <link id="theme-light" rel="stylesheet" href="{% static 'styles/style-light.css' %}">
+  <link id="theme-dark"  rel="stylesheet" href="{% static 'styles/style-dark.css' %}" disabled>
+  <link rel="stylesheet" href="{% static 'styles/theme-toggle.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/staff-board.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/rozet-django.css' %}">
+
+  <style>:root { --logo-icon: url('{% static "assets/logo/rozet-icon.webp" %}'); }</style>
+
+  {{ seed|json_script:"panel-data" }}
+  <script>
+    window.ROZET = { csrf: '{{ csrf_token }}' };
+  </script>
+
+  <script>
+    (function () {
+      var saved;
+      try { saved = localStorage.getItem('rozet-theme'); } catch (e) { saved = null; }
+      if (!saved) saved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+      document.getElementById('theme-light').disabled = (saved === 'dark');
+      document.getElementById('theme-dark').disabled  = (saved !== 'dark');
+    })();
+  </script>
+</head>
+<body class="page-board">
+
+<!-- ═══════════ نوار بالا ═══════════ -->
+<header class="bd-top" role="banner">
+  <div class="bd-top__in">
+    <a class="bd-brand" href="{% url 'staffpanel:board' %}" aria-label="رُزِت — پنل مدیریت">
+      <span class="bd-brand__mark" aria-hidden="true"></span>
+      <span class="bd-brand__t">تابلوی سفارش‌ها</span>
+    </a>
+
+    <p class="bd-clock">
+      <b id="bdToday">—</b>
+      <span id="bdNow">—</span>
+    </p>
+
+    <div class="bd-top__acts">
+      <!-- زنگ سفارش‌های تازه -->
+      <div class="bd-bell__wrap">
+        <button class="bd-iconbtn bd-bell" type="button" id="bdBell"
+                aria-expanded="false" aria-controls="bdBellPanel"
+                title="سفارش‌های تازه" aria-label="سفارش‌های تازه">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 16.5V11a6 6 0 1 0-12 0v5.5L4.5 18.5h15z"/><path d="M10 21h4"/></svg>
+          <span class="bd-bell__n" id="bdBellN" hidden>۰</span>
+        </button>
+
+        <div class="bd-bellbox" id="bdBellPanel" hidden>
+          <p class="bd-bellbox__h">سفارش‌های تازه</p>
+          <div id="bdBellList"></div>
+        </div>
+      </div>
+
+      <button class="bd-iconbtn" type="button" id="bdPrint" title="چاپ لیست امروز" aria-label="چاپ لیست امروز">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 9V4.5h10V9"/><rect x="4.5" y="9" width="15" height="7" rx="2"/><path d="M7 14h10v5.5H7z"/></svg>
+      </button>
+      <button class="icon-btn theme-toggle" type="button" role="switch" aria-checked="false"
+              aria-label="تغییر تم به تیره" title="تغییر تم">
+        <span class="theme-track" aria-hidden="true">
+          <span class="theme-knob">
+            <svg class="cupcake" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <g class="cupcake-body">
+                <circle class="cupcake-cherry" cx="12" cy="3.6" r="1.35"/>
+                <path class="cupcake-frosting" d="M6.4 11.4c0-3.1 2.5-5.6 5.6-5.6s5.6 2.5 5.6 5.6z"/>
+                <path d="M5.5 11.4h13l-1.35 7.3a1.7 1.7 0 0 1-1.67 1.4H8.52a1.7 1.7 0 0 1-1.67-1.4z"/>
+                <path d="M10.4 12.7 9.75 20.1"/><path d="M13.6 12.7l.65 7.4"/>
+              </g>
+              <g class="cupcake-sparks">
+                <path d="M3.3 6.2v1.7M2.45 7.05h1.7"/><path d="M20.9 8.6v1.4M20.2 9.3h1.4"/>
+              </g>
+            </svg>
+          </span>
+        </span>
+      </button>
+      {% comment %} چه کسی و با چه سطحی — دکمه‌ها بر همین اساس کم و زیاد می‌شوند {% endcomment %}
+      <span class="bd-me" title="{{ seed.me.levelLabel }}">{{ seed.me.name }}<small>{{ seed.me.levelLabel }}</small></span>
+      {% if seed.urls.admin %}<a class="bd-out" href="{{ seed.urls.admin }}">مدیریت سایت</a>{% endif %}
+      {% comment %} خروج فقط با POST؛ بعدش به صفحه‌ی ورود کارکنان {% endcomment %}
+      <form class="bd-out__form" method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{% url 'accounts:staff_login' %}">
+        <button class="bd-out" type="submit">خروج</button>
+      </form>
+    </div>
+  </div>
+</header>
+
+<main class="bd-main">
+
+  <!-- ═══════════ خلاصه‌ی روز — یک خط، نه چهار کادر ═══════════ -->
+  <p class="bd-line" id="bdLine"></p>
+
+  <!-- ═══════════ لیست پخت امروز ═══════════ -->
+  <section class="bd-prep" aria-labelledby="prepT">
+    <button class="bd-prep__head" type="button" id="prepToggle" aria-expanded="false" aria-controls="prepBody">
+      <span class="bd-prep__ic" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 4.5v6M6 4.5v3.4a2.5 2.5 0 0 0 5 0V4.5"/><path d="M8.5 10.5V20"/><path d="M17 4.5c-1.4 1.6-2 3.4-2 5.5 0 1.4.7 2.2 2 2.2V20"/></svg>
+      </span>
+      <span>
+        <b id="prepT">امروز باید آماده شود</b>
+        <small id="prepCount">—</small>
+      </span>
+      <svg class="bd-prep__caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="bd-prep__body" id="prepBody" hidden>
+      <ul class="bd-prep__list" id="prepList"></ul>
+    </div>
+  </section>
+
+  <!-- ═══════════ ابزار ═══════════ -->
+  <section class="bd-tools" aria-label="جست‌وجو و فیلتر">
+    <div class="bd-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="6.2"/><path d="m15.6 15.6 3.4 3.4"/></svg>
+      <input type="search" id="bdSearch" placeholder="نام مشتری، شماره یا کد سفارش…" aria-label="جست‌وجو در سفارش‌ها">
+    </div>
+    <div class="bd-chips" id="bdFilters" role="group" aria-label="نمایش">
+      <button class="bd-chip is-on" type="button" data-f="open">کارهای مانده</button>
+      <button class="bd-chip" type="button" data-f="all">با تحویل‌شده‌ها</button>
+    </div>
+  </section>
+
+  <!-- ═══════════ گروه‌های سفارش ═══════════ -->
+  <div id="bdGroups"></div>
+
+</main>
+
+<!-- اعلان و پیام‌ها در یک ستون می‌نشینند تا روی هم نیفتند -->
+<div class="bd-stack">
+  <!-- اعلان سفارش تازه — گوشه‌ی صفحه، با صدای خاموش -->
+  <div class="bd-alert" id="bdAlert" role="status" aria-live="polite" hidden>
+    <span class="bd-alert__ic" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 16.5V11a6 6 0 1 0-12 0v5.5L4.5 18.5h15z"/><path d="M10 21h4"/></svg>
+    </span>
+    <span class="bd-alert__x">
+      <b id="bdAlertTitle">سفارش تازه</b>
+      <span id="bdAlertText">—</span>
+    </span>
+    <a class="bd-alert__go" id="bdAlertGo" href="#">دیدن</a>
+    <button class="bd-alert__close" type="button" id="bdAlertClose" aria-label="بستن">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <div class="bd-toast" id="bdToast" role="status" aria-live="polite" hidden></div>
+</div>
+
+<script src="{% static 'js/staff-data.js' %}"></script>
+<script src="{% static 'js/staff-board.js' %}"></script>
+</body>
+</html>

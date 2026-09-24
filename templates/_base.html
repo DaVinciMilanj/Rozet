@@ -1,0 +1,362 @@
+{% load static %}<!DOCTYPE html>
+{% comment %}
+  ══════════════════════════════════════════════════════════════════════
+  قالب پایه‌ی رُزِت
+
+  هر چیزی که در همه‌ی صفحه‌ها تکرار می‌شود: هد، هدر، مگامنو، منوی موبایل،
+  کشوی سبد، فوتر و اسکریپت‌ها.
+
+  مارکاپ عیناً همان تمپلیت ساکن است. فقط سه چیز عوض شده:
+    ۱. مسیر فایل‌ها با {% templatetag openblock %} static {% templatetag closeblock %}
+    ۲. نشانی و ساعت کار از settings.CAFE
+    ۳. بلوک‌های قابل‌جایگزینی برای صفحه‌های فرزند
+
+  بلوک‌ها:
+    title · description · body_class · og · head_extra · content · scripts
+  ══════════════════════════════════════════════════════════════════════
+{% endcomment %}
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/logo/favicon-32.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/logo/favicon-180.png' %}">
+  <meta name="theme-color" content="#FAF6F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#17120F" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="{% url 'webmanifest' %}">
+
+  {% comment %}
+    عنوان، توضیح، canonical، Open Graph و JSON-LD — همه از «seo» که ویو
+    می‌سازد (apps/common/seo.py). پیش‌تر هر صفحه بلوک عنوان خودش را داشت
+    ولی og:title ثابت بود و گوگل و تلگرام دو عنوان متفاوت می‌دیدند.
+  {% endcomment %}
+{% include "seo/_head.html" %}
+
+  {% comment %} فونت‌های متن و تیتر زودتر شروع شوند: مرورگر تا پارس‌شدن CSS سراغشان
+     نمی‌رود و همین یک رفت‌وبرگشت، متن را دیر می‌آورد. {% endcomment %}
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{% static 'assets/font/YekanBakh-Regular/YekanBakh-Regular.woff2' %}">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{% static 'assets/font/Kalameh-Bold/Kalameh-Bold.woff2' %}">
+  {% block preload %}{% endblock %}
+
+  {% comment %} ══ دو تم سایت ══
+     هر دو استایل‌شیت از ابتدا لود می‌شوند و سوییچ فقط با disabled انجام
+     می‌گیرد؛ به این ترتیب تعویض تم آنی است و هیچ پرش یا فلیکری ندارد. {% endcomment %}
+  <link id="theme-light" rel="stylesheet" href="{% static 'styles/style-light.css' %}">
+  <link id="theme-dark"  rel="stylesheet" href="{% static 'styles/style-dark.css' %}" disabled>
+  <link rel="stylesheet" href="{% static 'styles/theme-toggle.css' %}">
+  {% comment %}
+    افزوده‌های نسخه‌ی جنگو. آخر می‌آید تا بتواند روی تم‌ها بنشیند، و جدا
+    است تا دو شیت تم عیناً همان تمپلیت ساکن بمانند.
+  {% endcomment %}
+  <link rel="stylesheet" href="{% static 'styles/rozet-django.css' %}">
+
+  {% comment %}
+    نشان برند از یک متغیر CSS می‌آید و مسیرش در استایل‌شیت مطلق نوشته
+    شده («/assets/…»). دلیلش درست بوده: url() داخل یک متغیر CSS نسبت به
+    «صفحه‌ای که از متغیر استفاده می‌کند» حل می‌شود، نه نسبت به فایل
+    استایل. ولی روی جنگو فایل‌ها زیر /static/ می‌نشینند، پس همان مسیر
+    مطلق ۴۰۴ می‌داد. اینجا بازنویسی می‌شود تا هر جا STATIC_URL باشد درست
+    بماند.
+  {% endcomment %}
+  <style>:root { --logo-icon: url('{% static "assets/logo/rozet-icon.webp" %}'); }</style>
+
+  {% comment %}
+    پلِ مسیر برای جاوااسکریپت. {% templatetag openblock %} static {% templatetag closeblock %}
+    داخل فایل‌های .js اجرا نمی‌شود، پس هر مسیری که JS خودش می‌سازد باید
+    از اینجا برسد — وگرنه ۲۵۰ فریم هرو ۴۰۴ می‌دهند و بوم سیاه می‌ماند.
+  {% endcomment %}
+  <script>
+    window.ROZET = {
+      framePath: '{{ STATIC_URL }}assets/frames/frame_',
+      favoriteApi: '{% url "catalog:favorite_toggle" %}',
+      reviewApi: '{% url "catalog:review_submit" %}',
+      productsUrl: '{% url "catalog:product_list" %}',
+      cartApi: '{% url "orders:cart_api" %}',
+      csrf: '{{ csrf_token }}',
+      {% comment %}
+        نشان برند برای صفحه‌ی «درباره ما». بدون این، about.js سی مسیر
+        حدسی را یکی‌یکی امتحان می‌کرد — سی درخواست ۴۰۴ در هر بار
+        بازشدن صفحه، و سی تای دیگر با هر تعویض تم.
+      {% endcomment %}
+      crest: {
+        light: '{% static "assets/logo/rozet-mark-light.webp" %}',
+        dark: '{% static "assets/logo/rozet-mark-dark.webp" %}'
+      }
+    };
+  </script>
+  {% block head_extra %}{% endblock %}
+
+  {% comment %} تم ذخیره‌شده پیش از اولین رنگ‌آمیزی صفحه اعمال می‌شود تا تم روشن
+     برای یک لحظه جلوی چشم کاربرِ تم‌تیره ظاهر نشود. {% endcomment %}
+  <script>
+    (function () {
+      var saved;
+      try { saved = localStorage.getItem('rozet-theme'); } catch (e) { saved = null; }
+      if (!saved) {
+        saved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', saved);
+      document.getElementById('theme-light').disabled = (saved === 'dark');
+      document.getElementById('theme-dark').disabled  = (saved !== 'dark');
+    })();
+  </script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+<!-- Film Grain Overlay -->
+<div class="grain-overlay" aria-hidden="true"></div>
+
+{% comment %}
+  پیوند «پرش به محتوا». هر صفحه لنگر خودش را دارد، پس صفحه‌ی فرزند
+  پرش می‌کند؛ صفحه‌ی اصلی اسکراب هرو دارد و لنگری برایش معنی ندارد.
+{% endcomment %}
+{% block skip_link %}{% endblock %}
+
+<!-- Luxury Custom Cursor -->
+<div class="custom-cursor is-hidden" aria-hidden="true">
+  <div class="cursor-dot"></div>
+  <div class="cursor-ring"></div>
+</div>
+
+<!-- Scroll frame progress bar -->
+<div class="scroll-frame-progress" aria-hidden="true"></div>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header class="site-header{% block header_class %}{% endblock %}" role="banner">
+  <div class="header-inner">
+    <a href="{% url 'pages:home' %}" class="brand-wordmark btn-magnetic" aria-label="رُزِت — صفحه اصلی"><span class="brand-mark" aria-hidden="true"></span>ROZET</a>
+    <nav class="header-nav" aria-label="منوی اصلی">
+      {% block nav %}
+      <a href="{% url 'pages:home' %}" class="active" aria-current="page">خانه</a>
+      <a href="{% url 'catalog:product_list' %}">مجموعه‌ها</a>
+      <a href="{% url 'custom_cake:wizard' %}">کیک سفارشی</a>
+      <a href="{% url 'pages:about' %}">درباره ما</a>
+      {% endblock %}
+      <div class="shop-nav-item">
+        <button class="shop-trigger" aria-expanded="false" aria-haspopup="true" aria-controls="shop-dropdown">
+          <span class="shop-trigger-text">فروشگاه</span>
+          <svg class="shop-trigger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+    </nav>
+    <div class="header-actions">
+      {% comment %}
+        دکمه‌ی حساب. تگ همان است و فقط مقصد و برچسبش به وضعیت ورود
+        بستگی دارد: کاربر واردشده یک‌راست به پروفایل می‌رود، مهمان به
+        صفحه‌ی ورود — با next، تا بعد از ورود به همین صفحه برگردد نه
+        به یک جای دلخواه.
+      {% endcomment %}
+      <a class="icon-btn account-btn"
+         href="{% if user.is_authenticated %}{% url 'accounts:account' %}{% else %}{{ LOGIN_URL }}?next={{ request.get_full_path|urlencode }}{% endif %}"
+         aria-label="{% if user.is_authenticated %}حساب کاربری{% else %}ورود یا ثبت‌نام{% endif %}"
+         title="{% if user.is_authenticated %}حساب کاربری{% else %}ورود / ثبت‌نام{% endif %}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20.2c0-3.6 3.2-5.8 7.2-5.8s7.2 2.2 7.2 5.8"/></svg>
+      </a>
+      <!-- سوییچ تم روشن / تیره — کاپ‌کیک رُزِت -->
+      <button class="icon-btn theme-toggle" type="button" role="switch" aria-checked="false"
+              aria-label="تغییر تم به تیره" title="تغییر تم">
+        <span class="theme-track" aria-hidden="true">
+          <span class="theme-knob">
+            <svg class="cupcake" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <g class="cupcake-body">
+                <!-- گیلاس روی کاپ‌کیک -->
+                <circle class="cupcake-cherry" cx="12" cy="3.6" r="1.35"/>
+                <!-- فراستینگ -->
+                <path class="cupcake-frosting" d="M6.4 11.4c0-3.1 2.5-5.6 5.6-5.6s5.6 2.5 5.6 5.6z"/>
+                <!-- کاپ کاغذی -->
+                <path d="M5.5 11.4h13l-1.35 7.3a1.7 1.7 0 0 1-1.67 1.4H8.52a1.7 1.7 0 0 1-1.67-1.4z"/>
+                <!-- چین‌های کاپ -->
+                <path d="M10.4 12.7 9.75 20.1"/>
+                <path d="M13.6 12.7l.65 7.4"/>
+              </g>
+              <!-- براده‌های نور، فقط در تم تیره -->
+              <g class="cupcake-sparks">
+                <path d="M3.3 6.2v1.7M2.45 7.05h1.7"/>
+                <path d="M20.9 8.6v1.4M20.2 9.3h1.4"/>
+              </g>
+            </svg>
+          </span>
+        </span>
+      </button>
+
+      <button class="icon-btn cart-btn btn-magnetic" aria-label="سبد خرید">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-count" aria-live="polite">۰</span>
+      </button>
+      <button class="icon-btn menu-toggle btn-magnetic" aria-expanded="false" aria-label="باز کردن منو" aria-controls="mobile-nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Shop Dropdown -->
+<div class="shop-dropdown" id="shop-dropdown" aria-hidden="true">
+  <div class="shop-dropdown-inner">
+    <div class="dropdown-col">
+      <p class="dropdown-col-title">کیک‌ها</p>
+      <a href="{% url 'catalog:product_list' %}?cat=cakes">کیک‌های مدرن</a>
+      <a href="{% url 'catalog:product_list' %}?cat=cakes">کیک تولد</a>
+      <a href="{% url 'catalog:product_list' %}?cat=cakes">کیک عروسی</a>
+      <a href="{% url 'catalog:product_list' %}?cat=cakes">کیک‌های مناسبتی</a>
+      <a href="{% url 'custom_cake:wizard' %}">کیک سفارشی</a>
+    </div>
+    <div class="dropdown-col">
+      <p class="dropdown-col-title">شیرینی و دسر</p>
+      <a href="{% url 'catalog:product_list' %}?cat=sweets">شیرینی‌های سنتی ایرانی</a>
+      <a href="{% url 'catalog:product_list' %}?cat=pastries">شیرینی تر</a>
+      <a href="{% url 'catalog:product_list' %}?cat=pastries">کوکی</a>
+      <a href="{% url 'catalog:product_list' %}?cat=pastries">کاپکیک</a>
+      <a href="{% url 'catalog:product_list' %}?cat=pastries">ماکارون</a>
+      <a href="{% url 'catalog:product_list' %}?cat=pastries">دسر</a>
+    </div>
+    <div class="dropdown-col">
+      <p class="dropdown-col-title">مجموعه‌ها</p>
+      <a href="{% url 'catalog:product_list' %}?sort=popular">پرفروش‌ترین‌ها</a>
+      <a href="{% url 'catalog:product_list' %}?sort=new">محصولات جدید</a>
+      <a href="{% url 'catalog:product_list' %}?cat=seasonal">مجموعه فصلی</a>
+      <a href="{% url 'catalog:product_list' %}?occ=gift">جعبه هدیه</a>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Nav -->
+<nav class="mobile-nav" id="mobile-nav" aria-label="منوی موبایل" aria-hidden="true">
+  <button class="mobile-nav-close" aria-label="بستن منو">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+  <a href="{% url 'pages:home' %}">خانه</a>
+  <a href="{% url 'catalog:product_list' %}">مجموعه‌ها</a>
+  <a href="{% url 'custom_cake:wizard' %}">کیک سفارشی</a>
+  <a href="{% url 'catalog:product_list' %}?cat=sweets">شیرینی‌های سنتی</a>
+  <a href="{% url 'catalog:product_list' %}?cat=pastries">شیرینی تر و دسر</a>
+  <a href="{% url 'pages:about' %}">درباره ما</a>
+  {% if user.is_authenticated %}
+  <a href="{% url 'accounts:account' %}" class="mobile-nav-auth">حساب کاربری</a>
+  {% else %}
+  <a href="{{ LOGIN_URL }}?next={{ request.get_full_path|urlencode }}" class="mobile-nav-auth">ورود / ثبت‌نام</a>
+  {% endif %}
+</nav>
+
+<!-- Cart Overlay -->
+<div class="cart-overlay" aria-hidden="true"></div>
+
+<!-- Cart Drawer -->
+<aside class="cart-drawer" aria-label="سبد خرید" aria-hidden="true">
+  <div class="cart-drawer-header">
+    <p class="cart-drawer-title">سبد خرید</p>
+    <button class="cart-drawer-close icon-btn" aria-label="بستن سبد خرید">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="cart-drawer-body">
+    <div class="cart-empty">
+      <svg class="cart-empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <p>سبد خرید شما خالی است</p>
+    </div>
+  </div>
+  <div class="cart-drawer-footer">
+    <div class="cart-subtotal">
+      <span>جمع کل</span>
+      <span class="cart-subtotal-amount">۰ تومان</span>
+    </div>
+    <a href="{% url 'orders:checkout' %}" class="btn-checkout">تکمیل خرید</a>
+  </div>
+</aside>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+{% block content %}{% endblock %}
+
+{% comment %}
+  فوتر بلندِ ستون‌دار — همان که تمپلیت فقط در صفحه‌ی اصلی داشت. صفحه‌هایی
+  که فوتر کوتاه دارند (فهرست، جزئیات) همین بلاک را بازنویسی می‌کنند.
+{% endcomment %}
+{% block footer %}
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-top">
+
+      <div class="footer-brand" data-reveal="fade-up">
+        <span class="footer-brand__mark" aria-hidden="true"></span>
+        <a href="{% url 'pages:home' %}" class="footer-brand-name btn-magnetic">ROZET</a>
+        <p class="footer-brand-desc">
+          کیک و شیرینی دست‌ساز با پخت روز. برای تولد، مهمانی و روزهایی که بهانه خوبی برای شیرینی هستند.
+        </p>
+        <div class="footer-newsletter" role="form" aria-label="عضویت در خبرنامه رُزِت">
+          <label for="newsletter-email" class="visually-hidden">آدرس ایمیل</label>
+          <input type="email" id="newsletter-email" placeholder="ایمیل شما" autocomplete="email" dir="ltr">
+          <button type="submit" class="btn-magnetic">عضویت</button>
+        </div>
+      </div>
+
+      <div class="footer-col" data-reveal="fade-up" data-delay="100">
+        <h3 class="footer-col-title">محصولات</h3>
+        <a href="{% url 'catalog:product_list' %}?cat=cakes">کیک‌های مناسبتی</a>
+        <a href="{% url 'catalog:product_list' %}?cat=sweets">شیرینی‌های اصیل</a>
+        <a href="{% url 'catalog:product_list' %}?cat=pastries">شیرینی تر و دسر</a>
+        <a href="{% url 'custom_cake:wizard' %}">سفارش کیک اختصاصی</a>
+        <a href="{% url 'catalog:product_list' %}?occ=gift">جعبه‌های کادویی</a>
+      </div>
+
+      <div class="footer-col" data-reveal="fade-up" data-delay="200">
+        <h3 class="footer-col-title">درباره رُزِت</h3>
+        <a href="{% url 'pages:about' %}">داستان برند</a>
+        <a href="{% url 'pages:about' %}">مواد اولیه</a>
+        {% if CAFE.instagram %}<a href="{{ CAFE.instagram }}" target="_blank" rel="noopener">اینستاگرام</a>{% else %}<a href="{% url 'pages:about' %}#contact">اینستاگرام</a>{% endif %}
+        <a href="{% url 'pages:about' %}#contact">همکاری و سفارش عمده</a>
+      </div>
+
+      {% comment %}
+        ستون حساب. برای کاربر واردشده میان‌بُرهای خودِ پنل است (هر کدام
+        یک نمای همان صفحه‌اند و با هش باز می‌شوند)، و برای مهمان دعوت به
+        ورود. ستون پنجم است، پس عرض گریدِ فوتر در rozet-django.css
+        بازنویسی شده.
+      {% endcomment %}
+      <div class="footer-col" data-reveal="fade-up" data-delay="300">
+        <h3 class="footer-col-title">حساب من</h3>
+        {% if user.is_authenticated %}
+        <a href="{% url 'accounts:account' %}">پیشخان حساب</a>
+        <a href="{% url 'accounts:account' %}#orders">سفارش‌های من</a>
+        <a href="{% url 'accounts:account' %}#favorites">علاقه‌مندی‌ها</a>
+        <a href="{% url 'accounts:account' %}#addresses">دفترچه آدرس</a>
+        {% else %}
+        <a href="{{ LOGIN_URL }}?next={{ request.get_full_path|urlencode }}">ورود / ثبت‌نام</a>
+        <a href="{{ LOGIN_URL }}?next={% url 'accounts:account' %}%23orders">پیگیری سفارش</a>
+        {% endif %}
+      </div>
+
+      <div class="footer-col footer-info" data-reveal="fade-up" data-delay="400">
+        <h3 class="footer-col-title">شعبه‌ها</h3>
+        <p><strong>{{ CAFE.city }}</strong> — {{ CAFE.address }}</p>
+        {% for day, hours in CAFE.hours %}<p>{{ day }} {{ hours }}</p>{% endfor %}
+      </div>
+
+    </div>
+
+    <div class="footer-bottom" data-reveal="fade-up" data-delay="500">
+      <div class="footer-tagline">
+        <strong>با حوصله پخته می‌شود،</strong>
+        با اشتها خورده می‌شود.
+      </div>
+      <p class="footer-legal">© ۱۴۰۴ رُزِت — تمام حقوق محفوظ است.</p>
+    </div>
+  </div>
+</footer>
+{% endblock %}
+
+{% comment %}
+  سبد پیش از cart.js و همگام در صفحه می‌نشیند: سه اسکریپت صفحه در همان
+  اولین خط RozetCart.load() را صدا می‌زنند و منتظر رفت‌وبرگشت شبکه
+  نمی‌مانند.
+{% endcomment %}
+{{ CART_ITEMS|json_script:"cart-data" }}
+<script src="{% static 'js/cart.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

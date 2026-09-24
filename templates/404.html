@@ -1,0 +1,171 @@
+{% extends "_base.html" %}
+{% load static %}
+{% comment %}
+  رُزِت — ۴۰۴ «برشِ گم‌شده»
+
+  در رقم فارسی «۰» یک دایره‌ی کوچک است؛ اینجا همان صفر، کیکی است که از
+  بالا دیده می‌شود و یک برشش جدا شده و کنارش شناور مانده — صفحه‌ای که
+  «جا افتاده». دورِ کیک مُهر چرخانِ صفحه‌ی «درباره ما» می‌چرخد.
+
+  بقیه‌ی صفحه راه برگشت است: جست‌وجو در محصولات، دو دکمه، چند پیوند
+  پرکاربرد و سه محصول پرفروش با همان کارتِ صفحه‌ی اصلی (سبد و قلبش هم
+  کار می‌کند، چون main.js روی همه‌ی صفحه‌ها بار می‌شود).
+
+  ویو: apps/pages/errors.py · استایل: static/styles/errors.css
+{% endcomment %}
+
+
+{% block body_class %}page-error page-404{% endblock %}
+{% block header_class %} scrolled-light{% endblock %}
+{% block skip_link %}<a href="#nfMain" class="skip-link">پرش به محتوا</a>{% endblock %}
+
+{% block head_extra %}
+  <link rel="stylesheet" href="{% static 'styles/errors.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="nf-main" id="nfMain">
+
+  <section class="nf-hero" aria-labelledby="nfTitle">
+    <div class="nf-hero__halo" aria-hidden="true"></div>
+    <div class="nf-crumbs" aria-hidden="true">
+      {% for _ in "abcdefghijkl" %}<span class="nf-crumb" style="--i:{{ forloop.counter }}"></span>{% endfor %}
+    </div>
+
+    <div class="nf-container">
+
+      <!-- ═══ «۴ ۰ ۴» — صفر، کیکی است که یک برشش گم شده ═══ -->
+      <div class="nf-code" role="img" aria-label="خطای ۴۰۴">
+        <span class="nf-digit" data-n="۴" aria-hidden="true">۴</span>
+
+        <div class="nf-cake" id="nfCake" aria-hidden="true">
+          <svg class="nf-cake__svg" viewBox="0 0 200 200" focusable="false">
+            <defs>
+              <path id="nfSealPath" d="M100,100 m-93,0 a93,93 0 1,1 186,0 a93,93 0 1,1 -186,0"/>
+              <radialGradient id="nfCreamGrad" cx="42%" cy="38%" r="72%">
+                <stop offset="0" class="nf-stop-a"/>
+                <stop offset="1" class="nf-stop-b"/>
+              </radialGradient>
+            </defs>
+
+            <!-- مُهر چرخان -->
+            <g class="nf-seal">
+              <text class="nf-seal__text" id="nfSealText">
+                <textPath href="#nfSealPath">ROZET · PAGE NOT FOUND · 404 · ROZET · PAGE NOT FOUND · 404 ·</textPath>
+              </text>
+            </g>
+
+            <!-- بشقاب -->
+            <circle class="nf-plate" cx="100" cy="100" r="84"/>
+            <circle class="nf-plate__rim" cx="100" cy="100" r="77.5"/>
+
+            <!-- کیک، منهای یک برش: دیواره‌ی خامه‌ی صورتی، رویه‌ی خامه‌ای، گل‌های خامه و توت -->
+            <g class="nf-whole">
+              <path class="nf-side" d="M100,100 L169.55,81.37 A72,72 0 1,1 118.63,30.45 Z"/>
+              <path class="nf-top" d="M100,100 L161.82,83.44 A64,64 0 1,1 116.56,38.18 Z"/>
+              <path class="nf-ring" d="M136.64,90.18 A38,38 0 1,1 109.83,63.29"/>
+              <g class="nf-sprinkles">
+                <rect class="nf-spr nf-spr--a" x="81.4" y="83.2" width="5.2" height="1.6" rx="0.8" transform="rotate(20 84 84)"/>
+                <rect class="nf-spr nf-spr--r" x="115.4" y="117.2" width="5.2" height="1.6" rx="0.8" transform="rotate(-35 118 118)"/>
+                <rect class="nf-spr nf-spr--p" x="75.4" y="111.2" width="5.2" height="1.6" rx="0.8" transform="rotate(70 78 112)"/>
+                <rect class="nf-spr nf-spr--r" x="101.4" y="79.2" width="5.2" height="1.6" rx="0.8" transform="rotate(-10 104 80)"/>
+                <rect class="nf-spr nf-spr--a" x="123.4" y="95.2" width="5.2" height="1.6" rx="0.8" transform="rotate(45 126 96)"/>
+                <rect class="nf-spr nf-spr--a" x="89.4" y="127.2" width="5.2" height="1.6" rx="0.8" transform="rotate(-60 92 128)"/>
+                <rect class="nf-spr nf-spr--r" x="67.4" y="93.2" width="5.2" height="1.6" rx="0.8" transform="rotate(15 70 94)"/>
+                <rect class="nf-spr nf-spr--p" x="107.4" y="103.2" width="5.2" height="1.6" rx="0.8" transform="rotate(110 110 104)"/>
+              </g>
+              <g class="nf-dollops">
+                <circle class="nf-dol" cx="156" cy="100" r="7"/><circle class="nf-dol__swirl" cx="156" cy="100" r="3.6"/><circle class="nf-berry" cx="156" cy="100" r="2.9"/>
+                <circle class="nf-dol" cx="148.5" cy="128" r="7"/><circle class="nf-dol__swirl" cx="148.5" cy="128" r="3.6"/>
+                <circle class="nf-dol" cx="128" cy="148.5" r="7"/><circle class="nf-dol__swirl" cx="128" cy="148.5" r="3.6"/><circle class="nf-berry" cx="128" cy="148.5" r="2.9"/>
+                <circle class="nf-dol" cx="100" cy="156" r="7"/><circle class="nf-dol__swirl" cx="100" cy="156" r="3.6"/>
+                <circle class="nf-dol" cx="72" cy="148.5" r="7"/><circle class="nf-dol__swirl" cx="72" cy="148.5" r="3.6"/><circle class="nf-berry" cx="72" cy="148.5" r="2.9"/>
+                <circle class="nf-dol" cx="51.5" cy="128" r="7"/><circle class="nf-dol__swirl" cx="51.5" cy="128" r="3.6"/>
+                <circle class="nf-dol" cx="44" cy="100" r="7"/><circle class="nf-dol__swirl" cx="44" cy="100" r="3.6"/><circle class="nf-berry" cx="44" cy="100" r="2.9"/>
+                <circle class="nf-dol" cx="51.5" cy="72" r="7"/><circle class="nf-dol__swirl" cx="51.5" cy="72" r="3.6"/>
+                <circle class="nf-dol" cx="72" cy="51.5" r="7"/><circle class="nf-dol__swirl" cx="72" cy="51.5" r="3.6"/><circle class="nf-berry" cx="72" cy="51.5" r="2.9"/>
+                <circle class="nf-dol" cx="100" cy="44" r="7"/><circle class="nf-dol__swirl" cx="100" cy="44" r="3.6"/>
+              </g>
+            </g>
+
+            <!-- جای خالی برش -->
+            <path class="nf-ghost" d="M100,100 L118.63,30.45 A72,72 0 0,1 169.55,81.37 Z"/>
+
+            <!-- برشِ جامانده -->
+            <g class="nf-slice" id="nfSlice">
+              <path class="nf-side" d="M100,100 L118.63,30.45 A72,72 0 0,1 169.55,81.37 Z"/>
+              <path class="nf-top" d="M100,100 L116.56,38.18 A64,64 0 0,1 161.82,83.44 Z"/>
+              <rect class="nf-spr nf-spr--p" x="116.4" y="79.2" width="5.2" height="1.6" rx="0.8" transform="rotate(30 119 80)"/>
+              <rect class="nf-spr nf-spr--r" x="126.4" y="70.2" width="5.2" height="1.6" rx="0.8" transform="rotate(-40 129 71)"/>
+              <circle class="nf-dol" cx="139.6" cy="60.4" r="7"/><circle class="nf-dol__swirl" cx="139.6" cy="60.4" r="3.6"/><circle class="nf-berry" cx="139.6" cy="60.4" r="2.9"/>
+            </g>
+          </svg>
+        </div>
+
+        <span class="nf-digit" data-n="۴" aria-hidden="true">۴</span>
+      </div>
+
+      <p class="nf-kicker">
+        <span class="nf-kicker__line" aria-hidden="true"></span>
+        خطای ۴۰۴
+        <span class="nf-kicker__line" aria-hidden="true"></span>
+      </p>
+      <h1 class="nf-title" id="nfTitle">این برش پیدا نشد</h1>
+      <p class="nf-sub">
+        صفحه‌ای که دنبالش بودید یا جابه‌جا شده، یا هیچ‌وقت از فر بیرون نیامده.
+        نگران نباشید؛ کیک‌ها سر جایشان هستند.
+      </p>
+
+      {% if request_path %}
+      <p class="nf-path">
+        <span>نشانی</span>
+        <code dir="ltr">{{ request_path|truncatechars:56 }}</code>
+      </p>
+      {% endif %}
+
+      <form class="nf-search" action="{% url 'catalog:product_list' %}" method="get" role="search">
+        <label for="nfQ" class="visually-hidden">جست‌وجو در محصولات</label>
+        <svg class="nf-search__ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="11" cy="11" r="6.4"/><path d="m15.8 15.8 3.7 3.7"/></svg>
+        <input class="nf-search__input" id="nfQ" name="q" type="search"
+               placeholder="دنبال چه کیک یا شیرینی‌ای بودید؟" autocomplete="off" enterkeyhint="search">
+        <button class="nf-search__go" type="submit" aria-label="جست‌وجو">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M19 12H5M11 5l-7 7 7 7"/></svg>
+        </button>
+      </form>
+
+      <div class="nf-actions">
+        <a class="btn btn-primary" href="{% url 'pages:home' %}">بازگشت به خانه</a>
+        <a class="btn btn-outline" href="{% url 'catalog:product_list' %}">دیدن همه‌ی محصولات</a>
+      </div>
+
+      <nav class="nf-links" aria-label="پیوندهای پرکاربرد">
+        <a href="{% url 'catalog:product_list' %}?cat=cakes">کیک‌ها</a>
+        <a href="{% url 'custom_cake:wizard' %}">کیک سفارشی</a>
+        <a href="{% url 'pages:about' %}">درباره و تماس</a>
+        <a href="{% url 'accounts:account' %}">حساب من</a>
+      </nav>
+    </div>
+  </section>
+
+  {% if suggestions %}
+  <section class="nf-suggest" aria-labelledby="nfSuggestTitle">
+    <div class="container">
+      <div class="nf-suggest__head">
+        <span class="section-label">شاید دنبال این‌ها بودید</span>
+        <h2 class="section-heading" id="nfSuggestTitle">محبوب‌های رُزِت</h2>
+      </div>
+      <div class="product-grid" role="list">
+        {% for product in suggestions %}
+          {% include "catalog/_product_card.html" with origin="پخت روز" cta="مشاهده و سفارش" order="افزودن به سبد" delay=forloop.counter|stringformat:"s" %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/not-found.js' %}"></script>
+{% endblock %}

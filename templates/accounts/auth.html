@@ -1,0 +1,264 @@
+{% load static rozet %}<!DOCTYPE html>
+{% comment %}
+  رُزِت — ورود و ثبت‌نام
+
+  دو فرم در یک کارت، با سوییچ بالای آن. مثل پنل کاربری، این صفحه از
+  _base.html ارث نمی‌برد: هدرش کوتاه است و فوتر ندارد.
+
+  پنل کد شش‌رقمی، دکمه‌ی «رمزم را فراموش کرده‌ام» و «ورود با کد پیامکی»
+  از تمپلیت برداشته شده‌اند — سامانه‌ی پیامکی هنوز وصل نیست و دکمه‌ای که
+  کار نکند بدتر از نبودنش است. مارکاپشان در تمپلیت ساکن هست و هر وقت
+  پیامک آمد، برمی‌گردد.
+{% endcomment %}
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, follow">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/logo/favicon-32.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/logo/favicon-180.png' %}">
+  <title>ورود و ثبت‌نام — رُزِت</title>
+  <meta name="description" content="ورود به حساب کافه‌قنادی رُزِت یا ساخت حساب تازه با شماره‌ی موبایل، برای ثبت سفارش کیک و پیگیری خریدها.">
+
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{% static 'assets/font/YekanBakh-Regular/YekanBakh-Regular.woff2' %}">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{% static 'assets/font/Kalameh-Bold/Kalameh-Bold.woff2' %}">
+
+  <link id="theme-light" rel="stylesheet" href="{% static 'styles/style-light.css' %}">
+  <link id="theme-dark"  rel="stylesheet" href="{% static 'styles/style-dark.css' %}" disabled>
+  <link rel="stylesheet" href="{% static 'styles/theme-toggle.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/auth.css' %}">
+  <link rel="stylesheet" href="{% static 'styles/rozet-django.css' %}">
+
+  <style>:root { --logo-icon: url('{% static "assets/logo/rozet-icon.webp" %}'); }</style>
+
+  {% comment %}
+    پلِ جاوااسکریپت — نشانی اندپوینت، توکن CSRF و مقصد بعد از ورود.
+    {% templatetag openblock %} url {% templatetag closeblock %} داخل
+    فایل .js اجرا نمی‌شود.
+  {% endcomment %}
+  <script>
+    window.ROZET = {
+      authApi: '{% url "accounts:auth_api" %}',
+      csrf: '{{ csrf_token }}',
+      next: '{{ next }}',
+      passwordMin: {{ PASSWORD_MIN }}
+    };
+  </script>
+
+  <script>
+    (function () {
+      var saved;
+      try { saved = localStorage.getItem('rozet-theme'); } catch (e) { saved = null; }
+      if (!saved) saved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+      document.getElementById('theme-light').disabled = (saved === 'dark');
+      document.getElementById('theme-dark').disabled  = (saved !== 'dark');
+    })();
+  </script>
+</head>
+<body class="page-auth">
+
+<div class="grain-overlay" aria-hidden="true"></div>
+<a href="#authCard" class="skip-link">پرش به فرم ورود</a>
+
+<header class="site-header scrolled-light" role="banner">
+  <div class="header-inner">
+    <a href="{% url 'pages:home' %}" class="brand-wordmark" aria-label="رُزِت — صفحه اصلی"><span class="brand-mark" aria-hidden="true"></span>ROZET</a>
+    <nav class="header-nav" aria-label="منوی اصلی">
+      <a href="{% url 'pages:home' %}">خانه</a>
+      <a href="{% url 'catalog:product_list' %}">محصولات</a>
+      <a href="{% url 'custom_cake:wizard' %}">کیک سفارشی</a>
+      <a href="{% url 'pages:about' %}">درباره ما</a>
+    </nav>
+    <div class="header-actions">
+      <!-- حساب کاربری -->
+      <a class="icon-btn account-btn" href="{% url 'accounts:account' %}"
+         aria-label="حساب کاربری" title="حساب کاربری">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20.2c0-3.6 3.2-5.8 7.2-5.8s7.2 2.2 7.2 5.8"/></svg>
+      </a>
+      <button class="icon-btn theme-toggle" type="button" role="switch" aria-checked="false"
+              aria-label="تغییر تم به تیره" title="تغییر تم">
+        <span class="theme-track" aria-hidden="true">
+          <span class="theme-knob">
+            <svg class="cupcake" width="17" height="17" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <g class="cupcake-body">
+                <circle class="cupcake-cherry" cx="12" cy="3.6" r="1.35"/>
+                <path class="cupcake-frosting" d="M6.4 11.4c0-3.1 2.5-5.6 5.6-5.6s5.6 2.5 5.6 5.6z"/>
+                <path d="M5.5 11.4h13l-1.35 7.3a1.7 1.7 0 0 1-1.67 1.4H8.52a1.7 1.7 0 0 1-1.67-1.4z"/>
+                <path d="M10.4 12.7 9.75 20.1"/><path d="M13.6 12.7l.65 7.4"/>
+              </g>
+              <g class="cupcake-sparks">
+                <path d="M3.3 6.2v1.7M2.45 7.05h1.7"/><path d="M20.9 8.6v1.4M20.2 9.3h1.4"/>
+              </g>
+            </svg>
+          </span>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="au-main">
+
+  <!-- ═══════════ ستون فرم ═══════════ -->
+  <section class="au-pane" aria-labelledby="authHeading">
+    <div class="au-card" id="authCard">
+
+      <p class="au-eyebrow">حساب کاربری</p>
+      <h1 class="au-title" id="authHeading">خوش آمدید</h1>
+      <p class="au-sub" id="authSub">برای ثبت سفارش و دیدن سابقه‌ی خریدتان وارد شوید.</p>
+
+      <!-- ── جابه‌جایی میان ورود و ثبت‌نام ── -->
+      <div class="au-tabs" role="tablist" aria-label="ورود یا ثبت‌نام">
+        <span class="au-tabs__pill" aria-hidden="true"></span>
+        <button class="au-tab is-on" type="button" role="tab" id="tabSignin"
+                aria-selected="true" aria-controls="paneSignin" data-tab="signin">ورود</button>
+        <button class="au-tab" type="button" role="tab" id="tabSignup"
+                aria-selected="false" aria-controls="paneSignup" data-tab="signup">ثبت‌نام</button>
+      </div>
+
+      <!-- ── ۱. ورود ── -->
+      <form class="au-form is-on" id="paneSignin" role="tabpanel" aria-labelledby="tabSignin" novalidate>
+        <div class="au-field">
+          <label for="siPhone">شماره موبایل</label>
+          <div class="au-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.6"/><path d="M10.6 18.6h2.8"/></svg>
+            <input type="tel" id="siPhone" name="phone" inputmode="numeric" dir="ltr"
+                   autocomplete="tel" placeholder="09xxxxxxxxx" maxlength="11" required>
+          </div>
+          <p class="au-err" id="siPhoneErr" role="alert"></p>
+        </div>
+
+        <div class="au-field">
+          {% comment %}
+            «رمزم را فراموش کرده‌ام» بدون پیامک راهی برای بازیابی ندارد،
+            پس تا آمدن پنل پیامکی برداشته شده است.
+          {% endcomment %}
+          <div class="au-field__row">
+            <label for="siPass">رمز عبور</label>
+          </div>
+          <div class="au-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.4"/><path d="M8.2 10.5V7.8a3.8 3.8 0 0 1 7.6 0v2.7"/></svg>
+            <input type="password" id="siPass" name="password" autocomplete="current-password"
+                   placeholder="رمز عبور" required>
+            <button type="button" class="au-eye" data-eye="siPass" aria-label="نمایش رمز عبور"></button>
+          </div>
+          <p class="au-err" id="siPassErr" role="alert"></p>
+        </div>
+
+        <label class="au-check">
+          <input type="checkbox" id="siRemember" checked>
+          <span class="au-check__box" aria-hidden="true"></span>
+          <span>مرا به خاطر بسپار</span>
+        </label>
+
+        <button type="submit" class="btn btn-primary au-submit">
+          <span class="au-submit__label">ورود به حساب</span>
+        </button>
+      </form>
+
+      <!-- ── ۲. ثبت‌نام ── -->
+      <form class="au-form" id="paneSignup" role="tabpanel" aria-labelledby="tabSignup" hidden novalidate>
+        <div class="au-field">
+          <label for="suName">نام و نام خانوادگی</label>
+          <div class="au-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20.2c0-3.6 3.2-5.8 7.2-5.8s7.2 2.2 7.2 5.8"/></svg>
+            <input type="text" id="suName" name="name" autocomplete="name" placeholder="مثلاً مریم رضایی" required>
+          </div>
+          <p class="au-err" id="suNameErr" role="alert"></p>
+        </div>
+
+        <div class="au-field">
+          <label for="suPhone">شماره موبایل</label>
+          <div class="au-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.6"/><path d="M10.6 18.6h2.8"/></svg>
+            <input type="tel" id="suPhone" name="phone" inputmode="numeric" dir="ltr"
+                   autocomplete="tel" placeholder="09xxxxxxxxx" maxlength="11" required>
+          </div>
+          <p class="au-hint">کد تأیید به همین شماره پیامک می‌شود.</p>
+          <p class="au-err" id="suPhoneErr" role="alert"></p>
+        </div>
+
+        <div class="au-field">
+          <label for="suPass">رمز عبور</label>
+          <div class="au-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.4"/><path d="M8.2 10.5V7.8a3.8 3.8 0 0 1 7.6 0v2.7"/></svg>
+            <input type="password" id="suPass" name="password" autocomplete="new-password"
+                   placeholder="دست‌کم {{ PASSWORD_MIN|fa }} نویسه" required>
+            <button type="button" class="au-eye" data-eye="suPass" aria-label="نمایش رمز عبور"></button>
+          </div>
+          <div class="au-meter" aria-hidden="true"><span></span><span></span><span></span></div>
+          <p class="au-hint" id="suMeterText">قدرت رمز</p>
+          <p class="au-err" id="suPassErr" role="alert"></p>
+        </div>
+
+        <label class="au-check">
+          <input type="checkbox" id="suTerms">
+          <span class="au-check__box" aria-hidden="true"></span>
+          <span>قوانین و شرایط رُزِت را خوانده‌ام و می‌پذیرم.</span>
+        </label>
+        <p class="au-err" id="suTermsErr" role="alert"></p>
+
+        <button type="submit" class="btn btn-primary au-submit">
+          <span class="au-submit__label">ساخت حساب</span>
+        </button>
+      </form>
+
+
+      <!-- ── ۴. پایان ── -->
+      <div class="au-form au-done" id="paneDone" hidden>
+        <span class="au-done__ring" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor">
+            <circle class="au-done__circle" cx="32" cy="32" r="29" stroke-width="1.4"/>
+            <path class="au-done__tick" d="M20 33.5 28.5 42 44.5 24" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <h2 class="au-done__title" id="doneTitle">خوش آمدید</h2>
+        <p class="au-done__text" id="doneText">حسابتان آماده است.</p>
+        <a class="btn btn-primary au-submit" id="doneGo" href="{% url 'accounts:account' %}">ورود به حساب کاربری</a>
+        <a class="au-link" href="{% url 'pages:home' %}">بازگشت به صفحه‌ی اصلی</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════ ستون تصویری ═══════════ -->
+  <aside class="au-art" aria-hidden="true">
+    <span class="au-art__glow au-art__glow--a"></span>
+    <span class="au-art__glow au-art__glow--b"></span>
+    <span class="au-art__motes" id="auMotes"></span>
+
+    <svg class="au-art__ring" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="92"/>
+      <circle cx="100" cy="100" r="78"/>
+    </svg>
+
+    <div class="au-art__inner">
+      <span class="au-art__mark"></span>
+      <p class="au-art__line">سفارش‌ها، آدرس‌ها و کیک‌های موردعلاقه‌تان یک‌جا می‌ماند.</p>
+      <p class="au-art__sub">دفعه‌ی بعد فقط انتخاب می‌کنید — بقیه‌اش با ماست.</p>
+    </div>
+  </aside>
+
+</main>
+
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-sign">
+      <span class="footer-sign__mark" aria-hidden="true"></span>
+      <span class="footer-sign__rule" aria-hidden="true"></span>
+    </div>
+    <div class="footer-bottom" style="border-top:0; margin-top:0; padding-top:0;">
+      <div class="footer-tagline"><strong>با حوصله پخته می‌شود،</strong> با اشتها خورده می‌شود.</div>
+      <p class="footer-legal">© ۱۴۰۴ رُزِت — تمام حقوق محفوظ است.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="{% static 'js/auth.js' %}"></script>
+</body>
+</html>

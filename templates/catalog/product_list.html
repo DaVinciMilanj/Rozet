@@ -1,0 +1,244 @@
+{% extends "_base.html" %}
+{% load static rozet %}
+
+
+{% block body_class %}page-products{% endblock %}
+{% block header_class %} scrolled-light{% endblock %}
+
+{% block skip_link %}<a href="#results" class="skip-link">پرش به فهرست محصولات</a>{% endblock %}
+
+{% block head_extra %}
+  <link rel="stylesheet" href="{% static 'styles/product-list.css' %}">
+{% endblock %}
+
+{% block nav %}
+  <a href="{% url 'pages:home' %}">خانه</a>
+  <a href="{% url 'catalog:product_list' %}" class="active" aria-current="page">مجموعه‌ها</a>
+  <a href="/custom-cake/">کیک سفارشی</a>
+  <a href="/about/">درباره ما</a>
+{% endblock %}
+
+{% block content %}
+<main class="pl-main">
+
+  <!-- ═══════════ ۲. سربرگ صفحه ═══════════ -->
+  <div class="pl-head">
+    <div class="pl-container">
+      <nav class="pl-crumb" aria-label="مسیر صفحه">
+        <a href="{% url 'pages:home' %}">خانه</a>
+        <span aria-hidden="true">›</span>
+        <span aria-current="page">محصولات</span>
+      </nav>
+      {% comment %} صفحه‌ی هر دسته تیتر خودش را دارد («کیک»)، نه «همه محصولات». {% endcomment %}
+      <h1 class="pl-title">{{ list_heading|default:"همه محصولات" }}</h1>
+      <p class="pl-lede">{% if list_lede %}{{ list_lede }}{% else %}کیک، شیرینی تر، دسر و شیرینی سنتی — همه با پخت روز. دسته و قیمت دلخواهتان را انتخاب کنید.{% endif %}</p>
+    </div>
+  </div>
+
+  <!-- ═══════════ ۳. نوار ابزار ═══════════ -->
+  <div class="pl-toolbar" id="toolbar">
+    <div class="pl-container pl-toolbar__inner">
+
+      <button class="pl-filter-btn" type="button" id="openFilters" aria-controls="filterPanel" aria-expanded="false">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
+        <span>فیلترها</span>
+        <span class="pl-filter-btn__count" id="filterBtnCount" hidden>۰</span>
+      </button>
+
+      <div class="pl-search">
+        <svg class="pl-search__icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="11" cy="11" r="7.5"/><path d="m20.5 20.5-4-4"/></svg>
+        <label for="searchInput" class="visually-hidden">جستجو در محصولات</label>
+        <input type="search" id="searchInput" class="pl-search__input" placeholder="دنبال چه چیزی می‌گردید؟" autocomplete="off">
+        <button class="pl-search__clear" type="button" id="clearSearch" aria-label="پاک کردن جستجو" hidden>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="pl-toolbar__right">
+        <div class="pl-select">
+          <label for="sortSelect" class="visually-hidden">ترتیب نمایش</label>
+          <select id="sortSelect" class="pl-select__field">
+            <option value="popular">پرفروش‌ترین</option>
+            <option value="new">جدیدترین</option>
+            <option value="price-asc">ارزان‌ترین</option>
+            <option value="price-desc">گران‌ترین</option>
+            <option value="name">حروف الفبا</option>
+          </select>
+          <svg class="pl-select__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+
+        <div class="pl-view" role="group" aria-label="نمای نمایش">
+          <button type="button" class="pl-view__btn is-active" data-view="grid" aria-pressed="true" aria-label="نمای شبکه‌ای" title="نمای شبکه‌ای">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1"/></svg>
+          </button>
+          <button type="button" class="pl-view__btn" data-view="list" aria-pressed="false" aria-label="نمای فهرستی" title="نمای فهرستی">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="15" width="18" height="5" rx="1"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pl-container pl-layout">
+
+    <!-- ═══════════ ۵. ستون فیلترها ═══════════ -->
+    <aside class="pl-filters" id="filterPanel" aria-label="فیلتر محصولات">
+      <div class="pl-filters__head">
+        <h2 class="pl-filters__title">فیلترها</h2>
+        <button class="pl-filters__close" type="button" id="closeFilters" aria-label="بستن فیلترها">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="pl-filters__body">
+
+        <section class="pl-group" data-open="true">
+          <h3><button class="pl-group__toggle" type="button" aria-expanded="true">دسته‌بندی<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button></h3>
+          <div class="pl-group__body" id="catGroup"><!-- از JS پر می‌شود --></div>
+        </section>
+
+        <section class="pl-group" data-open="true">
+          <h3><button class="pl-group__toggle" type="button" aria-expanded="true">محدوده قیمت<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button></h3>
+          <div class="pl-group__body">
+            <div class="pl-price">
+              <div class="pl-price__readout">
+                <span id="priceFrom">۰</span>
+                <span class="pl-price__sep">تا</span>
+                <span id="priceTo">۰</span>
+                <span class="pl-price__unit">تومان</span>
+              </div>
+              <div class="pl-range" id="priceRange">
+                <div class="pl-range__track"></div>
+                <div class="pl-range__fill" id="rangeFill"></div>
+                <label for="priceMin" class="visually-hidden">حداقل قیمت</label>
+                <input type="range" id="priceMin" class="pl-range__input" min="0" max="100" value="0" step="1">
+                <label for="priceMax" class="visually-hidden">حداکثر قیمت</label>
+                <input type="range" id="priceMax" class="pl-range__input" min="0" max="100" value="100" step="1">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="pl-group" data-open="true">
+          <h3><button class="pl-group__toggle" type="button" aria-expanded="true">مناسبت<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button></h3>
+          <div class="pl-group__body"><div class="pl-tags" id="occasionGroup"></div></div>
+        </section>
+
+        <section class="pl-group" data-open="true">
+          <h3><button class="pl-group__toggle" type="button" aria-expanded="true">ویژگی‌ها<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button></h3>
+          <div class="pl-group__body" id="featureGroup"></div>
+        </section>
+
+      </div>
+
+      <div class="pl-filters__foot">
+        <button class="btn btn-outline pl-clear" type="button" id="clearAll">پاک کردن همه فیلترها</button>
+        <button class="btn btn-primary pl-apply" type="button" id="applyFilters">نمایش نتایج</button>
+      </div>
+    </aside>
+
+    <!-- ═══════════ ۶. نتایج ═══════════ -->
+    <section class="pl-results" id="results" aria-label="فهرست محصولات">
+
+      <div class="pl-meta">
+        <p class="pl-count" id="resultCount" aria-live="polite" role="status">{% if list_total %}<b>{{ list_total|fa }}</b> محصول{% else %}در حال بارگذاری…{% endif %}</p>
+        <div class="pl-chips" id="activeChips"></div>
+      </div>
+
+      {% comment %} صفحه‌ی اول کارت‌ها از سرور — product-list.js بعد همین را با فیلترها بازمی‌سازد. {% endcomment %}
+      <div class="pl-grid" id="productGrid" data-view="grid">{% for p in list_cards %}{% include "catalog/partials/_list_card.html" %}{% endfor %}</div>
+
+      <!-- حالت خالی -->
+      <div class="pl-empty" id="emptyState" hidden>
+        <svg class="pl-empty__icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="3.6" r="1.35"/>
+          <path d="M6.4 11.4c0-3.1 2.5-5.6 5.6-5.6s5.6 2.5 5.6 5.6z"/>
+          <path d="M5.5 11.4h13l-1.35 7.3a1.7 1.7 0 0 1-1.67 1.4H8.52a1.7 1.7 0 0 1-1.67-1.4z"/>
+        </svg>
+        <h3 class="pl-empty__title">چیزی پیدا نشد</h3>
+        <p class="pl-empty__text">با این فیلترها محصولی نداریم. یکی دو فیلتر را بردارید تا گزینه‌های بیشتری ببینید.</p>
+        <button class="btn btn-primary" type="button" id="emptyReset">پاک کردن فیلترها</button>
+      </div>
+
+      <div class="pl-more">
+        <button class="btn btn-outline" type="button" id="loadMore">نمایش بیشتر</button>
+        <p class="pl-more__hint" id="moreHint"></p>
+      </div>
+
+    </section>
+  </div>
+</main>
+
+<!-- ═══════════ ۷. نمایش سریع محصول ═══════════ -->
+<div class="pl-modal" id="quickView" role="dialog" aria-modal="true" aria-labelledby="qvName" hidden>
+  <div class="pl-modal__scrim" data-close-modal></div>
+  <div class="pl-modal__panel" role="document">
+    <button class="pl-modal__close" type="button" data-close-modal aria-label="بستن">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="pl-modal__media"><img id="qvImage" src="" alt=""></div>
+    <div class="pl-modal__info">
+      <span class="pl-card__badge" id="qvBadge"></span>
+      <p class="pl-modal__name" id="qvName"></p>
+      <p class="pl-modal__en" id="qvEn"></p>
+      <p class="pl-modal__notes" id="qvNotes"></p>
+      <dl class="pl-modal__specs" id="qvSpecs"></dl>
+      <div class="pl-modal__buy">
+        <div class="pl-qty" role="group" aria-label="تعداد">
+          <button type="button" class="pl-qty__btn" id="qvMinus" aria-label="کاهش تعداد">−</button>
+          <span class="pl-qty__val" id="qvQty" aria-live="polite">۱</span>
+          <button type="button" class="pl-qty__btn" id="qvPlus" aria-label="افزایش تعداد">+</button>
+        </div>
+        <div class="pl-modal__price"><span id="qvPrice"></span> <small>تومان</small></div>
+      </div>
+      <button class="btn btn-primary pl-modal__add" type="button" id="qvAdd">افزودن به سبد</button>
+    </div>
+  </div>
+</div>
+
+{% comment %}
+  کشوی سبد اینجا تکرار نمی‌شود: قالب پایه یکی دارد و همه‌ی اسکریپت‌ها
+  اولین «.cart-drawer» را برمی‌دارند. نسخه‌ی دوم (از تمپلیت ساکن) هیچ‌وقت
+  به کار نمی‌آمد و فقط یک «سبد خرید» دیگر به ساختار تیترهای صفحه اضافه
+  می‌کرد.
+{% endcomment %}
+
+<div class="pl-scrim" id="filterScrim" hidden></div>
+
+{% endblock %}
+
+{% comment %}
+  فوتر کوتاه — همان که این صفحه در تمپلیت ساکن داشت. بدون این
+  بازنویسی، فوتر بلندِ _base.html هم زیرش می‌آمد و صفحه دو فوتر
+  می‌گرفت.
+{% endcomment %}
+{% block footer %}
+<!-- ═══════════ فوتر ═══════════ -->
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-sign">
+      <span class="footer-sign__mark" aria-hidden="true"></span>
+      <span class="footer-sign__rule" aria-hidden="true"></span>
+    </div>
+    <div class="footer-bottom" style="border-top:0; margin-top:0; padding-top:0;">
+      <div class="footer-tagline">
+        <strong>با حوصله پخته می‌شود،</strong>
+        با اشتها خورده می‌شود.
+      </div>
+      <p class="footer-legal">© ۱۴۰۴ رُزِت — تمام حقوق محفوظ است.</p>
+    </div>
+  </div>
+</footer>
+{% endblock %}
+
+{% block scripts %}
+  {% comment %}
+    داده‌ی دیتابیس برای موتور سمت کلاینت.
+
+    json_script داده را همگام و پیش از اجرای product-list.js می‌گذارد،
+    و خودش اسکیپ می‌کند — پس نه ترتیب اجرا عوض می‌شود و نه نام محصولی
+    با کوتیشن می‌تواند اسکریپت را بشکند.
+  {% endcomment %}
+  {{ catalog_data|json_script:"catalog-data" }}
+  <script src="{% static 'js/product-list.js' %}"></script>
+{% endblock %}

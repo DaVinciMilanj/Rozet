@@ -1,0 +1,191 @@
+/* ══════════════════════════════════════════════════════════════════
+   افزوده‌های نسخه‌ی جنگو
+
+   فایل‌های style-light.css و style-dark.css عیناً همان تمپلیت ساکن‌اند و
+   دست نمی‌خورند. هر چیزی که فقط در نسخه‌ی دیتابیس‌محور لازم می‌شود
+   اینجا می‌آید، تا هر وقت خواستیم بفهمیم چه چیزی اضافه شده، یک فایل را
+   نگاه کنیم.
+
+   بعد از دو شیت تم لود می‌شود و از متغیرهای همان‌ها استفاده می‌کند، پس
+   در هر دو تم خودش را تطبیق می‌دهد.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* حالت خالی یک بخش — وقتی هنوز محصولی ثبت نشده.
+
+   بیرون از .product-grid می‌نشیند، نه داخلش: داخل گرید، متن مثل یک
+   کارت در سلول اول جا می‌گرفت و به لبه می‌چسبید. */
+.section-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  text-align: center;
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  line-height: 2;
+  color: var(--text-subtle);
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--text) 2%, transparent);
+}
+
+/* دکمه‌ی «خروج از حساب».
+
+   در تمپلیت ساکن یک <a> بود؛ روی جنگو باید دکمه‌ی داخل فرم POST باشد
+   (خروج با GET یعنی هر تصویری در هر صفحه‌ای می‌تواند کاربر را بیرون
+   بیندازد). این چند خط فقط ظاهر پیش‌فرض دکمه را برمی‌دارد تا همان
+   .ac-out قبلی دیده شود. */
+.ac-out-form { display: contents; }
+button.ac-out {
+  width: 100%;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  text-align: start;
+}
+
+/* ستون پنجم فوتر — «حساب من».
+
+   فوتر تمپلیت چهار ستون داشت (برند، محصولات، درباره، شعبه‌ها) و عرضشان
+   در style-light/dark با چهار track نوشته شده بود. ستون حساب پنجمی است،
+   پس فقط همان یک قاعده‌ی دسکتاپ اینجا بازنویسی می‌شود.
+
+   دو بریک‌پوینت پایین‌تر دست نمی‌خورند: آن‌ها `1fr 1fr` و `1fr`اند و به
+   تعداد ستون کاری ندارند. */
+@media (min-width: 1101px) {
+  .footer-top { grid-template-columns: 1.7fr 1fr 1fr 1fr 1.1fr; }
+}
+
+/* فهرست بازشوی <select>.
+
+   خودِ کادر استایل دارد، ولی فهرستی که با کلیک باز می‌شود را مرورگر
+   می‌کشد و CSS صفحه به آن نمی‌رسد. نتیجه روی تم تیره یک پنل سفید با
+   متن روشن بود — عملاً ناخوانا (انتخاب تاریخ تولد در پنل کاربری).
+
+   `color-scheme` همان چیزی است که مرورگر برای رنگ‌آمیزی کنترل‌های
+   بومی نگاه می‌کند، پس با تم صفحه هماهنگ می‌شود. رنگ صریح option هم
+   به‌عنوان تکیه‌گاه می‌ماند برای موتورهایی که آن را رعایت می‌کنند. */
+:root[data-theme="dark"] select { color-scheme: dark; }
+:root[data-theme="light"] select { color-scheme: light; }
+
+select option {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* قاب عکس کافه در صفحه‌ی «درباره ما».
+
+   تمپلیت قاب را ۱۶:۹ بسته بود، برای عکس داخلیِ افقی. عکس واقعی سردرِ
+   کافه عمودی است (۷۶۸×۱۰۲۴) و با object-fit: cover فقط ۴۲٪ ارتفاعش
+   دیده می‌شد — بقیه از بالا و پایین بریده می‌شد.
+
+   نسبت قاب همان نسبت عکس شد (۳:۴)، پس هیچ بریدگی‌ای نمی‌ماند. عرض هم
+   محدود می‌شود وگرنه عکسِ عمودی در ۱۰۴۰ پیکسل، ۱۳۰۰ پیکسل ارتفاع
+   می‌گرفت و کل صفحه را می‌بلعید.
+
+   محدودیت روی خودِ قاب است نه تصویر، تا مُهرِ چرخانِ گوشه سر جایش
+   بماند. */
+.page-about .ab-shop__frame {
+  max-width: 520px;
+}
+.page-about .ab-shop__frame img {
+  aspect-ratio: 3 / 4;
+  /* بدون این، صفت height روی خودِ تگ img (که برای رزرو فضا لازم است)
+     ارتفاع را قفل می‌کند و aspect-ratio اصلاً اعمال نمی‌شود. */
+  height: auto;
+}
+
+
+/* ═══════════ پنل کارکنان (staffpanel) ═══════════ */
+
+/* خروج با POST است نه لینک؛ فرم نباید چیدمان نوار بالا را به هم بزند
+   و دکمه باید دقیقاً شکل همان لینک «خروج» تمپلیت را داشته باشد. */
+.bd-out__form { display: contents; }
+button.bd-out { background: none; border: 0; cursor: pointer; }
+/* تمپلیت «خروج» را در موبایل پنهان می‌کرد — یعنی روی گوشی راهی برای
+   بیرون آمدن نبود. پیوند پنل جنگو پنهان می‌ماند، خروج نه. */
+@media (max-width: 760px) {
+  .bd-out__form .bd-out { display: inline-block; }
+}
+
+/* چه کسی وارد است و با چه سطحی */
+.bd-me {
+  display: grid;
+  line-height: 1.25;
+  padding: 0 0.6rem;
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: var(--text);
+  text-align: start;
+}
+.bd-me small { font-size: var(--text-xs); color: var(--text-subtle); }
+@media (max-width: 760px) { .bd-me { display: none; } }
+
+/* دکمه‌ای که منتظر پاسخ سرور است */
+.bd-next:disabled, .bd-undo:disabled, .od-call:disabled { opacity: 0.55; cursor: progress; }
+
+/* کادرهای یادداشت داخلی و کارهای مدیر در برگه‌ی سفارش */
+.od-box[hidden] { display: none; }
+.od-hint {
+  margin: 0 0 0.6rem;
+  font-family: var(--font);
+  font-size: var(--text-xs);
+  line-height: 1.8;
+  color: var(--text-subtle);
+}
+.od-input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--border-mid);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  line-height: 1.8;
+  resize: vertical;
+}
+.od-input:focus { outline: none; border-color: var(--amber); }
+.od-act + .od-act {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.od-act__t {
+  margin: 0 0 0.55rem;
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+.od-act__t b { font-family: var(--font-num); color: var(--rosette); }
+.od-act__row { display: flex; gap: 0.5rem; align-items: stretch; }
+.od-act__row .od-input { flex: 1; }
+.od-act__row .od-call { width: auto; margin-top: 0; padding-inline: 1rem; white-space: nowrap; }
+.od-act > .od-input + .od-call,
+.od-act > .od-hint + .od-call { margin-top: 0.6rem; }
+.od-act > .od-input + .od-hint { margin-top: 0.5rem; }
+.od-call--danger {
+  border-color: color-mix(in srgb, var(--rosette) 45%, transparent);
+  color: var(--rosette);
+  background: none;
+  cursor: pointer;
+}
+.od-call--danger:hover { background: color-mix(in srgb, var(--rosette) 12%, transparent); }
+button.od-call { background: none; cursor: pointer; }
+@media print { .od-box--manage, #odNote { display: none !important; } }
+
+/* ═══════════ سئو: تیترهای غیرمحتوایی ═══════════
+   عنوان ستون‌های مگامنو و عنوان کشوی سبد در همه‌ی صفحه‌ها پیش از h1
+   می‌آمدند و ساختار تیترِ صفحه را از «سبد خرید» شروع می‌کردند. حالا <p>
+   هستند؛ ظاهرشان از کلاس می‌آید و فقط ارتفاع خطِ تیتر باید حفظ شود. */
+.dropdown-col-title, .cart-drawer-title { line-height: 1.25; }
+
+/* برچسب «کافه‌قنادی رُزِت · مشهد» حالا داخل h1 صفحه‌ی خانه است (کلیدواژه
+   در تیتر اصلی). همان جای قبلی می‌نشیند: یک خط جدا، وسط، با فاصله‌ی
+   پایینِ خودش؛ ارتفاع خط و سایه‌ی تیتر درشت به آن سرایت نمی‌کند. */
+.hero-headline > .hero-label {
+  display: flex;
+  width: fit-content;
+  margin-inline: auto;
+  line-height: 1.6;
+}

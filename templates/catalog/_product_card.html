@@ -1,0 +1,64 @@
+{% load static rozet %}{% comment %}
+  کارت محصول — همان مارکاپی که CSS برایش نوشته شده.
+
+  هیچ کلاس یا گرهی جابه‌جا نشده؛ تنها تفاوت با تمپلیت ساکن این است که
+  مقدارها از دیتابیس می‌آیند. جاوااسکریپت سبد، نام و قیمت و تصویر را از
+  همین DOM می‌خواند، پس ساختار باید دست‌نخورده بماند.
+
+  پارامترها:
+    product   محصول
+    pastry    True برای گرید چهارستونه‌ی شیرینی تر
+    origin    برچسب بالا-راست کارت («پخت روز» / «تازه هر روز»)
+    cta       متن دکمه‌ی روی هاور
+    order     متن دکمه‌ی افزودن به سبد
+    delay     تأخیر انیمیشن ظهور
+{% endcomment %}
+<article class="product-card{% if pastry %} product-card--pastry{% endif %}" role="listitem" data-product="{{ product.pk }}"{% if pastry %} data-category="{{ product.category.slug }}"{% endif %} data-reveal="fade-up" data-delay="{{ delay }}">
+  <div class="product-card__visual">
+    {% with cover=product.cover %}
+    <img class="product-card__image" src="{% if cover %}{{ cover.image.url }}{% else %}{% static 'assets/images/brand-story.webp' %}{% endif %}" alt="{{ cover.alt|default:product.name }}" loading="lazy" width="896" height="1200" decoding="async">
+    {% endwith %}
+    {% if product.badge %}
+    <div class="product-card__badge">
+      <span class="badge-dot"></span>
+      <span>{{ product.get_badge_display }}</span>
+    </div>
+    {% endif %}
+{% comment %}
+      قلب با حالتی که در دیتابیس ثبت شده رندر می‌شود، نه همیشه خالی —
+      وگرنه کاربر بعد از رفرش فکر می‌کند نشانش پاک شده.
+    {% endcomment %}
+    <button class="product-card__wishlist{% if product.pk in favorite_ids %} is-liked{% endif %}"
+            type="button" aria-pressed="{% if product.pk in favorite_ids %}true{% else %}false{% endif %}"
+            aria-label="افزودن {{ product.name }} به علاقه‌مندی‌ها">
+      {% if product.pk in favorite_ids %}<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>{% else %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>{% endif %}
+    </button>
+    <div class="product-card__hover-action">
+      <a href="/product/{{ product.slug }}/" class="product-card__quick-btn">
+        <span>{{ cta }}</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform: scaleX(-1)"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="product-card__info">
+    <div class="product-card__meta">
+      <span class="product-card__origin">{{ origin }}</span>
+      <span class="product-card__servings">{{ product.serves }}</span>
+    </div>
+    <h3 class="product-card__name"><a href="/product/{{ product.slug }}/">{{ product.name }}</a></h3>
+    <span class="product-card__name-en">{{ product.name_en }}</span>
+    <div class="product-card__notes-pyramid">
+      {% for note in product.flavor_notes.all %}{% if not forloop.first %}<span class="pyramid-sep">·</span>
+      {% endif %}<span class="pyramid-item">{{ note.label }}</span>
+      {% endfor %}
+    </div>
+    <div class="product-card__divider"></div>
+    <div class="product-card__bottom">
+      <div class="product-card__price-box">
+        <span class="product-card__price-label">قیمت</span>
+        <span class="product-card__price" data-price="{{ product.price_rial|toman_plain }}">{{ product.price_rial|toman }} <small>تومان</small></span>
+      </div>
+      <button class="product-card__order-btn">{{ order }}</button>
+    </div>
+  </div>
+</article>

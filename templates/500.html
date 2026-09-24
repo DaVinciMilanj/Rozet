@@ -1,0 +1,376 @@
+{% load static %}<!DOCTYPE html>
+{% comment %}
+  رُزِت — ۵۰۰ «فر روی ۵۰۰ درجه مانده»
+
+  این صفحه وقتی نشان داده می‌شود که خودِ سایت جایی شکسته؛ پس به هیچ‌چیز
+  تکیه نمی‌کند:
+    • قالب پایه را extend نمی‌کند (هدر و سبدش از دیتابیس می‌خوانند)،
+    • context processor ندارد — ویو بدون request رندرش می‌کند،
+    • CSS و اسکریپتش همین‌جاست؛ فقط فونت و لوگو از static می‌آیند و
+      اگر نیامدند، فونت سیستم و متن جایشان را می‌گیرند،
+    • پیوندها ثابت‌اند («/» و «/account/»)، نه {% templatetag openblock %} url {% templatetag closeblock %} —
+      اگر خطا از خودِ نقشه‌ی نشانی‌ها باشد، reverse هم می‌شکند.
+
+  تنها داده: CAFE از تنظیمات (نشانی و ساعت کار).
+  ویو: apps/pages/errors.py
+{% endcomment %}
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#FAF6F0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#17120F" media="(prefers-color-scheme: dark)">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/logo/favicon-32.png' %}">
+  <title>کمی صبر کنید — رُزِت</title>
+
+  <script>
+    (function () {
+      var t;
+      try { t = localStorage.getItem('rozet-theme'); } catch (e) { t = null; }
+      if (!t) t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <style>
+    @font-face {
+      font-family: 'YekanBakh';
+      src: url('{% static "assets/font/YekanBakh-Regular/YekanBakh-Regular.woff2" %}') format('woff2');
+      font-weight: 400; font-display: swap;
+    }
+    @font-face {
+      font-family: 'Kalameh';
+      src: url('{% static "assets/font/Kalameh-Bold/Kalameh-Bold.woff2" %}') format('woff2');
+      font-weight: 700; font-display: swap;
+    }
+    @font-face {
+      font-family: 'Playfair Display';
+      src: url('{% static "assets/font/Playfair_Display/PlayfairDisplay-VariableFont_wght.woff2" %}') format('woff2-variations');
+      font-weight: 400 900; font-display: swap;
+    }
+
+    /* ── توکن‌ها: همان مقدارهای style-light / style-dark ── */
+    :root {
+      --bg: #FAF6F0; --bg-alt: #F0E8DF; --surface: #FFFFFF;
+      --text: #2A1B16; --text-muted: #7A5E52; --text-subtle: #A08878;
+      --amber: #DDA15E; --rosette: #BA4E64; --cocoa: #2A1B16; --cream: #FAF6F0;
+      --border: rgba(42, 27, 22, 0.08); --border-mid: rgba(42, 27, 22, 0.14);
+      --kicker: #7E6034; --shadow: rgba(42, 27, 22, 0.18);
+      --oven: #F4ECE2; --oven-edge: rgba(42, 27, 22, 0.22); --glass: #2A1B16;
+      --font: 'YekanBakh', 'Vazirmatn', Tahoma, system-ui, sans-serif;
+      --font-heading: 'Kalameh', 'Vazirmatn', var(--font);
+      --font-brand: 'Playfair Display', Georgia, serif;
+      --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      color-scheme: light;
+    }
+    :root[data-theme="dark"] {
+      --bg: #17120F; --bg-alt: #1E1815; --surface: #241D1A;
+      --text: #E6DCD2; --text-muted: rgba(230, 220, 210, 0.62); --text-subtle: rgba(230, 220, 210, 0.42);
+      --amber: #C9A87F; --rosette: #C97286; --cocoa: #E6DCD2; --cream: #17120F;
+      --border: rgba(201, 168, 127, 0.14); --border-mid: rgba(201, 168, 127, 0.26);
+      --kicker: #C9A87F; --shadow: rgba(0, 0, 0, 0.5);
+      --oven: #2A2320; --oven-edge: rgba(201, 168, 127, 0.3); --glass: #0E0B09;
+      color-scheme: dark;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+    body {
+      min-height: 100vh; min-height: 100svh;
+      display: flex; flex-direction: column;
+      background: var(--bg); color: var(--text);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; }
+
+    /* بافت فیلم — همان دانه‌ی ریز سایت */
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.05;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .e-top {
+      position: relative; z-index: 1;
+      display: flex; justify-content: center;
+      padding: 1.6rem 1rem 0;
+    }
+    .e-brand {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-family: var(--font-brand); font-size: 1.35rem; letter-spacing: 0.22em;
+      color: var(--text); text-decoration: none;
+    }
+    .e-brand img { width: 38px; height: auto; }
+
+    .e-main {
+      position: relative; z-index: 1; isolation: isolate;
+      flex: 1; display: grid; place-items: center;
+      padding: clamp(1.5rem, 5vh, 3.5rem) 16px clamp(2rem, 6vh, 4rem);
+      text-align: center;
+    }
+    .e-halo {
+      position: absolute; z-index: -1; top: 8%; left: 50%;
+      width: min(760px, 96%); aspect-ratio: 1.3; border-radius: 50%;
+      background: radial-gradient(circle at 50% 40%,
+                  color-mix(in srgb, var(--amber) 34%, transparent) 0%,
+                  color-mix(in srgb, var(--rosette) 14%, transparent) 46%, transparent 72%);
+      filter: blur(60px);
+      transform: translateX(-50%);
+      animation: halo 7s var(--ease) infinite;
+    }
+    @keyframes halo {
+      0%, 100% { transform: translateX(-50%) scale(0.94); opacity: 0.75; }
+      50%      { transform: translateX(-50%) scale(1.08); opacity: 1; }
+    }
+
+    .e-wrap { width: 100%; max-width: 620px; }
+
+    /* ── فر ── */
+    .e-oven {
+      width: clamp(210px, 46vw, 300px);
+      margin: 0 auto clamp(1.4rem, 4vh, 2.2rem);
+      overflow: visible;
+      animation: up 1s var(--ease-out) both;
+    }
+    .o-body { fill: var(--oven); stroke: var(--oven-edge); stroke-width: 1.2; }
+    .o-panel { fill: color-mix(in srgb, var(--text) 6%, var(--oven)); }
+    .o-foot { fill: var(--oven-edge); }
+    .o-knob { fill: var(--surface); stroke: var(--oven-edge); stroke-width: 1.2; }
+    .o-tick { stroke: var(--text-muted); stroke-width: 1.8; stroke-linecap: round; }
+    .o-knob-g { transform-box: fill-box; transform-origin: center; }
+    .o-knob-g--hot { animation: knob 3.2s var(--ease) infinite; }
+    @keyframes knob { 0%, 100% { transform: rotate(-35deg); } 50% { transform: rotate(55deg); } }
+
+    .o-screen { fill: var(--glass); }
+    .o-temp {
+      font-family: var(--font-heading); font-size: 15px; font-weight: 700;
+      fill: #F2B872;
+      animation: blink 1.6s steps(2, jump-none) infinite;
+    }
+    @keyframes blink { 0%, 60% { opacity: 1; } 61%, 100% { opacity: 0.35; } }
+
+    .o-door { fill: var(--glass); stroke: var(--oven-edge); stroke-width: 1.2; }
+    .o-glow { animation: glow 2.4s var(--ease) infinite; }
+    @keyframes glow { 0%, 100% { opacity: 0.65; } 50% { opacity: 1; } }
+    .o-handle { stroke: var(--text-muted); stroke-width: 4; stroke-linecap: round; }
+    .o-cake { animation: rise 3.6s var(--ease) infinite; transform-box: fill-box; transform-origin: bottom center; }
+    @keyframes rise { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.06); } }
+    .o-cake__s { fill: #E9B574; }
+    .o-cake__c { fill: #FFF3E2; }
+    .o-cake__b { fill: #C4485E; }
+
+    .o-steam path {
+      fill: none; stroke: var(--text-subtle); stroke-width: 3; stroke-linecap: round;
+      stroke-dasharray: 60; stroke-dashoffset: 60;
+      animation: steam 3s var(--ease) infinite;
+    }
+    .o-steam path:nth-child(2) { animation-delay: 0.7s; }
+    .o-steam path:nth-child(3) { animation-delay: 1.4s; }
+    @keyframes steam {
+      0%   { stroke-dashoffset: 60; opacity: 0; transform: translateY(6px); }
+      30%  { opacity: 0.9; }
+      100% { stroke-dashoffset: -60; opacity: 0; transform: translateY(-10px); }
+    }
+
+    /* ── متن ── */
+    .e-kicker {
+      display: inline-flex; align-items: center; gap: 0.7rem;
+      margin-bottom: 0.9rem;
+      font-size: 0.8125rem; color: var(--kicker);
+      animation: up 0.9s var(--ease-out) 0.12s both;
+    }
+    .e-kicker i { width: 30px; height: 1px; background: currentColor; opacity: 0.55; }
+    h1 {
+      font-family: var(--font-heading); font-weight: 700;
+      font-size: clamp(1.85rem, 4.8vw, 3rem); line-height: 1.3;
+      text-wrap: balance;
+      margin-bottom: 0.9rem;
+      animation: up 0.9s var(--ease-out) 0.2s both;
+    }
+    h1 em {
+      font-style: normal;
+      background: linear-gradient(120deg, var(--amber), var(--rosette));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .e-sub {
+      max-width: 33rem; margin: 0 auto;
+      font-size: clamp(0.95rem, 1.6vw, 1.05rem); line-height: 2;
+      color: var(--text-muted); text-wrap: pretty;
+      animation: up 0.9s var(--ease-out) 0.28s both;
+    }
+
+    /* ── دکمه‌ها — هم‌خانواده‌ی .btn سایت ── */
+    .e-actions {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 0.8rem;
+      margin-top: clamp(1.6rem, 4vh, 2.2rem);
+      animation: up 0.9s var(--ease-out) 0.36s both;
+    }
+    .e-btn {
+      position: relative; overflow: hidden; isolation: isolate;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+      padding: 1rem 2.3rem; border-radius: 999px;
+      font-family: var(--font-heading); font-size: 0.9375rem; font-weight: 700; line-height: 1;
+      text-decoration: none; cursor: pointer; white-space: nowrap;
+      transition: color 0.45s var(--ease-out), border-color 0.5s var(--ease-out),
+                  box-shadow 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+    }
+    .e-btn::before {
+      content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+      transform: translateY(101%); transition: transform 0.6s var(--ease-out);
+    }
+    .e-btn:hover::before { transform: none; }
+    .e-btn:active { transform: scale(0.97); }
+    .e-btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+    .e-btn svg { width: 17px; height: 17px; transition: transform 0.6s var(--ease-out); }
+    .e-btn:hover svg { transform: rotate(-200deg); }
+
+    .e-btn--primary {
+      background: var(--cocoa); color: var(--cream); border: 1px solid var(--cocoa);
+      box-shadow: 0 12px 28px -14px var(--shadow);
+    }
+    .e-btn--primary::before { background: linear-gradient(135deg, #EFC689 0%, var(--amber) 52%, #C68C42 100%); }
+    .e-btn--primary:hover { color: #23150E; border-color: var(--amber); }
+    .e-btn--ghost { background: transparent; color: var(--text); border: 1px solid var(--border-mid); }
+    .e-btn--ghost::before { background: color-mix(in srgb, var(--text) 8%, transparent); }
+
+    /* ── اطمینان‌خاطر درباره‌ی پرداخت ── */
+    .e-note {
+      display: flex; align-items: flex-start; gap: 0.85rem;
+      max-width: 30rem; margin: clamp(1.8rem, 5vh, 2.6rem) auto 0;
+      padding: 1rem 1.15rem;
+      border: 1px solid var(--border); border-radius: 18px;
+      background: color-mix(in srgb, var(--surface) 70%, transparent);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      text-align: start; font-size: 0.875rem; line-height: 1.9; color: var(--text-muted);
+      animation: up 0.9s var(--ease-out) 0.44s both;
+    }
+    .e-note svg { width: 22px; height: 22px; flex-shrink: 0; margin-top: 0.2rem; color: var(--amber); }
+    .e-note b { color: var(--text); font-weight: 400; font-family: var(--font-heading); }
+    .e-note a { color: var(--rosette); text-underline-offset: 4px; }
+
+    .e-foot {
+      position: relative; z-index: 1;
+      padding: 1.2rem 16px 1.6rem;
+      text-align: center; font-size: 0.8125rem; line-height: 1.9; color: var(--text-subtle);
+    }
+    .e-foot span + span::before { content: '·'; margin-inline: 0.55rem; opacity: 0.6; }
+
+    @keyframes up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+    @media (max-width: 520px) {
+      .e-btn { flex: 1 1 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="e-top">
+    <a class="e-brand" href="/" aria-label="رُزِت — صفحه‌ی اصلی">
+      <img src="{% static 'assets/logo/rozet-icon.webp' %}" alt="" width="38" height="28" onerror="this.remove()">
+      ROZET
+    </a>
+  </header>
+
+  <main class="e-main">
+    <div class="e-halo" aria-hidden="true"></div>
+
+    <div class="e-wrap">
+
+      <!-- فر، روی ۵۰۰ درجه -->
+      <svg class="e-oven" viewBox="0 0 240 212" role="img" aria-label="فری که دمایش روی ۵۰۰ درجه مانده">
+        <defs>
+          <radialGradient id="ovenGlow" cx="50%" cy="78%" r="75%">
+            <stop offset="0" stop-color="#FFB45C" stop-opacity="0.95"/>
+            <stop offset="0.55" stop-color="#E0663F" stop-opacity="0.45"/>
+            <stop offset="1" stop-color="#E0663F" stop-opacity="0"/>
+          </radialGradient>
+          <clipPath id="doorClip"><rect x="54" y="104" width="132" height="76" rx="12"/></clipPath>
+        </defs>
+
+        <g class="o-steam">
+          <path d="M92 36 c-8 -8 8 -14 0 -24"/>
+          <path d="M120 32 c-8 -8 8 -14 0 -24"/>
+          <path d="M148 36 c-8 -8 8 -14 0 -24"/>
+        </g>
+
+        <rect class="o-foot" x="52" y="194" width="18" height="10" rx="3"/>
+        <rect class="o-foot" x="170" y="194" width="18" height="10" rx="3"/>
+
+        <rect class="o-body" x="30" y="44" width="180" height="152" rx="20"/>
+        <path class="o-panel" d="M30 64 a20 20 0 0 1 20 -20 h140 a20 20 0 0 1 20 20 v16 h-180 z"/>
+
+        <g class="o-knob-g">
+          <circle class="o-knob" cx="54" cy="62" r="9"/>
+          <line class="o-tick" x1="54" y1="62" x2="54" y2="55"/>
+        </g>
+        <g class="o-knob-g o-knob-g--hot">
+          <circle class="o-knob" cx="80" cy="62" r="9"/>
+          <line class="o-tick" x1="80" y1="62" x2="80" y2="55"/>
+        </g>
+
+        <rect class="o-screen" x="126" y="52" width="68" height="21" rx="6"/>
+        <text class="o-temp" x="160" y="68" text-anchor="middle" direction="ltr">۵۰۰°</text>
+
+        <line class="o-handle" x1="74" y1="93" x2="166" y2="93"/>
+
+        <rect class="o-door" x="54" y="104" width="132" height="76" rx="12"/>
+        <g clip-path="url(#doorClip)">
+          <rect class="o-glow" x="54" y="104" width="132" height="76" fill="url(#ovenGlow)"/>
+          <g class="o-cake">
+            <rect class="o-cake__s" x="92" y="152" width="56" height="22" rx="4"/>
+            <path class="o-cake__c" d="M92 156 h56 v-4 a4 4 0 0 0 -4 -4 h-48 a4 4 0 0 0 -4 4 z"/>
+            <rect class="o-cake__s" x="104" y="133" width="32" height="17" rx="3"/>
+            <path class="o-cake__c" d="M104 137 h32 v-2 a3 3 0 0 0 -3 -3 h-26 a3 3 0 0 0 -3 3 z"/>
+            <circle class="o-cake__b" cx="120" cy="128" r="3.4"/>
+          </g>
+          <line x1="54" y1="178" x2="186" y2="178" stroke="#000" stroke-opacity="0.25" stroke-width="3"/>
+        </g>
+      </svg>
+
+      <p class="e-kicker"><i aria-hidden="true"></i>خطای ۵۰۰ · مشکل از سمت ماست<i aria-hidden="true"></i></p>
+      <h1>فر ما روی <em>۵۰۰ درجه</em> مانده!</h1>
+      <p class="e-sub">
+        چیزی در آشپزخانه‌ی سایت بیش از حد داغ شد. تقصیر شما نیست و
+        همکاران ما خبردار شده‌اند. چند لحظه‌ی دیگر دوباره امتحان کنید.
+      </p>
+
+      <div class="e-actions">
+        <button class="e-btn e-btn--primary" type="button" id="retry">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.35-5.65"/><path d="M20 4v5h-5"/></svg>
+          دوباره امتحان کنید
+        </button>
+        <a class="e-btn e-btn--ghost" href="/">بازگشت به خانه</a>
+      </div>
+
+      <p class="e-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.2 7.5 9.5 4.4-1.3 7.5-4.9 7.5-9.5V6z"/><path d="m8.8 12.2 2.2 2.2 4.3-4.6"/></svg>
+        <span>
+          <b>وسط سفارش یا پرداخت بودید؟</b>
+          نگران نباشید؛ مبلغی دو بار کسر نمی‌شود. کمی بعد وضعیت سفارش را از
+          <a href="/account/">حساب من</a> ببینید.
+        </span>
+      </p>
+    </div>
+  </main>
+
+  <footer class="e-foot">
+    <span>{{ CAFE.name|default:"رُزِت" }}</span>
+    {% if CAFE.city %}<span>{{ CAFE.city }}، {{ CAFE.address }}</span>{% endif %}
+    {% for day, hours in CAFE.hours %}<span>{{ day }} {{ hours }}</span>{% endfor %}
+    {% if CAFE.landline %}<span><a href="tel:{{ CAFE.landline }}" dir="ltr">{{ CAFE.landline }}</a></span>{% endif %}
+  </footer>
+
+  <script>
+    document.getElementById('retry').addEventListener('click', function () {
+      this.disabled = true;
+      location.reload();
+    });
+  </script>
+</body>
+</html>

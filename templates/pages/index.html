@@ -1,0 +1,384 @@
+{% extends "_base.html" %}
+{% load static rozet %}
+
+{% block body_class %}page-home{% endblock %}
+
+{% block preload %}
+  {# اولین فریم هرو = بزرگ‌ترین عنصر قابل رنگ صفحه #}
+  <link rel="preload" as="image" fetchpriority="high"
+        href="{% static 'assets/frames/frame_0001.webp' %}">
+{% endblock %}
+
+{% block content %}
+<main>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTIONS 1 + 2: CANVAS 250-FRAME VIDEO SCRUB
+       Hero Section ──▶ Frame Scrub ──▶ Brand Intro Overlay
+       ══════════════════════════════════════════════════════════ -->
+  <div class="scroll-frame-container" id="scroll-frame-container">
+    <div class="scroll-frame-sticky">
+
+      <!-- High-Resolution Canvas (renders frame_0001.webp ... frame_0250.webp) -->
+      <canvas id="scroll-frame-canvas" class="scroll-frame-canvas"></canvas>
+
+      <!-- Gradient lighting overlay -->
+      <div class="hero-overlay" aria-hidden="true"></div>
+
+      <!-- Atmospheric darkener for Section 2 legibility -->
+      <div class="hero-overlay-dark" aria-hidden="true"></div>
+
+      <!-- SECTION 1: HERO CONTENT (fades out as user begins scrolling) -->
+      <div class="hero-content">
+        <div class="container">
+          {% comment %}
+            برچسب بالای تیتر داخل خودِ h1 است: تیتر اصلی صفحه‌ی خانه فقط
+            «هر روز صبح، از نو می‌پزیم» بود و نه «قنادی» داشت نه «مشهد».
+            ظاهر عوض نمی‌شود — rozet-django.css برچسب را در همان جای قبلی
+            می‌نشاند.
+          {% endcomment %}
+          <h1 class="hero-headline">
+            <span class="hero-label">کافه‌قنادی رُزِت · مشهد</span>
+            هر روز صبح،<br>
+            از نو می‌پزیم.
+          </h1>
+          <p class="hero-sub">
+            کیک، شیرینی تر و دسر دست‌ساز، تازه‌ی هر روز.<br>
+            بدون مواد آماده، بدون باقی‌مانده‌ی دیروز.
+          </p>
+          <div class="hero-actions">
+            <a href="#cakes" class="btn btn-primary btn-magnetic">مشاهده کیک‌ها</a>
+            <a href="{% url 'custom_cake:wizard' %}" class="btn btn-ghost-light btn-magnetic">کیک سفارشی</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: BRAND INTRO OVERLAY (appears mid-scrub over frames) -->
+      <div class="brand-intro-overlay">
+        <div class="brand-intro-inner">
+          <div class="brand-intro-divider"></div>
+          <h2 class="brand-intro-heading">
+            ساده، اما درست.
+            
+          </h2>
+          <p class="brand-intro-text">
+            کره‌ی حیوانی، زعفران قائنات، پسته‌ی رفسنجان — همین. خمیر را خودمان می‌گیریم، خامه را خودمان می‌زنیم و هیچ سفارشی از روز قبل نمی‌ماند.
+          </p>
+          <div class="brand-intro-divider"></div>
+        </div>
+      </div>
+
+      <!-- Scroll cue -->
+      <div class="scroll-hint" aria-hidden="true">
+        <span class="scroll-hint-text">اسکرول</span>
+        <div class="scroll-hint-track">
+          <div class="scroll-hint-line"></div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /scroll-frame-container -->
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 3: SIGNATURE CAKES (Luxury 3D Tilt Cards)
+       ══════════════════════════════════════════════════════════ -->
+  <section class="section-cakes section" id="cakes" aria-labelledby="cakes-heading">
+    <div class="container">
+
+      <div class="cakes-header">
+        <div data-reveal="fade-right" data-dur="slow">
+          <span class="section-label">کیک‌های ما</span>
+          <h2 class="section-heading" id="cakes-heading">
+            با حوصله <br>پخته می‌شود.
+          </h2>
+        </div>
+        <a href="{% url 'catalog:product_list' %}?cat=cakes" class="btn-link btn-magnetic" data-reveal="fade-left" data-delay="150">
+          مشاهده همه کیک‌ها
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="transform:scaleX(-1)"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      {% if cakes %}
+      <div class="product-grid" role="list">
+        {% for product in cakes %}
+          {% include "catalog/_product_card.html" with origin="پخت روز" cta="مشاهده و سفارش" order="افزودن به سبد" delay=forloop.counter|stringformat:"s" %}
+        {% endfor %}
+      </div>
+      {% else %}
+      {# خارج از گرید — داخلش، متن مثل یک کارت در سلول اول می‌نشست. #}
+      <p class="section-empty" data-reveal="fade-up">به‌زودی؛ هنوز کیکی ثبت نشده است.</p>
+      {% endif %}
+    </div>
+  </section>
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 4: TRADITIONAL SWEETS
+       ══════════════════════════════════════════════════════════ -->
+  <section class="section-sweets" id="sweets" aria-labelledby="sweets-heading">
+    <div class="container">
+      <div class="sweets-inner">
+
+        <!-- Text side — RIGHT in RTL -->
+        <div class="sweets-content">
+          <span class="section-label" data-reveal="fade-right">شیرینی‌های سنتی</span>
+          <h2 class="sweets-heading" id="sweets-heading" data-reveal="fade-right" data-delay="100" data-dur="slow">
+            همان طعم قدیم،<br>
+            با بسته‌بندی امروز.
+          </h2>
+          <p class="section-sub" data-reveal="fade-right" data-delay="200">
+            سوهان، گز، قطاب و باقلوا — هر کدام با دستور و مواد اولیه‌ی شهر خودش، تازه و بدون افزودنی.
+          </p>
+
+          <div class="sweets-grid" role="list">
+            <div class="sweet-item" role="listitem" data-reveal="fade-up" data-delay="100">
+              <h3 class="sweet-item-name">سوهان زعفرانی</h3>
+              <p class="sweet-item-origin">کره حیوانی · زعفران ممتاز</p>
+              <p class="sweet-item-price">۱۲۰٬۰۰۰ تومان</p>
+            </div>
+            <div class="sweet-item" role="listitem" data-reveal="fade-up" data-delay="180">
+              <h3 class="sweet-item-name">گز انگبین اصفهان</h3>
+              <p class="sweet-item-origin">۴۲٪ مغز پسته اعلا</p>
+              <p class="sweet-item-price">۱۹۵٬۰۰۰ تومان</p>
+            </div>
+            <div class="sweet-item" role="listitem" data-reveal="fade-up" data-delay="260">
+              <h3 class="sweet-item-name">قطاب سنتی یزد</h3>
+              <p class="sweet-item-origin">مغز گردو و بادام · هل سبز</p>
+              <p class="sweet-item-price">۱۱۰٬۰۰۰ تومان</p>
+            </div>
+            <div class="sweet-item" role="listitem" data-reveal="fade-up" data-delay="340">
+              <h3 class="sweet-item-name">نان برنجی کرمانشاهی</h3>
+              <p class="sweet-item-origin">روغن کرمانشاهی اصل</p>
+              <p class="sweet-item-price">۸۵٬۰۰۰ تومان</p>
+            </div>
+            <div class="sweet-item" role="listitem" data-reveal="fade-up" data-delay="420">
+              <h3 class="sweet-item-name">باقلوای استانبولی و ایرانی</h3>
+              <p class="sweet-item-origin">شهد عسل و زعفران</p>
+              <p class="sweet-item-price">۱۳۰٬۰۰۰ تومان</p>
+            </div>
+            <div class="sweet-item" role="listitem" data-reveal="fade-up" data-delay="500">
+              <h3 class="sweet-item-name">شیرینی یزدی و لوز</h3>
+              <p class="sweet-item-origin">لوز بادام و پسته دو رنگ</p>
+              <p class="sweet-item-price">۱۴۰٬۰۰۰ تومان</p>
+            </div>
+          </div>
+
+          <a href="{% url 'catalog:product_list' %}?cat=sweets" class="btn-link btn-magnetic" data-reveal="fade-up" data-delay="550">
+            دیدن همه شیرینی‌های سنتی
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="transform:scaleX(-1)"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Image side — LEFT in RTL with Parallax -->
+        <div class="sweets-editorial-img img-reveal" data-parallax="0.07" data-reveal="scale" data-dur="slow">
+          <img src="{% static 'assets/images/sweets-editorial.webp' %}" alt="شیرینی‌های سنتی ایرانی رُزِت" loading="lazy" width="928" height="1152" decoding="async">
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 5: CUSTOM CAKE (Bespoke Atelier Feature)
+       ══════════════════════════════════════════════════════════ -->
+  <section class="section-custom" id="custom" aria-labelledby="custom-heading">
+
+    <div class="custom-content-side">
+      <div class="custom-content">
+        <span class="section-label" data-reveal="fade-right">سفارش کیک اختصاصی</span>
+        <h2 class="custom-heading" id="custom-heading" data-reveal="fade-right" data-delay="100" data-dur="slow">
+          کیک مراسم شما، دقیقاً<br>
+          همان‌طور که می‌خواهید.
+        </h2>
+        <p class="custom-text" data-reveal="fade-right" data-delay="200">
+          برای عروسی، تولد یا هر مناسبت دیگری، کیک را از صفر با شما طراحی می‌کنیم؛ تعداد طبقات، طعم لایه‌ها و شکل تزیین. قبل از پخت هم طرح نهایی را برایتان می‌فرستیم تا مطمئن شوید همان چیزی است که می‌خواستید.
+        </p>
+
+        <div class="custom-steps" role="list" data-reveal="fade-up" data-delay="300">
+          <div class="custom-step" role="listitem">
+            <span class="custom-step-num">۰۱</span>
+            <span class="custom-step-label">مشورت اولیه</span>
+            <span class="custom-step-desc">درباره مراسم و سلیقه‌تان حرف می‌زنیم</span>
+          </div>
+          <div class="custom-step" role="listitem">
+            <span class="custom-step-num">۰۲</span>
+            <span class="custom-step-label">اندازه و طبقات</span>
+            <span class="custom-step-desc">بر اساس تعداد مهمان‌ها</span>
+          </div>
+          <div class="custom-step" role="listitem">
+            <span class="custom-step-num">۰۳</span>
+            <span class="custom-step-label">انتخاب طعم</span>
+            <span class="custom-step-desc">می‌توانید چند طعم را تست کنید</span>
+          </div>
+          <div class="custom-step" role="listitem">
+            <span class="custom-step-num">۰۴</span>
+            <span class="custom-step-label">پخت و تزیین</span>
+            <span class="custom-step-desc">یک روز قبل از مراسم آماده می‌شود</span>
+          </div>
+        </div>
+
+        <div class="custom-action-wrap" data-reveal="fade-up" data-delay="400">
+          <a href="{% url 'custom_cake:wizard' %}" class="btn btn-primary btn-magnetic">
+            مشاوره و ثبت سفارش
+          </a>
+          <span class="custom-lead-time">سفارش را حداقل ۴۸ ساعت قبل ثبت کنید</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="custom-image-side img-reveal" data-parallax="0.05">
+      <img src="{% static 'assets/images/custom-cake.webp' %}" alt="کیک چندطبقه دست‌ساز در کارگاه رُزِت" loading="lazy" width="1200" height="896" decoding="async">
+      <div class="custom-image-badge">
+        <span class="seal-icon">⚜</span>
+        <div class="seal-text">
+          <strong>سفارش اختصاصی رُزِت</strong>
+          <small>پخت در کارگاه خودمان</small>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SECTION 6: PASTRIES & CUPCAKES
+       ══════════════════════════════════════════════════════════ -->
+  <section class="section-pastries section" id="pastries" aria-labelledby="pastries-heading">
+    <div class="container">
+
+      <div class="section-header section-header--center">
+        <span class="section-label" data-reveal="fade-down">شیرینی تر و دسر</span>
+        <h2 class="section-heading" id="pastries-heading" data-reveal="fade-up" data-delay="100" data-dur="slow">
+          لقمه‌های کوچک،<br>
+          برای هر روز.
+        </h2>
+        <p class="section-sub" data-reveal="fade-up" data-delay="150" style="max-width: 400px; margin-inline: auto; text-align: center;">
+          دسرهای تک‌نفره برای وقتی مهمان دارید، یا فقط دلتان یک چیز شیرین می‌خواهد. همه روزانه پخته می‌شوند.
+        </p>
+        {% if pastry_filters %}
+        <div class="pastries-filter" role="tablist" data-reveal="fade-up" data-delay="200">
+          <button class="filter-pill active" role="tab" aria-selected="true" data-filter="all">همه</button>
+          {% for sub in pastry_filters %}<button class="filter-pill" role="tab" aria-selected="false" data-filter="{{ sub.slug }}">{{ sub.name }}</button>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      {% if pastries %}
+      <div class="product-grid product-grid-4" role="list">
+        {% for product in pastries %}
+          {% include "catalog/_product_card.html" with pastry=True origin="تازه هر روز" cta="مشاهده و سفارش" order="افزودن" delay=forloop.counter|stringformat:"s" %}
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="section-empty" data-reveal="fade-up">به‌زودی؛ هنوز شیرینی‌ای ثبت نشده است.</p>
+      {% endif %}
+
+      <div class="section-cta" data-reveal="fade-up" data-delay="200">
+        <a href="{% url 'catalog:product_list' %}?cat=pastries" class="btn btn-outline btn-magnetic">
+          دیدن همه دسرها
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+     ۱۱. سکشن ۷: کلکسیون فصلی و بسته‌بندی‌های لوکس (Seasonal Collection)
+         بنر سینمایی عریض با افکت پارالاکس و تایپوگرافی شاعرانه
+     ══════════════════════════════════════════════════════════════════════ -->
+  <section class="section-seasonal" id="seasonal" aria-labelledby="seasonal-heading">
+    <img class="seasonal-bg" src="{% static 'assets/images/seasonal-editorial.webp' %}" alt="مجموعه فصلی رُزِت" loading="lazy" width="1376" height="768" decoding="async">
+    <div class="seasonal-overlay" aria-hidden="true"></div>
+    <div class="container">
+      <div class="seasonal-glass-card" data-reveal="fade-up" data-delay="100">
+        <div class="seasonal-badge">
+          <span class="badge-dot"></span>
+          <span>ویژه پاییز و زمستان · تعداد محدود</span>
+        </div>
+        <h2 class="seasonal-heading" id="seasonal-heading">
+          طعم‌های تازه‌ی<br>
+          این فصل.
+        </h2>
+        <p class="seasonal-sub">
+          انار یزد، شاه‌بلوط، هل و شکلات تلخ ۶۶٪ — ترکیب‌هایی که فقط همین چند ماه از سال روی میز ما هستند.
+        </p>
+        <div class="seasonal-features">
+          <div class="seasonal-feat-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span>جعبه کادویی، آماده هدیه دادن</span>
+          </div>
+          <div class="seasonal-feat-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>تعداد محدود · با رزرو قبلی</span>
+          </div>
+          <div class="seasonal-feat-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span>ارسال با جعبه سردنگه‌دار</span>
+          </div>
+        </div>
+        <div class="seasonal-actions">
+          <a href="{% url 'catalog:product_list' %}?cat=seasonal" class="btn btn-primary btn-magnetic">
+            دیدن مجموعه فصلی
+          </a>
+          <a href="{% url 'custom_cake:wizard' %}" class="btn btn-outline btn-magnetic" style="color: var(--cream); border-color: rgba(250, 246, 240, 0.3);">
+            سفارش عمده و شرکتی
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+     ۱۲. سکشن ۸: داستان برند و کارگاه (Brand Story)
+         معرفی اصالت قنادی، مواد اولیه طبیعی و دست‌ساز بودن آثار با امضای رُزِت
+     ══════════════════════════════════════════════════════════════════════ -->
+  <section class="section-story" id="story" aria-labelledby="story-heading">
+    <div class="container">
+      <div class="story-inner">
+
+        <div class="story-content">
+          <span class="section-label" data-reveal="fade-right">داستان ما</span>
+          <h2 class="story-headline" id="story-heading" data-reveal="fade-right" data-delay="100" data-dur="slower">
+            دست‌ساز،<br>
+            <em>بدون میان‌بر.</em>
+          </h2>
+          <p class="story-text" data-reveal="fade-right" data-delay="220">
+            رُزِت یک کافه‌قنادی در مشهد است. همه چیز را خودمان درست می‌کنیم، از خمیر تا تزیین، و چیزی را از روز قبل نگه نمی‌داریم.
+          </p>
+          <a href="{% url 'pages:about' %}" class="btn-link btn-magnetic" data-reveal="fade-up" data-delay="380">
+            بیشتر درباره ما
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="transform:scaleX(-1)"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <span class="story-signature" data-reveal="fade-up" data-delay="480">ROZET</span>
+        </div>
+
+        <div class="story-image-side" data-parallax="0.06">
+          <div class="story-image-wrap img-reveal" data-reveal="scale" data-dur="slow">
+            <img src="{% static 'assets/images/brand-story.webp' %}" alt="کارگاه قنادی رُزِت" loading="lazy" width="1200" height="896" decoding="async">
+          </div>
+          <p class="story-image-caption" data-reveal="fade-up" data-delay="300">کارگاه رُزِت — مشهد</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+     ۱۳. سکشن ۹: نوار گالری تصاویر اینستاگرام (Instagram / Visual Atelier)
+         نمایش لحظات خلق شیرینی‌ها و آثار هنری در آتلیه با هاور نرم
+     ══════════════════════════════════════════════════════════════════════ -->
+  <section class="section-gallery section-sm" aria-label="گالری تصاویر رُزِت">
+    <div class="gallery-header" data-reveal="fade-right">
+      <span class="gallery-label">
+        رُزِت در اینستاگرام — <a href="https://instagram.com" target="_blank" rel="noopener" class="gallery-instagram-link">&#8206;@rozet.ir</a>
+      </span>
+    </div>
+    <div class="gallery-strip" role="list">
+      {% for shot in gallery %}
+      <div class="gallery-item" role="listitem" data-reveal="scale" data-delay="{{ forloop.counter|add:forloop.counter0|add:forloop.counter0 }}0">
+        <img src="{{ shot.image.url }}" alt="{{ shot.alt|default:shot.caption }}" loading="lazy" width="896" height="1200" decoding="async">
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+</main>
+{% endblock %}
